@@ -8,21 +8,29 @@
   <meta property="og:title" content="Vecino Digital">
   <meta property="og:description" content="Te ordenamos los números del negocio. Vos seguí atendiendo.">
   <meta property="og:image" content="/compartir.png">
-  <meta name="theme-color" content="#FFE03A">
+  <meta name="theme-color" content="#23160F">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="/fuentes/big-shoulders-display-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fuentes/rye-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
   <a class="saltar" href="#lista">Ir a la lista de precios</a>
 
-  <header class="afiche">
+  <header class="letrero">
     <div class="ancho">
-      <p class="marca">Vecino Digital</p>
-      <h1>Te ordenamos los números del negocio. <span>Vos seguí atendiendo.</span></h1>
-      <p class="bajada">Planillas, carteles y textos listos para usar, armados con los datos que nos pasás
-        por un formulario. Pagás una vez, desde $&nbsp;25.000 y nunca más de $&nbsp;200.000, y los descargás
-        en unos minutos.</p>
+      <div class="panel">
+        <svg class="panel-dibujo" viewBox="0 0 1180 600" aria-hidden="true" focusable="false"><use href="/filete.svg#letrero"/></svg>
+        <div class="panel-texto">
+          <p class="marca">Vecino Digital</p>
+          <h1>Te ordenamos los números del negocio. <span>Vos seguí atendiendo.</span></h1>
+          <p class="cinta">
+            <svg viewBox="-4 0 532 90" aria-hidden="true" focusable="false" preserveAspectRatio="none"><use href="/filete.svg#cinta"/></svg>
+            <span>De $&nbsp;25.000 a $&nbsp;200.000</span>
+          </p>
+        </div>
+      </div>
+      <p class="bajada">Planillas, carteles y textos listos para usar, armados con los datos que nos pasás por un
+        formulario. Pagás una vez y los descargás en unos minutos.</p>
     </div>
   </header>
 
@@ -30,6 +38,7 @@
     <div class="columna">
       <section id="lista" aria-labelledby="t-lista">
         <h2 id="t-lista">Lista de precios</h2>
+        <svg class="llave" viewBox="0 0 600 60" aria-hidden="true" focusable="false"><use href="/filete.svg#llave"/></svg>
         <p class="aclaracion">Precios de noviembre de 2026. Tocá un renglón para pedirlo.</p>
         <div id="catalogo"></div>
       </section>
