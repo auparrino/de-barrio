@@ -255,6 +255,22 @@ def banda(d, t=16):
             f'<path d="{d}" fill="none" stroke="{C["verde_luz"]}" stroke-width="1.6" transform="translate({-t * .34} {-t * .34})"/>']
 
 
+def acanto_pintado(escala=.375, dx=30, dy=33):
+    """Hoja de acanto generada como imagen (Canva), reducida a cuatro tonos planos y vectorizada con
+    potrace (tools/filete_capas.py). Las capas están en tools/filete-acanto.json; acá se pintan con la
+    paleta y se les agrega la sombra proyectada."""
+    import json
+    import os
+    datos = json.load(open(os.path.join(os.path.dirname(__file__), "filete-acanto.json")))
+    capas = datos["capas"]
+    s = [f'<g transform="translate({dx} {dy}) scale({escala})">',
+         f'<path d="{capas["verde_sombra"]}" fill="{C["sombra"]}" transform="translate(6 6)"/>']
+    for k in ["verde_sombra", "verde", "verde_luz", "blanco"]:
+        s.append(f'<path d="{capas[k]}" fill="{C[k]}"/>')
+    s.append("</g>")
+    return "\n".join(s)
+
+
 def letrero(W=1180, H=600):
     """Panel completo: marco, nivel exterior (acanto a la izquierda + banda que completa la derecha
     con esquinas recortadas y bolitas), firulete y, en el nivel interior, un ramo de flores planas.
@@ -271,7 +287,7 @@ def letrero(W=1180, H=600):
     s.append(f'<path d="{df}" fill="none" stroke="{C["bermellon"]}" stroke-width="2.5"/>')
     s += bolita(W - m, m, 9, "rosa") + bolita(W - m, H - m, 9, "rosa")
     # nivel exterior: la hoja de acanto, desplazada para que su tallo entre en la banda de arriba
-    s.append(f'<g transform="translate(26 {m - 28 * .92}) scale(.92)">{acanto_lateral()}</g>')
+    s.append(acanto_pintado())
     # nivel interior: ramo abajo a la derecha
     s.append(f'<g transform="translate({W - m - k - 250} {H - m - k - 150})">{ramo()}</g>')
     return "\n".join(s)
@@ -282,9 +298,6 @@ def sprite():
 <!-- Fileteado porteño generado por tools/filete.py siguiendo data/guias/fileteado.md -->
 <symbol id="letrero" viewBox="0 0 1180 600">
 {letrero()}
-</symbol>
-<symbol id="acanto" viewBox="-40 -50 360 640">
-{acanto_lateral()}
 </symbol>
 <symbol id="esquina" viewBox="0 0 90 90">
 {esquinero_banda()}
