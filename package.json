@@ -1,0 +1,22 @@
+{
+  "name": "vecino-digital",
+  "version": "0.1.0",
+  "description": "Microconsultoría para comercios de barrio: cotización, pago con Mercado Pago y generación del producto con Claude.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "GENERADOR=demo node --watch server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
+    "express": "^4.22.3",
+    "multer": "^2.5.0"
+  },
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  }
+}

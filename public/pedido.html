@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tu pedido · Vecino Digital</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header class="portada chica"><h1><a href="/">Vecino Digital</a></h1></header>
+  <main class="estado">
+    <h2 id="titulo">Buscando tu pedido…</h2>
+    <p id="detalle"></p>
+    <p id="accion"></p>
+    <ul id="archivos" class="archivos"></ul>
+    <p class="nota">Guardá esta página: el link es tu acceso al pedido.</p>
+  </main>
+  <script type="module">
+    const q = new URLSearchParams(location.search);
+    const id = q.get("id"), clave = q.get("clave");
+    const $ = (s) => document.querySelector(s);
+    const pesos = (n) => "$ " + Math.round(n).toLocaleString("es-AR");
+    const textos = {
+      cotizado: ["Falta el pago", "Cuando se acredite, empezamos a armar tu pedido."],
+      pagado: ["¡Pago recibido!", "Estamos por empezar."],
+      generando: ["Estamos armando tu pedido", "Suele tardar entre 2 y 10 minutos. Podés dejar esta página abierta."],
+      listo: ["¡Tu pedido está listo!", ""],
+      error: ["Tuvimos un problema", ""],
+    };
+
+    async function actualizar() {
+      const r = await fetch(`/api/pedidos/${id}?clave=${clave}`);
+      if (!r.ok) { $("#titulo").textContent = "No encontramos el pedido"; return; }
+      const p = await r.json();
+      const [t, d] = textos[p.estado];
+      $("#titulo").textContent = t;
+      $("#detalle").textContent = p.estado === "listo" ? p.resumen : (p.error ?? `${p.servicio} para ${p.negocio} · ${pesos(p.cotizacion.total)}. ${d}`);
+      $("#accion").innerHTML = p.urlPago ? `<a class="boton" href="${p.urlPago}">Pagar ${pesos(p.cotizacion.total)}</a>` : "";
+      $("#archivos").innerHTML = p.archivos.map((a) =>
+        `<li><a href="/api/pedidos/${id}/archivos/${a.split("/").map(encodeURIComponent).join("/")}?clave=${clave}">${a}</a></li>`).join("");
+      if (["cotizado", "pagado", "generando"].includes(p.estado)) setTimeout(actualizar, 5000);
+    }
+    actualizar();
+  </script>
+</body>
+</html>

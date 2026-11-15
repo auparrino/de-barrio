@@ -1,0 +1,210 @@
+{
+  "moneda": "ARS",
+  "tope": 200000,
+  "recargos": {
+    "urgente": { "nombre": "Entrega urgente (en el día)", "porcentaje": 20 }
+  },
+  "servicios": [
+    {
+      "id": "flyer",
+      "nombre": "Flyer / volante",
+      "rubro": "Difusión",
+      "descripcion": "Volante listo para imprimir en A5 y versión para redes (cuadrada y para historias). Incluye el texto de la promo.",
+      "entregables": ["flyer-a5.html (para imprimir o guardar como PDF)", "post-cuadrado.svg", "historia.svg", "textos.md"],
+      "precio_base": 25000,
+      "opciones": [
+        { "id": "variantes", "nombre": "Variantes extra de diseño", "tipo": "cantidad", "precio_unitario": 8000, "max": 3 },
+        { "id": "dorso", "nombre": "Dorso con mapa y horarios", "tipo": "si_no", "precio": 7000 }
+      ],
+      "campos": [
+        { "id": "motivo", "etiqueta": "¿Qué querés comunicar? (promo, inauguración, nuevo producto…)", "tipo": "texto_largo", "requerido": true },
+        { "id": "colores", "etiqueta": "Colores que te gustan o los de tu local", "tipo": "texto" },
+        { "id": "vigencia", "etiqueta": "Vigencia de la promo", "tipo": "texto" }
+      ]
+    },
+    {
+      "id": "redes",
+      "nombre": "Pack de redes sociales del mes",
+      "rubro": "Difusión",
+      "descripcion": "12 publicaciones para Instagram/Facebook con imagen, texto y hashtags, más un calendario de qué publicar cada día.",
+      "entregables": ["calendario.md", "posts/post-01.svg … post-12.svg", "textos-posts.md"],
+      "precio_base": 55000,
+      "opciones": [
+        { "id": "posts_extra", "nombre": "Bloques de 4 posts extra", "tipo": "cantidad", "precio_unitario": 15000, "max": 3 },
+        { "id": "historias", "nombre": "8 historias con encuestas y preguntas", "tipo": "si_no", "precio": 18000 }
+      ],
+      "campos": [
+        { "id": "objetivo", "etiqueta": "¿Qué querés lograr este mes? (más clientes, vender un producto, que te conozcan…)", "tipo": "texto_largo", "requerido": true },
+        { "id": "productos", "etiqueta": "Productos o servicios a destacar", "tipo": "texto_largo" },
+        { "id": "tono", "etiqueta": "Tono (cercano, gracioso, formal…)", "tipo": "texto" }
+      ]
+    },
+    {
+      "id": "carta_qr",
+      "nombre": "Carta / lista de precios digital con QR",
+      "rubro": "Digitalización",
+      "descripcion": "Tu carta o lista de precios como página web liviana que se abre desde un QR en el mostrador o la mesa. Se actualiza editando un archivo.",
+      "entregables": ["carta.html (página lista para subir)", "cartel-qr.html (cartel para imprimir)", "instrucciones.md"],
+      "precio_base": 45000,
+      "opciones": [
+        { "id": "bilingue", "nombre": "Versión en inglés", "tipo": "si_no", "precio": 12000 },
+        { "id": "pedido_whatsapp", "nombre": "Botón para pedir por WhatsApp", "tipo": "si_no", "precio": 10000 }
+      ],
+      "campos": [
+        { "id": "items", "etiqueta": "Pegá tu lista de productos con precios (o subí fotos de la carta)", "tipo": "texto_largo", "requerido": true },
+        { "id": "whatsapp", "etiqueta": "Número de WhatsApp (si pediste el botón)", "tipo": "texto" }
+      ],
+      "acepta_fotos": true
+    },
+    {
+      "id": "cuaderno_fiado",
+      "nombre": "Del cuaderno a la planilla: fiado y cuentas corrientes",
+      "rubro": "Digitalización",
+      "descripcion": "Pasamos tu cuaderno de fiado o cuentas corrientes a una planilla (Google Sheets o Excel) con saldo por cliente, alertas de deudas viejas y mensaje de recordatorio para WhatsApp.",
+      "entregables": ["clientes.csv", "movimientos.csv", "formulas-y-armado.md", "mensajes-recordatorio.md"],
+      "precio_base": 60000,
+      "opciones": [
+        { "id": "paginas_extra", "nombre": "Bloques de 10 páginas extra de cuaderno (incluye 10)", "tipo": "cantidad", "precio_unitario": 15000, "max": 4 }
+      ],
+      "campos": [
+        { "id": "detalle", "etiqueta": "Contanos cómo anotás (columnas, abreviaturas, qué significa cada cosa)", "tipo": "texto_largo", "requerido": true },
+        { "id": "planilla", "etiqueta": "¿Usás Google Sheets o Excel?", "tipo": "opciones", "valores": ["Google Sheets", "Excel", "Me da igual"] }
+      ],
+      "acepta_fotos": true
+    },
+    {
+      "id": "stock",
+      "nombre": "Control de stock y reposición",
+      "rubro": "Digitalización",
+      "descripcion": "Planilla de stock con entradas, salidas, stock mínimo por producto y lista automática de qué pedirle a cada proveedor.",
+      "entregables": ["productos.csv", "movimientos-ejemplo.csv", "proveedores.csv", "formulas-y-armado.md"],
+      "precio_base": 70000,
+      "opciones": [
+        { "id": "codigos", "nombre": "Etiquetas con código de barras/QR por producto", "tipo": "si_no", "precio": 15000 },
+        { "id": "capacitacion", "nombre": "Guía paso a paso para el empleado", "tipo": "si_no", "precio": 10000 }
+      ],
+      "campos": [
+        { "id": "productos", "etiqueta": "Lista de productos (aunque sea aproximada) o fotos de la estantería/factura", "tipo": "texto_largo", "requerido": true },
+        { "id": "proveedores", "etiqueta": "Proveedores y cada cuánto pasan", "tipo": "texto_largo" }
+      ],
+      "acepta_fotos": true
+    },
+    {
+      "id": "costos",
+      "nombre": "Costeo y precios: ¿cuánto gano por producto?",
+      "rubro": "Gestión",
+      "descripcion": "Planilla que calcula costo real, margen y precio sugerido de cada producto, con la inflación y los gastos fijos del local adentro.",
+      "entregables": ["costeo.csv", "gastos-fijos.csv", "formulas-y-armado.md", "diagnostico.md"],
+      "precio_base": 55000,
+      "opciones": [
+        { "id": "recetas", "nombre": "Costeo por receta (gastronomía, panadería)", "tipo": "si_no", "precio": 20000 }
+      ],
+      "campos": [
+        { "id": "productos", "etiqueta": "Productos con lo que te cuestan y a cuánto los vendés", "tipo": "texto_largo", "requerido": true },
+        { "id": "gastos", "etiqueta": "Gastos fijos del mes (alquiler, luz, sueldos, etc.)", "tipo": "texto_largo" }
+      ],
+      "acepta_fotos": true
+    },
+    {
+      "id": "google_maps",
+      "nombre": "Ficha de Google Maps optimizada",
+      "rubro": "Presencia online",
+      "descripcion": "Textos y datos listos para cargar tu negocio en Google Maps (Perfil de Empresa): descripción, categorías, servicios, preguntas frecuentes y respuestas modelo a reseñas.",
+      "entregables": ["ficha-google.md", "respuestas-resenas.md", "pasos-para-cargarla.md"],
+      "precio_base": 30000,
+      "opciones": [
+        { "id": "pedir_resenas", "nombre": "Cartel QR \"dejanos tu reseña\"", "tipo": "si_no", "precio": 8000 }
+      ],
+      "campos": [
+        { "id": "que_hace", "etiqueta": "¿Qué vendés o hacés y qué te diferencia?", "tipo": "texto_largo", "requerido": true },
+        { "id": "horarios", "etiqueta": "Horarios", "tipo": "texto" }
+      ]
+    },
+    {
+      "id": "whatsapp",
+      "nombre": "WhatsApp Business ordenado",
+      "rubro": "Presencia online",
+      "descripcion": "Perfil, catálogo, mensajes de bienvenida y ausencia, respuestas rápidas y etiquetas para ordenar pedidos.",
+      "entregables": ["perfil-y-catalogo.md", "respuestas-rapidas.md", "pasos-para-configurarlo.md"],
+      "precio_base": 35000,
+      "opciones": [
+        { "id": "difusion", "nombre": "4 mensajes de difusión para clientes", "tipo": "si_no", "precio": 8000 }
+      ],
+      "campos": [
+        { "id": "consultas", "etiqueta": "¿Qué te preguntan más seguido por WhatsApp?", "tipo": "texto_largo", "requerido": true },
+        { "id": "productos", "etiqueta": "Productos para el catálogo (con precio)", "tipo": "texto_largo" }
+      ]
+    },
+    {
+      "id": "fidelizacion",
+      "nombre": "Tarjeta de fidelidad y promos",
+      "rubro": "Difusión",
+      "descripcion": "Tarjeta de sellos para imprimir (\"la 10ª es gratis\"), reglas del programa y cartel para el mostrador.",
+      "entregables": ["tarjeta.html (para imprimir)", "cartel-mostrador.html", "reglas.md"],
+      "precio_base": 20000,
+      "opciones": [],
+      "campos": [
+        { "id": "premio", "etiqueta": "¿Qué querés regalar y cada cuántas compras?", "tipo": "texto", "requerido": true }
+      ]
+    },
+    {
+      "id": "identidad",
+      "nombre": "Identidad básica del negocio",
+      "rubro": "Marca",
+      "descripcion": "Tres propuestas de logo simple en vector, paleta de colores, tipografías, slogan y una mini guía de uso.",
+      "entregables": ["logo-a.svg", "logo-b.svg", "logo-c.svg", "guia-de-marca.html"],
+      "precio_base": 80000,
+      "opciones": [
+        { "id": "papeleria", "nombre": "Tarjeta personal y sello/etiqueta", "tipo": "si_no", "precio": 15000 }
+      ],
+      "campos": [
+        { "id": "personalidad", "etiqueta": "¿Cómo querés que te vean? (tradicional, moderno, familiar…)", "tipo": "texto_largo", "requerido": true },
+        { "id": "referencias", "etiqueta": "Marcas o locales que te gustan", "tipo": "texto" }
+      ]
+    },
+    {
+      "id": "sitio_web",
+      "nombre": "Sitio web de una página",
+      "rubro": "Presencia online",
+      "descripcion": "Página web propia, rápida y para celular: quiénes son, qué venden, fotos, mapa, horarios y botón de WhatsApp. Lista para publicar gratis.",
+      "entregables": ["sitio/index.html", "sitio/estilos.css", "como-publicarlo.md"],
+      "precio_base": 140000,
+      "opciones": [
+        { "id": "secciones", "nombre": "Secciones extra (menú, galería, testimonios…)", "tipo": "cantidad", "precio_unitario": 12000, "max": 3 },
+        { "id": "formulario", "nombre": "Formulario de contacto", "tipo": "si_no", "precio": 10000 }
+      ],
+      "campos": [
+        { "id": "contenido", "etiqueta": "Contanos tu historia y qué ofrecés", "tipo": "texto_largo", "requerido": true },
+        { "id": "datos", "etiqueta": "Dirección, horarios, WhatsApp y redes", "tipo": "texto_largo", "requerido": true },
+        { "id": "colores", "etiqueta": "Colores o estilo", "tipo": "texto" }
+      ]
+    },
+    {
+      "id": "lanzamiento",
+      "nombre": "Kit de inauguración",
+      "rubro": "Combos",
+      "descripcion": "Para abrir o reabrir: flyer, 6 posts de cuenta regresiva, ficha de Google Maps y mensaje para avisar a los vecinos por WhatsApp.",
+      "entregables": ["flyer-a5.html", "posts/*.svg", "ficha-google.md", "mensajes-vecinos.md"],
+      "precio_base": 95000,
+      "opciones": [],
+      "campos": [
+        { "id": "fecha", "etiqueta": "Fecha y qué va a pasar en la inauguración", "tipo": "texto_largo", "requerido": true },
+        { "id": "que_hace", "etiqueta": "¿Qué vendés o hacés?", "tipo": "texto_largo", "requerido": true }
+      ]
+    },
+    {
+      "id": "barrio_digital",
+      "nombre": "Combo Barrio Digital",
+      "rubro": "Combos",
+      "descripcion": "Todo para estar en internet: sitio de una página, ficha de Google Maps, WhatsApp Business ordenado y un flyer. Ahorrás más de $40.000.",
+      "entregables": ["sitio/", "ficha-google.md", "whatsapp.md", "flyer-a5.html"],
+      "precio_base": 190000,
+      "opciones": [],
+      "campos": [
+        { "id": "contenido", "etiqueta": "Contanos tu historia y qué ofrecés", "tipo": "texto_largo", "requerido": true },
+        { "id": "datos", "etiqueta": "Dirección, horarios, WhatsApp y redes", "tipo": "texto_largo", "requerido": true },
+        { "id": "consultas", "etiqueta": "¿Qué te preguntan más seguido?", "tipo": "texto_largo" }
+      ]
+    }
+  ]
+}

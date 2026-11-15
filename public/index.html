@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vecino Digital · Servicios para comercios de barrio</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header class="portada">
+    <h1>Vecino Digital</h1>
+    <p>Flyers, planillas, cartas con QR y sitios web para tu negocio del barrio.
+      Precio cerrado, <strong>nunca más de $ 200.000</strong>, y lo recibís en el día.</p>
+    <ol class="pasos">
+      <li>Elegí un servicio</li>
+      <li>Contanos de tu negocio</li>
+      <li>Pagás la cotización</li>
+      <li>Descargás tu producto</li>
+    </ol>
+  </header>
+
+  <main>
+    <section id="catalogo" aria-label="Servicios"></section>
+
+    <section id="formulario" hidden>
+      <button type="button" class="volver" id="volver">← Ver todos los servicios</button>
+      <h2 id="f-titulo"></h2>
+      <p id="f-descripcion"></p>
+      <p class="entregables" id="f-entregables"></p>
+
+      <form id="pedido">
+        <fieldset>
+          <legend>Tu negocio</legend>
+          <label>Nombre del negocio <input name="negocio.nombre" required></label>
+          <label>Rubro <input name="negocio.rubro" placeholder="Almacén, peluquería, ferretería…"></label>
+          <label>Barrio / localidad <input name="negocio.barrio"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Lo que necesitamos saber</legend>
+          <div id="f-campos"></div>
+          <label id="f-fotos" hidden>Fotos (cuaderno, carta, productos; hasta 8)
+            <input type="file" name="fotos" accept="image/*" multiple>
+          </label>
+        </fieldset>
+
+        <fieldset id="f-opciones-caja">
+          <legend>Adicionales</legend>
+          <div id="f-opciones"></div>
+          <label class="check"><input type="checkbox" name="urgente"> <span id="f-urgente"></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>¿A dónde te avisamos?</legend>
+          <label>Tu nombre <input name="contacto.nombre"></label>
+          <label>Email <input type="email" name="contacto.email" required></label>
+          <label>WhatsApp <input name="contacto.telefono"></label>
+        </fieldset>
+
+        <aside class="cotizacion" aria-live="polite">
+          <h3>Tu cotización</h3>
+          <table id="cot-lineas"></table>
+          <p class="total">Total: <strong id="cot-total">—</strong></p>
+          <p class="error" id="error" hidden></p>
+          <button type="submit" id="pagar">Pagar y generar</button>
+          <p class="nota">Pagás con Mercado Pago. Apenas se acredita, empezamos a armar tu pedido
+            y te dejamos los archivos para descargar.</p>
+        </aside>
+      </form>
+    </section>
+  </main>
+
+  <footer>Vecino Digital · microconsultoría para comercios de cercanía</footer>
+  <script src="app.js" type="module"></script>
+</body>
+</html>
