@@ -1,0 +1,40 @@
+# Revisa las tablas de data/tablas/ contra sus fuentes oficiales todos los lunes.
+# Si algo cambió y pasó los controles, commitea la tabla nueva.
+# Si algo necesita revisión, la corrida queda en rojo (GitHub avisa por mail)
+# y la tabla queda como estaba: al vencerse, su servicio se apaga solo.
+name: Actualizar tablas
+on:
+  schedule:
+    - cron: "17 11 * * 1" # lunes 08:17 hora argentina
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Consultar fuentes oficiales
+        id: actualizar
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node tools/actualizar-tablas.js
+        continue-on-error: true
+      - run: npm test
+      - name: Commitear tablas actualizadas e informe
+        run: |
+          git config user.name "vecino-digital-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/tablas
+          git diff --cached --quiet || git commit -m "Tablas: actualización automática $(date +%F)"
+          git push
+      - name: Avisar si hace falta revisar
+        if: steps.actualizar.outcome == 'failure'
+        run: |
+          echo "::error::Alguna tabla necesita revisión. Ver data/tablas/INFORME.md"
+          exit 1
