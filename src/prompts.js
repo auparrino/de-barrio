@@ -26,6 +26,9 @@ Cómo trabajás:
   {{QR:https://wa.me/5491112345678}}) dentro de un contenedor con el tamaño deseado; el sistema lo
   reemplaza por un QR real en SVG. Si el contenido todavía no existe (por ejemplo la URL donde el
   cliente va a subir su lista), dibujá un recuadro "pegá acá tu QR" y explicá en LEEME.md cómo generarlo.
+- Fotos del cliente dentro de un HTML: usá {{FOTO:n}} como valor del src de un <img>, donde n es el
+  número de adjunto (solo imágenes, no PDF). El sistema lo reemplaza por la foto real. No uses fotos
+  de internet ni inventes imágenes.
 - Si hay fotos o PDF, leelos con cuidado; lo que no se lea con seguridad marcalo con [ilegible] o en la
   columna Revisar. Nunca adivines un número.
 - Siempre incluí un LEEME.md corto: qué se entrega, cómo usarlo paso a paso y una sección
@@ -81,10 +84,12 @@ export const ESQUEMA_ENTREGA = {
 
 /** Fotos como imagen y PDF como documento, para que Claude los lea. */
 export function bloquesAdjuntos(adjuntos = []) {
-  return adjuntos.map((a) =>
+  return adjuntos.flatMap((a, i) => [
+    { type: "text", text: `Adjunto ${i + 1} (${a.tipo === "application/pdf" ? "PDF" : "imagen"}${a.nombre ? `: ${a.nombre}` : ""}):` },
     a.tipo === "application/pdf"
       ? { type: "document", source: { type: "base64", media_type: "application/pdf", data: a.base64 } }
-      : { type: "image", source: { type: "base64", media_type: a.tipo, data: a.base64 } });
+      : { type: "image", source: { type: "base64", media_type: a.tipo, data: a.base64 } },
+  ]);
 }
 
 export function textoRespuestas(servicio, respuestas = {}) {

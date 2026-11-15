@@ -23,6 +23,11 @@
       "descripcion": "Los costos fijos que más pesan: sueldos, luz y alquiler."
     },
     {
+      "id": "imagen",
+      "nombre": "Tu imagen",
+      "descripcion": "Lo básico para que el barrio te conozca: sitio web, flyer y redes."
+    },
+    {
       "id": "vender",
       "nombre": "Vender en el barrio",
       "descripcion": "Que te encuentren, te pidan por WhatsApp y vean tus promos."
@@ -508,6 +513,158 @@
       "tablas": [],
       "instrucciones": "Usá los precios exactamente como los escribió el cliente; si la promo es un porcentaje, el precio final viene calculado en <calculos> cuando se pudo; no hagas cuentas vos. Si la oferta parece dejar el producto debajo del costo y el cliente dio el costo, avisalo en LEEME.md. Entregá flyer-a5.html (A5 para imprimir), posts/ con piezas cuadradas 1080x1080 en SVG, estados/ con piezas 1080x1920 en SVG (la cantidad total de piezas según lo contratado, repartidas entre posts y estados), y textos.md con el texto y hashtags de cada pieza y el mensaje para la lista de difusión.",
       "calculo": "precio_promo"
+    },
+    {
+      "id": "sitio_web",
+      "categoria": "imagen",
+      "nombre": "Sitio web de una página",
+      "descripcion": "Tu página web propia, rápida y pensada para celular: quiénes son, qué venden, fotos, mapa, horarios y botón de WhatsApp. Lista para publicar gratis.",
+      "entregables": [
+        "sitio/index.html (un solo archivo, con tus fotos adentro)",
+        "como-publicarlo.md",
+        "LEEME.md"
+      ],
+      "precio_base": 140000,
+      "opciones": [
+        {
+          "id": "secciones",
+          "nombre": "Secciones extra (carta o lista de productos, galería, preguntas frecuentes)",
+          "tipo": "cantidad",
+          "precio_unitario": 12000,
+          "max": 3
+        },
+        {
+          "id": "ingles",
+          "nombre": "Versión en inglés",
+          "tipo": "si_no",
+          "precio": 15000
+        }
+      ],
+      "campos": [
+        {
+          "id": "contenido",
+          "etiqueta": "Contanos tu historia y qué ofrecés",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "datos",
+          "etiqueta": "Dirección, horarios, WhatsApp, redes y medios de pago",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "estilo",
+          "etiqueta": "Colores o estilo que te gusten",
+          "tipo": "texto"
+        },
+        {
+          "id": "secciones_extra",
+          "etiqueta": "Si pediste secciones extra, ¿cuáles y con qué contenido?",
+          "tipo": "texto_largo"
+        }
+      ],
+      "adjuntos": true,
+      "adjuntos_ayuda": "Subí tu logo y fotos del local y los productos (hasta 8). Van dentro del sitio.",
+      "tablas": [],
+      "instrucciones": "Entregá sitio/index.html: un solo archivo autocontenido, mobile first, liviano, con <title> y meta description pensados para que lo encuentren buscando el rubro y el barrio, datos estructurados schema.org LocalBusiness en JSON-LD solo con los datos que dio el cliente, y secciones: portada con nombre y frase, quiénes somos, qué ofrecemos, fotos, horarios y medios de pago, cómo llegar (link a Google Maps armado con la dirección: https://www.google.com/maps/search/?api=1&query=DIRECCION codificada; no uses iframes ni claves de API) y un botón flotante de WhatsApp (https://wa.me/NUMERO solo con dígitos y código de país 54 si el cliente dio el número). Usá las fotos adjuntas con el marcador {{FOTO:n}} como valor del src de cada <img> (n empieza en 1, en el orden en que se adjuntaron; la primera suele ser el logo si el cliente lo dice). Agregá las secciones extra contratadas y, si pidió inglés, un selector ES/EN en la misma página. como-publicarlo.md: paso a paso para publicarlo gratis en Netlify Drop (arrastrar la carpeta) y cómo conectar un dominio .com.ar de NIC Argentina si quiere."
+    },
+    {
+      "id": "flyer",
+      "categoria": "imagen",
+      "nombre": "Flyer o volante",
+      "descripcion": "Un volante para imprimir y su versión para redes y estados de WhatsApp: para anunciar el local, un servicio nuevo, horarios, envíos o lo que necesites.",
+      "entregables": [
+        "flyer-a5.html (para imprimir o guardar como PDF)",
+        "post-cuadrado.svg",
+        "estado-whatsapp.svg",
+        "textos.md",
+        "LEEME.md"
+      ],
+      "precio_base": 25000,
+      "opciones": [
+        {
+          "id": "variantes",
+          "nombre": "Variantes extra de diseño",
+          "tipo": "cantidad",
+          "precio_unitario": 8000,
+          "max": 3
+        },
+        {
+          "id": "dorso",
+          "nombre": "Dorso con horarios, medios de pago y cómo llegar",
+          "tipo": "si_no",
+          "precio": 7000
+        }
+      ],
+      "campos": [
+        {
+          "id": "mensaje",
+          "etiqueta": "¿Qué querés comunicar? (apertura, envíos a domicilio, nuevo servicio, horarios…)",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "datos",
+          "etiqueta": "Datos que tienen que figurar (dirección, WhatsApp, redes, horarios)",
+          "tipo": "texto_largo"
+        },
+        {
+          "id": "colores",
+          "etiqueta": "Colores de tu local o que te gusten",
+          "tipo": "texto"
+        }
+      ],
+      "adjuntos": true,
+      "adjuntos_ayuda": "Opcional: tu logo o una foto del local o producto para usar en el flyer.",
+      "tablas": [],
+      "instrucciones": "Entregá flyer-a5.html (A5 vertical con @page, listo para imprimir o guardar como PDF; si pidió dorso, segunda página con horarios, medios de pago y dirección), post-cuadrado.svg (1080x1080) y estado-whatsapp.svg (1080x1920) con el mismo mensaje adaptado, y textos.md con el texto para acompañar la publicación y el mensaje para la lista de difusión. Si contrató variantes, agregá flyer-variante-N.html con propuestas visuales distintas. En el HTML podés usar las fotos adjuntas con {{FOTO:n}} como src de <img>; en los SVG no uses fotos. Si el cliente dio el WhatsApp, incluí un QR con {{QR:https://wa.me/NUMERO}}. No pongas precios que el cliente no haya dado."
+    },
+    {
+      "id": "redes",
+      "categoria": "imagen",
+      "nombre": "Perfil de redes armado",
+      "descripcion": "Tu Instagram y Facebook listos para arrancar: nombre de usuario, bio, foto de perfil, portadas de destacadas, las primeras 9 publicaciones y una guía de qué publicar cada semana.",
+      "entregables": [
+        "perfil.md (bio, usuario, categoría, datos de contacto)",
+        "foto-de-perfil.svg",
+        "destacadas/*.svg",
+        "primeras-publicaciones/*.svg",
+        "textos-publicaciones.md",
+        "plan-semanal.md",
+        "LEEME.md"
+      ],
+      "precio_base": 45000,
+      "opciones": [
+        {
+          "id": "mas_posts",
+          "nombre": "Bloques de 6 publicaciones extra (incluye 9)",
+          "tipo": "cantidad",
+          "precio_unitario": 15000,
+          "max": 2
+        }
+      ],
+      "campos": [
+        {
+          "id": "que_hace",
+          "etiqueta": "¿Qué vendés o hacés y qué te diferencia?",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "datos",
+          "etiqueta": "Dirección, horarios, WhatsApp, y si ya tenés cuentas, su usuario actual",
+          "tipo": "texto_largo"
+        },
+        {
+          "id": "tono",
+          "etiqueta": "Tono (cercano, gracioso, formal…) y colores",
+          "tipo": "texto"
+        }
+      ],
+      "adjuntos": false,
+      "tablas": [],
+      "instrucciones": "Entregá perfil.md con: 3 opciones de nombre de usuario (verificá que tengan hasta 30 caracteres, solo letras, números, punto y guion bajo, y aclarando que hay que chequear que estén libres), nombre visible, categoría sugerida, bio de Instagram de hasta 150 caracteres (contalos), texto de 'Información' para la página de Facebook, y botón de contacto recomendado. foto-de-perfil.svg (1080x1080, legible en círculo chico: iniciales o nombre corto con los colores del cliente). destacadas/: 5 portadas 1080x1920 con ícono simple y título (por ejemplo Productos, Horarios, Envíos, Cómo pagar, Opiniones). primeras-publicaciones/: las 9 publicaciones (más las extra contratadas) en SVG 1080x1350, pensadas para verse bien juntas en la grilla: presentación, qué vendemos, horarios, cómo pedir, medios de pago, el equipo o la historia, etc. textos-publicaciones.md con el texto y hashtags del barrio y el rubro de cada una. plan-semanal.md: qué publicar cada día de la semana, ideas que se puedan sacar con el celular en el local. LEEME.md: cómo crear las cuentas, pasarlas a cuenta profesional y conectar Instagram con Facebook y WhatsApp."
     }
   ]
 }

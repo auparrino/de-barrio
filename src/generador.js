@@ -50,12 +50,24 @@ export async function insertarQrs(texto) {
   return salida;
 }
 
+/** Reemplaza cada {{FOTO:n}} por la foto n que adjuntó el cliente (como data URI). */
+export function insertarFotos(texto, adjuntos = [], avisos = []) {
+  return texto.replace(/\{\{FOTO:(\d+)\}\}/g, (_m, n) => {
+    const a = adjuntos[Number(n) - 1];
+    if (!a || !a.tipo.startsWith("image/")) {
+      avisos.push(`Se pidió la foto ${n}, pero ese adjunto no existe o no es una imagen.`);
+      return "";
+    }
+    return `data:${a.tipo};base64,${a.base64}`;
+  });
+}
+
 /** Convierte la respuesta de Claude en archivos listos para guardar. */
-export async function armarArchivos(entrega) {
+export async function armarArchivos(entrega, adjuntos = []) {
   const archivos = [];
   const avisos = [];
   for (const a of entrega.archivos) {
-    archivos.push({ ruta: a.ruta, contenido: await insertarQrs(a.contenido) });
+    archivos.push({ ruta: a.ruta, contenido: insertarFotos(await insertarQrs(a.contenido), adjuntos, avisos) });
   }
   for (const p of entrega.planillas ?? []) {
     avisos.push(...revisarPlanilla(p));
@@ -64,7 +76,7 @@ export async function armarArchivos(entrega) {
   }
   if (avisos.length) {
     const leeme = archivos.find((a) => a.ruta === "LEEME.md");
-    const nota = `\n\n## Revisión automática de las planillas\n\n${avisos.map((a) => `- ${a}`).join("\n")}\n`;
+    const nota = `\n\n## Revisión automática\n\n${avisos.map((a) => `- ${a}`).join("\n")}\n`;
     if (leeme) leeme.contenido += nota;
     else archivos.push({ ruta: "LEEME.md", contenido: nota.trimStart() });
   }
@@ -92,7 +104,7 @@ export async function generarProducto(catalogo, pedido, { tablas = {} } = {}) {
     ? { datos: entregaDemo(pedido), uso: null, modelo: "demo" }
     : await pedirJson({ content: armarPedido(catalogo, pedido, { tablas, calculos }), esquema: ESQUEMA_ENTREGA });
 
-  const { archivos, avisos } = await armarArchivos(r.datos);
+  const { archivos, avisos } = await armarArchivos(r.datos, pedido.adjuntos);
   return { resumen: r.datos.resumen, archivos, avisos, uso: r.uso, modelo: r.modelo };
 }
 

@@ -4,7 +4,7 @@ import ExcelJS from "exceljs";
 import { precioPorUnidad, precioPromo, EXTRACCIONES } from "../src/calculos.js";
 import { estadoTabla, disponibilidad } from "../src/tablas.js";
 import { armarXlsx, revisarPlanilla, valorCelda } from "../src/planillas.js";
-import { insertarQrs } from "../src/generador.js";
+import { insertarQrs, insertarFotos } from "../src/generador.js";
 
 test("precio por unidad de medida", () => {
   assert.deepEqual(precioPorUnidad(4500, 1, "kg"), { valor: 4500, por: "kg" });
@@ -54,4 +54,12 @@ test("reemplaza los marcadores de QR por un SVG real", async () => {
   const html = await insertarQrs('<div>{{QR:https://wa.me/541100000000}}</div>');
   assert.match(html, /<svg[^>]*viewBox/);
   assert.doesNotMatch(html, /\{\{QR/);
+});
+
+test("reemplaza los marcadores de foto por la imagen del cliente", () => {
+  const avisos = [];
+  const adj = [{ tipo: "image/png", base64: "AAAA" }, { tipo: "application/pdf", base64: "BBBB" }];
+  const html = insertarFotos('<img src="{{FOTO:1}}"><img src="{{FOTO:2}}"><img src="{{FOTO:9}}">', adj, avisos);
+  assert.match(html, /src="data:image\/png;base64,AAAA"/);
+  assert.equal(avisos.length, 2);
 });

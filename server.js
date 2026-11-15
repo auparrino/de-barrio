@@ -93,7 +93,7 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
       cotizacion,
       cantidadAdjuntos: adjuntos.length,
     });
-    almacen.guardarAdjuntos(pedido.id, adjuntos.map((f) => ({ tipo: f.mimetype, base64: f.buffer.toString("base64") })));
+    almacen.guardarAdjuntos(pedido.id, adjuntos.map((f) => ({ tipo: f.mimetype, nombre: f.originalname, base64: f.buffer.toString("base64") })));
 
     const urlPago = await pagos.crearLinkDePago(pedido, URL_BASE);
     almacen.actualizar(pedido.id, { urlPago });

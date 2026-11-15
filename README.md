@@ -9,7 +9,7 @@ bonifica sola.
 
 ## Servicios
 
-Once servicios automáticos en cinco categorías, elegidos a partir de la investigación en
+Catorce servicios automáticos en seis categorías, elegidos a partir de la investigación en
 [`docs/investigacion/`](docs/investigacion/). Todos se generan solos a partir del formulario.
 
 | Categoría | Servicio | Desde | Tabla vigente que usa |
@@ -23,6 +23,9 @@ Once servicios automáticos en cinco categorías, elegidos a partir de la invest
 | Clientes y fiado | Clientes que vuelven | $ 65.000 | — |
 | Personal y local | Costo laboral y turnos | $ 110.000 | `escala_comercio` |
 | Personal y local | Revisión de luz y alquiler | $ 100.000 | — |
+| Tu imagen | Sitio web de una página | $ 140.000 | — |
+| Tu imagen | Flyer o volante | $ 25.000 | — |
+| Tu imagen | Perfil de redes armado | $ 45.000 | — |
 | Vender en el barrio | Que te encuentren y te pidan | $ 120.000 | — |
 | Vender en el barrio | Promos del mes | $ 55.000 | — |
 
@@ -37,7 +40,8 @@ Precios, adicionales, preguntas e instrucciones para Claude de cada servicio est
 - **Los datos que cambian viven en `data/tablas/`** (comisiones, escala de Comercio, normativa de precios),
   con fecha, fuente y vigencia. Un servicio que usa una tabla **no se puede contratar** si la tabla no
   está marcada `"verificado": true` o pasó su vigencia: aparece como «Muy pronto».
-- **Los QR los genera el código** (`{{QR:...}}` → SVG real), no el modelo.
+- **Los QR los genera el código** (`{{QR:...}}` → SVG real), no el modelo, y las fotos del cliente
+  entran al HTML con `{{FOTO:n}}`: nunca se usan imágenes de internet ni generadas.
 - Cada entrega trae un LEEME.md con una sección «Revisá esto» (datos faltantes, dudosos o transcriptos
   de fotos) y una revisión automática de las fórmulas que apuntan a hojas inexistentes.
 
