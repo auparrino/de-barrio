@@ -1,210 +1,513 @@
 {
   "moneda": "ARS",
   "tope": 200000,
-  "recargos": {
-    "urgente": { "nombre": "Entrega urgente (en el día)", "porcentaje": 20 }
-  },
+  "categorias": [
+    {
+      "id": "plata",
+      "nombre": "Plata y margen",
+      "descripcion": "Saber cuánto ganás, cobrar más barato y tener la caja ordenada."
+    },
+    {
+      "id": "mercaderia",
+      "nombre": "Mercadería y góndola",
+      "descripcion": "Que no falte ni sobre, y precios exhibidos como pide la ley."
+    },
+    {
+      "id": "clientes",
+      "nombre": "Clientes y fiado",
+      "descripcion": "Que el fiado no te deje sin caja y que los clientes vuelvan."
+    },
+    {
+      "id": "local",
+      "nombre": "Personal y local",
+      "descripcion": "Los costos fijos que más pesan: sueldos, luz y alquiler."
+    },
+    {
+      "id": "vender",
+      "nombre": "Vender en el barrio",
+      "descripcion": "Que te encuentren, te pidan por WhatsApp y vean tus promos."
+    }
+  ],
   "servicios": [
     {
-      "id": "flyer",
-      "nombre": "Flyer / volante",
-      "rubro": "Difusión",
-      "descripcion": "Volante listo para imprimir en A5 y versión para redes (cuadrada y para historias). Incluye el texto de la promo.",
-      "entregables": ["flyer-a5.html (para imprimir o guardar como PDF)", "post-cuadrado.svg", "historia.svg", "textos.md"],
-      "precio_base": 25000,
+      "id": "margen",
+      "categoria": "plata",
+      "nombre": "Margen real y lista de precios",
+      "descripcion": "Planilla que calcula cuánto ganás de verdad con cada producto, con tus gastos fijos adentro, y te dice a cuánto vender y cuándo remarcar.",
+      "entregables": [
+        "margen-y-precios.xlsx",
+        "diagnostico.md",
+        "LEEME.md"
+      ],
+      "precio_base": 140000,
       "opciones": [
-        { "id": "variantes", "nombre": "Variantes extra de diseño", "tipo": "cantidad", "precio_unitario": 8000, "max": 3 },
-        { "id": "dorso", "nombre": "Dorso con mapa y horarios", "tipo": "si_no", "precio": 7000 }
+        {
+          "id": "productos_extra",
+          "nombre": "Bloques de 50 productos extra (incluye 50)",
+          "tipo": "cantidad",
+          "precio_unitario": 15000,
+          "max": 3
+        },
+        {
+          "id": "recetas",
+          "nombre": "Costeo por receta (gastronomía, panadería)",
+          "tipo": "si_no",
+          "precio": 20000
+        }
       ],
       "campos": [
-        { "id": "motivo", "etiqueta": "¿Qué querés comunicar? (promo, inauguración, nuevo producto…)", "tipo": "texto_largo", "requerido": true },
-        { "id": "colores", "etiqueta": "Colores que te gustan o los de tu local", "tipo": "texto" },
-        { "id": "vigencia", "etiqueta": "Vigencia de la promo", "tipo": "texto" }
-      ]
+        {
+          "id": "productos",
+          "etiqueta": "Productos con lo que te cuestan y a cuánto los vendés (pegá la lista o subí fotos/PDF de listas y facturas)",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "gastos",
+          "etiqueta": "Gastos fijos del mes: alquiler, luz, sueldos, contador, internet, etc.",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "ventas",
+          "etiqueta": "¿Cuánto vendés por mes, más o menos?",
+          "tipo": "texto"
+        },
+        {
+          "id": "competencia",
+          "etiqueta": "Opcional: precios de la competencia que conozcas (súper, chino, otro almacén)",
+          "tipo": "texto_largo"
+        }
+      ],
+      "adjuntos": true,
+      "tablas": [],
+      "instrucciones": "Entregá margen-y-precios.xlsx con estas hojas: 'Productos' (producto, familia, costo, precio actual, margen % y margen $ con fórmula, precio sugerido con fórmula según el margen objetivo de su familia, diferencia con el precio actual); 'Familias' (margen objetivo por familia, editable); 'Gastos fijos' (lista y total con fórmula); 'Equilibrio' (venta mensual necesaria para cubrir gastos fijos con el margen promedio ponderado, con fórmula); si dio precios de la competencia, 'Competencia' (producto, precio propio, precio competidor, diferencia % con fórmula). Usá solo los costos y precios que dio el cliente; si falta el costo de un producto, dejá la celda vacía y listalo en LEEME.md. En diagnostico.md: los 10 productos con menos margen, los que conviene usar de gancho, una regla de remarcación simple (por ejemplo: cuando el costo sube más de X%, actualizar el precio con la fórmula de la hoja) y qué revisar. Si pidió costeo por receta, agregá la hoja 'Recetas' (ingrediente, cantidad, costo unitario, costo total por receta y por unidad, con fórmulas)."
     },
     {
-      "id": "redes",
-      "nombre": "Pack de redes sociales del mes",
-      "rubro": "Difusión",
-      "descripcion": "12 publicaciones para Instagram/Facebook con imagen, texto y hashtags, más un calendario de qué publicar cada día.",
-      "entregables": ["calendario.md", "posts/post-01.svg … post-12.svg", "textos-posts.md"],
-      "precio_base": 55000,
-      "opciones": [
-        { "id": "posts_extra", "nombre": "Bloques de 4 posts extra", "tipo": "cantidad", "precio_unitario": 15000, "max": 3 },
-        { "id": "historias", "nombre": "8 historias con encuestas y preguntas", "tipo": "si_no", "precio": 18000 }
+      "id": "cobros",
+      "categoria": "plata",
+      "nombre": "Cobrá más barato",
+      "descripcion": "Comparamos lo que te cuestan tus medios de cobro (QR, débito, crédito, transferencias) con las comisiones vigentes y te decimos cómo configurarlos para pagar menos cada mes.",
+      "entregables": [
+        "comparativa-cobros.xlsx",
+        "recomendacion.md",
+        "cartel-medios-de-pago.html",
+        "LEEME.md"
       ],
+      "precio_base": 75000,
+      "opciones": [],
       "campos": [
-        { "id": "objetivo", "etiqueta": "¿Qué querés lograr este mes? (más clientes, vender un producto, que te conozcan…)", "tipo": "texto_largo", "requerido": true },
-        { "id": "productos", "etiqueta": "Productos o servicios a destacar", "tipo": "texto_largo" },
-        { "id": "tono", "etiqueta": "Tono (cercano, gracioso, formal…)", "tipo": "texto" }
-      ]
+        {
+          "id": "medios",
+          "etiqueta": "¿Con qué cobrás hoy? (Mercado Pago, posnet de qué banco, Cuenta DNI, MODO, transferencia, efectivo) y en qué plazo te acreditan",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "montos",
+          "etiqueta": "¿Cuánto cobrás por mes con cada medio, más o menos? (o subí los resúmenes)",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "provincia",
+          "etiqueta": "Provincia",
+          "tipo": "texto"
+        }
+      ],
+      "adjuntos": true,
+      "tablas": [
+        "comisiones"
+      ],
+      "instrucciones": "Usá EXCLUSIVAMENTE las comisiones de la tabla 'comisiones' que viene en <tablas_vigentes>; no uses comisiones de memoria. Si el cliente usa un medio que no está en la tabla, decilo en LEEME.md y no lo calcules. Entregá comparativa-cobros.xlsx con: 'Mis cobros' (medio, plazo, monto mensual del cliente, comisión % de la tabla, IVA sobre la comisión, costo mensual con fórmula); 'Alternativas' (mismos montos con el medio y plazo más barato disponible para cada tipo de pago, ahorro mensual y anual con fórmula); 'Tabla usada' (copia de la tabla con su fecha y fuente). En recomendacion.md: qué cambiar, en qué orden, ahorro estimado, y la advertencia de que la tabla tiene fecha y conviene revisarla. cartel-medios-de-pago.html: cartel A4 para imprimir con los medios recomendados (sin logos de marcas, solo texto)."
     },
     {
-      "id": "carta_qr",
-      "nombre": "Carta / lista de precios digital con QR",
-      "rubro": "Digitalización",
-      "descripcion": "Tu carta o lista de precios como página web liviana que se abre desde un QR en el mostrador o la mesa. Se actualiza editando un archivo.",
-      "entregables": ["carta.html (página lista para subir)", "cartel-qr.html (cartel para imprimir)", "instrucciones.md"],
-      "precio_base": 45000,
+      "id": "caja",
+      "categoria": "plata",
+      "nombre": "Caja ordenada",
+      "descripcion": "Planilla diaria de ventas, gastos y retiros que separa tu plata de la del negocio, con cierre de caja y control de lo que entra por cada billetera.",
+      "entregables": [
+        "caja.xlsx",
+        "cierre-de-caja.html (para imprimir)",
+        "LEEME.md"
+      ],
+      "precio_base": 85000,
       "opciones": [
-        { "id": "bilingue", "nombre": "Versión en inglés", "tipo": "si_no", "precio": 12000 },
-        { "id": "pedido_whatsapp", "nombre": "Botón para pedir por WhatsApp", "tipo": "si_no", "precio": 10000 }
+        {
+          "id": "empleado",
+          "nombre": "Guía de cierre de caja para empleados",
+          "tipo": "si_no",
+          "precio": 10000
+        }
       ],
       "campos": [
-        { "id": "items", "etiqueta": "Pegá tu lista de productos con precios (o subí fotos de la carta)", "tipo": "texto_largo", "requerido": true },
-        { "id": "whatsapp", "etiqueta": "Número de WhatsApp (si pediste el botón)", "tipo": "texto" }
+        {
+          "id": "como_hoy",
+          "etiqueta": "¿Cómo anotás hoy las ventas y gastos? ¿Quién abre y cierra la caja?",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "medios",
+          "etiqueta": "Medios de cobro que usás (efectivo, Mercado Pago, posnet, transferencia…)",
+          "tipo": "texto",
+          "requerido": true
+        },
+        {
+          "id": "gastos_tipicos",
+          "etiqueta": "Gastos que pagás de la caja (proveedores, flete, limpieza…)",
+          "tipo": "texto_largo"
+        }
       ],
-      "acepta_fotos": true
-    },
-    {
-      "id": "cuaderno_fiado",
-      "nombre": "Del cuaderno a la planilla: fiado y cuentas corrientes",
-      "rubro": "Digitalización",
-      "descripcion": "Pasamos tu cuaderno de fiado o cuentas corrientes a una planilla (Google Sheets o Excel) con saldo por cliente, alertas de deudas viejas y mensaje de recordatorio para WhatsApp.",
-      "entregables": ["clientes.csv", "movimientos.csv", "formulas-y-armado.md", "mensajes-recordatorio.md"],
-      "precio_base": 60000,
-      "opciones": [
-        { "id": "paginas_extra", "nombre": "Bloques de 10 páginas extra de cuaderno (incluye 10)", "tipo": "cantidad", "precio_unitario": 15000, "max": 4 }
-      ],
-      "campos": [
-        { "id": "detalle", "etiqueta": "Contanos cómo anotás (columnas, abreviaturas, qué significa cada cosa)", "tipo": "texto_largo", "requerido": true },
-        { "id": "planilla", "etiqueta": "¿Usás Google Sheets o Excel?", "tipo": "opciones", "valores": ["Google Sheets", "Excel", "Me da igual"] }
-      ],
-      "acepta_fotos": true
+      "adjuntos": false,
+      "tablas": [],
+      "instrucciones": "Entregá caja.xlsx con: 'Diario' (fecha, concepto, tipo [venta/gasto/retiro del dueño/aporte], medio, importe, con columnas de saldo por medio calculadas con fórmula); 'Cierre' (efectivo inicial, ventas en efectivo, gastos en efectivo, retiros, efectivo esperado y diferencia con lo contado, todo con fórmula); 'Mes' (totales por tipo y por medio con SUMIFS sobre 'Diario', y ganancia de caja del mes); 'Categorías' (lista de categorías de gasto adaptada a su rubro). Precargá 3 filas de ejemplo claramente marcadas como EJEMPLO para que se entienda. cierre-de-caja.html: hoja A4 imprimible para completar a mano al cerrar. En LEEME.md explicá la regla: el sueldo del dueño se retira como 'retiro', nunca mezclado con gastos."
     },
     {
       "id": "stock",
-      "nombre": "Control de stock y reposición",
-      "rubro": "Digitalización",
-      "descripcion": "Planilla de stock con entradas, salidas, stock mínimo por producto y lista automática de qué pedirle a cada proveedor.",
-      "entregables": ["productos.csv", "movimientos-ejemplo.csv", "proveedores.csv", "formulas-y-armado.md"],
-      "precio_base": 70000,
+      "categoria": "mercaderia",
+      "nombre": "Stock mínimo y mapa de compras",
+      "descripcion": "Planilla con tus productos que más rotan, stock mínimo y punto de pedido, y una comparación de precios entre tus proveedores para saber a quién comprarle qué.",
+      "entregables": [
+        "stock-y-compras.xlsx",
+        "calendario-de-compras.md",
+        "LEEME.md"
+      ],
+      "precio_base": 150000,
       "opciones": [
-        { "id": "codigos", "nombre": "Etiquetas con código de barras/QR por producto", "tipo": "si_no", "precio": 15000 },
-        { "id": "capacitacion", "nombre": "Guía paso a paso para el empleado", "tipo": "si_no", "precio": 10000 }
+        {
+          "id": "productos_extra",
+          "nombre": "Bloques de 50 productos extra (incluye 100)",
+          "tipo": "cantidad",
+          "precio_unitario": 15000,
+          "max": 2
+        },
+        {
+          "id": "etiquetas",
+          "nombre": "Etiquetas de góndola con código QR por producto",
+          "tipo": "si_no",
+          "precio": 15000
+        }
       ],
       "campos": [
-        { "id": "productos", "etiqueta": "Lista de productos (aunque sea aproximada) o fotos de la estantería/factura", "tipo": "texto_largo", "requerido": true },
-        { "id": "proveedores", "etiqueta": "Proveedores y cada cuánto pasan", "tipo": "texto_largo" }
+        {
+          "id": "productos",
+          "etiqueta": "Productos que más vendés, con cuánto vendés por semana (aproximado) y cuánto tenés hoy",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "proveedores",
+          "etiqueta": "Proveedores y mayoristas: qué te traen, cada cuánto pasan o vas, y cuánto tardan",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "listas",
+          "etiqueta": "Precios de cada proveedor (pegá o subí listas y facturas)",
+          "tipo": "texto_largo"
+        }
       ],
-      "acepta_fotos": true
+      "adjuntos": true,
+      "tablas": [],
+      "instrucciones": "Entregá stock-y-compras.xlsx con: 'Productos' (producto, proveedor principal, venta semanal, días de demora del proveedor, stock de seguridad en días, stock mínimo y punto de pedido calculados con fórmula, stock actual, columna PEDIR con fórmula SI(stock<=punto de pedido; cantidad sugerida; \"\")); 'Movimientos' (fecha, producto, entrada/salida, cantidad) y el stock actual de 'Productos' calculado con SUMIFS desde ahí; 'Proveedores' (nombre, días de visita, demora, contacto); 'Comparación' solo con los precios que dio el cliente (producto, precio por proveedor, el más barato con fórmula, diferencia %). Si no dio precios de proveedores, no inventes: dejá la hoja vacía con su encabezado y explicalo. calendario-de-compras.md: qué día pedir a quién. Si pidió etiquetas, agregá etiquetas.html: hoja A4 con etiquetas de góndola (producto, precio y el marcador {{QR:nombre del producto}})."
     },
     {
-      "id": "costos",
-      "nombre": "Costeo y precios: ¿cuánto gano por producto?",
-      "rubro": "Gestión",
-      "descripcion": "Planilla que calcula costo real, margen y precio sugerido de cada producto, con la inflación y los gastos fijos del local adentro.",
-      "entregables": ["costeo.csv", "gastos-fijos.csv", "formulas-y-armado.md", "diagnostico.md"],
+      "id": "precios_regla",
+      "categoria": "mercaderia",
+      "nombre": "Precios a la vista y en regla",
+      "descripcion": "Carteles y lista de precios con precio final y precio por unidad de medida como pide la normativa, más tu lista o carta con QR para el mostrador.",
+      "entregables": [
+        "carteles-de-precios.html (para imprimir)",
+        "lista-de-precios.html (página para el QR)",
+        "cartel-qr.html",
+        "checklist-exhibicion.md",
+        "LEEME.md"
+      ],
       "precio_base": 55000,
       "opciones": [
-        { "id": "recetas", "nombre": "Costeo por receta (gastronomía, panadería)", "tipo": "si_no", "precio": 20000 }
+        {
+          "id": "bilingue",
+          "nombre": "Lista también en inglés",
+          "tipo": "si_no",
+          "precio": 10000
+        },
+        {
+          "id": "pedido_whatsapp",
+          "nombre": "Botón para pedir por WhatsApp en la lista",
+          "tipo": "si_no",
+          "precio": 10000
+        }
       ],
       "campos": [
-        { "id": "productos", "etiqueta": "Productos con lo que te cuestan y a cuánto los vendés", "tipo": "texto_largo", "requerido": true },
-        { "id": "gastos", "etiqueta": "Gastos fijos del mes (alquiler, luz, sueldos, etc.)", "tipo": "texto_largo" }
+        {
+          "id": "items",
+          "etiqueta": "Productos con precio y presentación (por ejemplo: Yerba X 1 kg $ 4.500)",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "whatsapp",
+          "etiqueta": "WhatsApp del negocio (si pediste el botón)",
+          "tipo": "texto"
+        }
       ],
-      "acepta_fotos": true
+      "adjuntos": true,
+      "tablas": [
+        "normativa_precios"
+      ],
+      "instrucciones": "Seguí la tabla 'normativa_precios' de <tablas_vigentes> para qué debe tener cada cartel. El precio por unidad de medida (por kg, por litro, por unidad) NO lo calcules vos: viene calculado en <calculos> para cada producto cuyo contenido se pudo leer; usá esos valores tal cual. Si un producto no tiene contenido neto claro, poné el cartel sin precio por unidad y listalo en LEEME.md para que el cliente lo complete. Entregá: carteles-de-precios.html (A4, 8 carteles por hoja, precio final grande y precio por unidad de medida visible); lista-de-precios.html (página para celular, agrupada por categoría, autocontenida); cartel-qr.html (A5 para el mostrador con un recuadro para el QR y la explicación de cómo generarlo cuando la lista esté publicada); checklist-exhibicion.md (qué revisar en góndola según la normativa).",
+      "calculo": "precio_por_unidad"
     },
     {
-      "id": "google_maps",
-      "nombre": "Ficha de Google Maps optimizada",
-      "rubro": "Presencia online",
-      "descripcion": "Textos y datos listos para cargar tu negocio en Google Maps (Perfil de Empresa): descripción, categorías, servicios, preguntas frecuentes y respuestas modelo a reseñas.",
-      "entregables": ["ficha-google.md", "respuestas-resenas.md", "pasos-para-cargarla.md"],
-      "precio_base": 30000,
+      "id": "fiado",
+      "categoria": "clientes",
+      "nombre": "Fiado bajo control",
+      "descripcion": "Pasamos tu libreta a una planilla con saldo y tope por cliente, te escribimos una política de fiado clara y los mensajes para cobrar por WhatsApp sin quedar mal.",
+      "entregables": [
+        "fiado.xlsx",
+        "politica-de-fiado.md",
+        "cartel-fiado.html",
+        "mensajes-de-cobro.md",
+        "LEEME.md"
+      ],
+      "precio_base": 75000,
       "opciones": [
-        { "id": "pedir_resenas", "nombre": "Cartel QR \"dejanos tu reseña\"", "tipo": "si_no", "precio": 8000 }
+        {
+          "id": "paginas_extra",
+          "nombre": "Bloques de 10 páginas extra de libreta (incluye 10)",
+          "tipo": "cantidad",
+          "precio_unitario": 15000,
+          "max": 4
+        }
       ],
       "campos": [
-        { "id": "que_hace", "etiqueta": "¿Qué vendés o hacés y qué te diferencia?", "tipo": "texto_largo", "requerido": true },
-        { "id": "horarios", "etiqueta": "Horarios", "tipo": "texto" }
-      ]
-    },
-    {
-      "id": "whatsapp",
-      "nombre": "WhatsApp Business ordenado",
-      "rubro": "Presencia online",
-      "descripcion": "Perfil, catálogo, mensajes de bienvenida y ausencia, respuestas rápidas y etiquetas para ordenar pedidos.",
-      "entregables": ["perfil-y-catalogo.md", "respuestas-rapidas.md", "pasos-para-configurarlo.md"],
-      "precio_base": 35000,
-      "opciones": [
-        { "id": "difusion", "nombre": "4 mensajes de difusión para clientes", "tipo": "si_no", "precio": 8000 }
+        {
+          "id": "detalle",
+          "etiqueta": "Contanos cómo anotás el fiado (columnas, abreviaturas) o pegá lo que tenés anotado",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "reglas",
+          "etiqueta": "¿A quién le fiás, hasta cuánto y en qué plazo te pagan?",
+          "tipo": "texto_largo"
+        }
       ],
-      "campos": [
-        { "id": "consultas", "etiqueta": "¿Qué te preguntan más seguido por WhatsApp?", "tipo": "texto_largo", "requerido": true },
-        { "id": "productos", "etiqueta": "Productos para el catálogo (con precio)", "tipo": "texto_largo" }
-      ]
+      "adjuntos": true,
+      "tablas": [],
+      "instrucciones": "Si hay fotos de la libreta, transcribí cada línea a la hoja 'Movimientos' (fecha, cliente, detalle, debe, pago) y agregá una columna 'Revisar' marcando con SI toda línea que no se lea con total seguridad (montos, nombres o fechas dudosos); nunca adivines un monto. Entregá fiado.xlsx con: 'Movimientos'; 'Clientes' (cliente, teléfono, tope, saldo con SUMIFS, días desde el último pago con fórmula, estado con fórmula: OK / cerca del tope / pasado de tope / más de 30 días); 'Resumen' (total fiado en la calle y por antigüedad, con fórmula). politica-de-fiado.md: reglas cortas basadas en lo que contó el cliente (tope, plazo, qué pasa si se atrasa). cartel-fiado.html: cartel A5 amable con la política. mensajes-de-cobro.md: 4 mensajes de WhatsApp escalonados, respetuosos y de barrio."
     },
     {
       "id": "fidelizacion",
-      "nombre": "Tarjeta de fidelidad y promos",
-      "rubro": "Difusión",
-      "descripcion": "Tarjeta de sellos para imprimir (\"la 10ª es gratis\"), reglas del programa y cartel para el mostrador.",
-      "entregables": ["tarjeta.html (para imprimir)", "cartel-mostrador.html", "reglas.md"],
-      "precio_base": 20000,
+      "categoria": "clientes",
+      "nombre": "Clientes que vuelven",
+      "descripcion": "Tarjeta de sellos para imprimir, lista de difusión de clientes habituales y un calendario de promos para los días flojos del mes.",
+      "entregables": [
+        "tarjeta-de-sellos.html (para imprimir)",
+        "cartel-mostrador.html",
+        "calendario-de-promos.md",
+        "mensajes-de-difusion.md",
+        "LEEME.md"
+      ],
+      "precio_base": 65000,
       "opciones": [],
       "campos": [
-        { "id": "premio", "etiqueta": "¿Qué querés regalar y cada cuántas compras?", "tipo": "texto", "requerido": true }
-      ]
+        {
+          "id": "premio",
+          "etiqueta": "¿Qué querés regalar y cada cuántas compras? (si no sabés, te proponemos)",
+          "tipo": "texto",
+          "requerido": true
+        },
+        {
+          "id": "dias_flojos",
+          "etiqueta": "¿Qué días o semanas del mes vendés menos?",
+          "tipo": "texto"
+        },
+        {
+          "id": "productos",
+          "etiqueta": "Productos que querés empujar",
+          "tipo": "texto_largo"
+        }
+      ],
+      "adjuntos": false,
+      "tablas": [],
+      "instrucciones": "Entregá: tarjeta-de-sellos.html (A4 con 10 tarjetas de 85x55 mm para recortar, frente con nombre del negocio y casilleros); cartel-mostrador.html (A5 explicando el programa); calendario-de-promos.md (un mes tipo, con promos para los días flojos que contó el cliente; si no los dio, usá las semanas antes del 10 y después del 20, que es cuando más cae la compra de barrio); mensajes-de-difusion.md (cómo armar la lista de difusión de WhatsApp Business y 6 mensajes listos). Los descuentos expresalos en porcentaje o 'llevá 2 pagá 1'; no calcules precios finales."
     },
     {
-      "id": "identidad",
-      "nombre": "Identidad básica del negocio",
-      "rubro": "Marca",
-      "descripcion": "Tres propuestas de logo simple en vector, paleta de colores, tipografías, slogan y una mini guía de uso.",
-      "entregables": ["logo-a.svg", "logo-b.svg", "logo-c.svg", "guia-de-marca.html"],
-      "precio_base": 80000,
+      "id": "costo_laboral",
+      "categoria": "local",
+      "nombre": "Costo laboral y turnos",
+      "descripcion": "Cuánto te cuesta de verdad un empleado de comercio con todo incluido, comparado con tus horas de más venta, y una grilla de turnos que cierre.",
+      "entregables": [
+        "costo-y-turnos.xlsx",
+        "escenarios.md",
+        "manual-del-mostrador.md",
+        "LEEME.md"
+      ],
+      "precio_base": 110000,
+      "opciones": [],
+      "campos": [
+        {
+          "id": "equipo",
+          "etiqueta": "¿Quiénes trabajan hoy? (familia, empleados, cuántas horas cada uno)",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "horario",
+          "etiqueta": "Horario del local y horas de más y menos movimiento",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "duda",
+          "etiqueta": "¿Qué estás pensando? (contratar a alguien, media jornada, cambiar horario…)",
+          "tipo": "texto_largo"
+        }
+      ],
+      "adjuntos": false,
+      "tablas": [
+        "escala_comercio"
+      ],
+      "instrucciones": "Usá EXCLUSIVAMENTE los valores de la tabla 'escala_comercio' de <tablas_vigentes> (básicos, adicionales y porcentajes de cargas). Entregá costo-y-turnos.xlsx con: 'Parámetros' (copia de la tabla usada con su fecha, editable); 'Costo' (para cada categoría y jornada que aplique: básico, adicionales, contribuciones del empleador, ART, provisión de aguinaldo y vacaciones, costo mensual total y costo por hora, TODO con fórmulas que referencien 'Parámetros', nada escrito a mano); 'Turnos' (grilla semanal por hora con quién está, horas por persona con fórmula y alerta si alguien pasa 48 horas semanales); 'Escenarios' (2 o 3 alternativas según lo que contó el cliente, con costo mensual por fórmula). En escenarios.md explicá cada escenario en criollo. Aclarando en LEEME.md que la registración del empleado la hace el contador y que es una estimación con la escala de la fecha indicada."
+    },
+    {
+      "id": "luz_alquiler",
+      "categoria": "local",
+      "nombre": "Revisión de luz y alquiler",
+      "descripcion": "Leemos tu factura de luz y tu contrato de alquiler: dónde se va la plata, qué equipos consumen más, cuánto vas a pagar de alquiler los próximos 12 meses y con qué argumentos negociar.",
+      "entregables": [
+        "luz-y-alquiler.xlsx",
+        "informe.md",
+        "LEEME.md"
+      ],
+      "precio_base": 100000,
+      "opciones": [],
+      "campos": [
+        {
+          "id": "equipos",
+          "etiqueta": "Equipos del local: heladeras, freezers, exhibidoras, aire, iluminación (cantidad y horas que están prendidos)",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "alquiler",
+          "etiqueta": "Alquiler actual, cada cuánto ajusta y con qué índice, cuándo vence el contrato",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "otros",
+          "etiqueta": "Algo más que quieras que miremos",
+          "tipo": "texto_largo"
+        }
+      ],
+      "adjuntos": true,
+      "adjuntos_ayuda": "Subí la última factura de luz y el contrato de alquiler (fotos o PDF).",
+      "tablas": [],
+      "instrucciones": "De la factura de luz tomá SOLO lo que figure impreso (tarifa, potencia, consumo en kWh, cargos, impuestos); si algo no se lee, decilo. Entregá luz-y-alquiler.xlsx con: 'Factura' (los conceptos leídos y su peso % con fórmula); 'Equipos' (equipo, cantidad, potencia estimada en W indicada como estimación, horas por día, kWh por mes con fórmula, % del consumo de la factura con fórmula); 'Alquiler' (proyección a 12 meses del alquiler con el mecanismo de ajuste del contrato, con una columna de índice mensual editable precargada con el supuesto que indiques; todos los montos con fórmula). informe.md: los 3 cambios con más ahorro (por ejemplo burletes, horarios de frío, iluminación LED, revisar potencia contratada con la distribuidora), un resumen claro del contrato (plazo, ajuste, garantías, rescisión) y argumentos para renegociar. Aclarando que no es asesoramiento legal ni técnico eléctrico."
+    },
+    {
+      "id": "encontrar",
+      "categoria": "vender",
+      "nombre": "Que te encuentren y te pidan",
+      "descripcion": "Todo para tu ficha de Google Maps y tu WhatsApp Business: textos, categorías, catálogo, mensajes automáticos, zona y costo de envío, y una planilla para anotar pedidos.",
+      "entregables": [
+        "ficha-google-maps.md",
+        "whatsapp-business.md",
+        "catalogo-whatsapp.xlsx",
+        "pedidos.xlsx",
+        "cartel-resenas.html",
+        "LEEME.md"
+      ],
+      "precio_base": 120000,
       "opciones": [
-        { "id": "papeleria", "nombre": "Tarjeta personal y sello/etiqueta", "tipo": "si_no", "precio": 15000 }
+        {
+          "id": "productos_extra",
+          "nombre": "Bloques de 40 productos extra en el catálogo (incluye 40)",
+          "tipo": "cantidad",
+          "precio_unitario": 10000,
+          "max": 3
+        }
       ],
       "campos": [
-        { "id": "personalidad", "etiqueta": "¿Cómo querés que te vean? (tradicional, moderno, familiar…)", "tipo": "texto_largo", "requerido": true },
-        { "id": "referencias", "etiqueta": "Marcas o locales que te gustan", "tipo": "texto" }
-      ]
+        {
+          "id": "que_hace",
+          "etiqueta": "¿Qué vendés o hacés y qué te diferencia?",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "datos",
+          "etiqueta": "Dirección, horarios, teléfono y redes",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "productos",
+          "etiqueta": "Productos para el catálogo con precio",
+          "tipo": "texto_largo"
+        },
+        {
+          "id": "envios",
+          "etiqueta": "¿Hacés envíos? ¿A qué zona y cuánto cobrás?",
+          "tipo": "texto"
+        },
+        {
+          "id": "consultas",
+          "etiqueta": "¿Qué te preguntan más seguido?",
+          "tipo": "texto_largo"
+        }
+      ],
+      "adjuntos": true,
+      "tablas": [],
+      "instrucciones": "Entregá: ficha-google-maps.md (paso a paso para crear o reclamar la ficha, nombre exacto, categoría principal y secundarias, descripción de hasta 750 caracteres, atributos, servicios, preguntas frecuentes con respuesta, 5 respuestas modelo a reseñas buenas y malas, plan para pedir reseñas); whatsapp-business.md (perfil, mensaje de bienvenida y de ausencia, 10 respuestas rápidas, etiquetas para pedidos: nuevo/preparando/listo/entregado/pagado, cómo armar el catálogo); catalogo-whatsapp.xlsx (producto, descripción corta de hasta 100 caracteres, precio tal cual lo dio el cliente, categoría); pedidos.xlsx ('Pedidos': fecha, cliente, teléfono, detalle, importe, envío, total con fórmula, estado, pagado; 'Resumen' con totales por día y estado con fórmula); cartel-resenas.html (A5 con un recuadro para el QR del link de reseñas y cómo obtener ese link). No inventes reseñas, horarios ni datos que no dio."
     },
     {
-      "id": "sitio_web",
-      "nombre": "Sitio web de una página",
-      "rubro": "Presencia online",
-      "descripcion": "Página web propia, rápida y para celular: quiénes son, qué venden, fotos, mapa, horarios y botón de WhatsApp. Lista para publicar gratis.",
-      "entregables": ["sitio/index.html", "sitio/estilos.css", "como-publicarlo.md"],
-      "precio_base": 140000,
+      "id": "promos",
+      "categoria": "vender",
+      "nombre": "Promos del mes",
+      "descripcion": "Piezas para redes y estados de WhatsApp y un flyer para imprimir, todas sobre una oferta real que te conviene.",
+      "entregables": [
+        "flyer-a5.html",
+        "posts/*.svg",
+        "estados/*.svg",
+        "textos.md",
+        "LEEME.md"
+      ],
+      "precio_base": 55000,
       "opciones": [
-        { "id": "secciones", "nombre": "Secciones extra (menú, galería, testimonios…)", "tipo": "cantidad", "precio_unitario": 12000, "max": 3 },
-        { "id": "formulario", "nombre": "Formulario de contacto", "tipo": "si_no", "precio": 10000 }
+        {
+          "id": "piezas_extra",
+          "nombre": "Bloques de 4 piezas extra (incluye 6)",
+          "tipo": "cantidad",
+          "precio_unitario": 15000,
+          "max": 2
+        }
       ],
       "campos": [
-        { "id": "contenido", "etiqueta": "Contanos tu historia y qué ofrecés", "tipo": "texto_largo", "requerido": true },
-        { "id": "datos", "etiqueta": "Dirección, horarios, WhatsApp y redes", "tipo": "texto_largo", "requerido": true },
-        { "id": "colores", "etiqueta": "Colores o estilo", "tipo": "texto" }
-      ]
-    },
-    {
-      "id": "lanzamiento",
-      "nombre": "Kit de inauguración",
-      "rubro": "Combos",
-      "descripcion": "Para abrir o reabrir: flyer, 6 posts de cuenta regresiva, ficha de Google Maps y mensaje para avisar a los vecinos por WhatsApp.",
-      "entregables": ["flyer-a5.html", "posts/*.svg", "ficha-google.md", "mensajes-vecinos.md"],
-      "precio_base": 95000,
-      "opciones": [],
-      "campos": [
-        { "id": "fecha", "etiqueta": "Fecha y qué va a pasar en la inauguración", "tipo": "texto_largo", "requerido": true },
-        { "id": "que_hace", "etiqueta": "¿Qué vendés o hacés?", "tipo": "texto_largo", "requerido": true }
-      ]
-    },
-    {
-      "id": "barrio_digital",
-      "nombre": "Combo Barrio Digital",
-      "rubro": "Combos",
-      "descripcion": "Todo para estar en internet: sitio de una página, ficha de Google Maps, WhatsApp Business ordenado y un flyer. Ahorrás más de $40.000.",
-      "entregables": ["sitio/", "ficha-google.md", "whatsapp.md", "flyer-a5.html"],
-      "precio_base": 190000,
-      "opciones": [],
-      "campos": [
-        { "id": "contenido", "etiqueta": "Contanos tu historia y qué ofrecés", "tipo": "texto_largo", "requerido": true },
-        { "id": "datos", "etiqueta": "Dirección, horarios, WhatsApp y redes", "tipo": "texto_largo", "requerido": true },
-        { "id": "consultas", "etiqueta": "¿Qué te preguntan más seguido?", "tipo": "texto_largo" }
-      ]
+        {
+          "id": "oferta",
+          "etiqueta": "¿Qué querés ofrecer? (producto, precio normal, precio o % de la promo, vigencia)",
+          "tipo": "texto_largo",
+          "requerido": true
+        },
+        {
+          "id": "colores",
+          "etiqueta": "Colores de tu local o que te gusten",
+          "tipo": "texto"
+        },
+        {
+          "id": "tono",
+          "etiqueta": "Tono (cercano, gracioso, formal…)",
+          "tipo": "texto"
+        }
+      ],
+      "adjuntos": true,
+      "tablas": [],
+      "instrucciones": "Usá los precios exactamente como los escribió el cliente; si la promo es un porcentaje, el precio final viene calculado en <calculos> cuando se pudo; no hagas cuentas vos. Si la oferta parece dejar el producto debajo del costo y el cliente dio el costo, avisalo en LEEME.md. Entregá flyer-a5.html (A5 para imprimir), posts/ con piezas cuadradas 1080x1080 en SVG, estados/ con piezas 1080x1920 en SVG (la cantidad total de piezas según lo contratado, repartidas entre posts y estados), y textos.md con el texto y hashtags de cada pieza y el mensaje para la lista de difusión.",
+      "calculo": "precio_promo"
     }
   ]
 }

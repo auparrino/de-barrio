@@ -5,11 +5,12 @@ import { cargarCatalogo, buscarServicio, cotizar } from "./src/cotizador.js";
 import * as almacen from "./src/almacen.js";
 import * as pagos from "./src/pagos.js";
 import { generarProducto } from "./src/generador.js";
+import { cargarTablas, disponibilidad } from "./src/tablas.js";
 
 const catalogo = cargarCatalogo();
 const PUERTO = Number(process.env.PORT || 3000);
 const URL_BASE = (process.env.PUBLIC_URL || `http://localhost:${PUERTO}`).replace(/\/$/, "");
-const TIPOS_FOTO = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const TIPOS_ADJUNTO = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"]);
 
 const app = express();
 app.use(express.json({ limit: "1mb" }));
@@ -17,8 +18,8 @@ app.use(express.static("public"));
 
 const subir = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024, files: 8 },
-  fileFilter: (_req, f, cb) => cb(null, TIPOS_FOTO.has(f.mimetype)),
+  limits: { fileSize: 10 * 1024 * 1024, files: 8 },
+  fileFilter: (_req, f, cb) => cb(null, TIPOS_ADJUNTO.has(f.mimetype)),
 });
 
 const igual = (a = "", b = "") => {
@@ -37,7 +38,16 @@ function pedidoConClave(req, res) {
 
 // ---------- Catálogo y cotización ----------
 
-app.get("/api/catalogo", (_req, res) => res.json(catalogo));
+// Las tablas se releen en cada consulta: al verificarlas, el servicio se habilita sin reiniciar.
+const conDisponibilidad = () => {
+  const tablas = cargarTablas();
+  return {
+    ...catalogo,
+    servicios: catalogo.servicios.map(({ instrucciones, ...s }) => ({ ...s, ...disponibilidad(s, tablas) })),
+  };
+};
+
+app.get("/api/catalogo", (_req, res) => res.json(conDisponibilidad()));
 
 app.post("/api/cotizar", (req, res) => {
   try {
@@ -50,18 +60,22 @@ app.post("/api/cotizar", (req, res) => {
 
 // ---------- Pedidos ----------
 
-app.post("/api/pedidos", subir.array("fotos", 8), async (req, res) => {
+app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
   try {
     const datos = JSON.parse(req.body.datos ?? "{}");
     const servicio = buscarServicio(catalogo, datos.servicio);
     if (!servicio) return res.status(400).json({ error: "Elegí un servicio" });
+    const disp = disponibilidad(servicio, cargarTablas());
+    if (!disp.disponible) return res.status(409).json({ error: "Este servicio todavía no está disponible." });
 
     const faltan = [];
     if (!datos.negocio?.nombre) faltan.push("nombre del negocio");
     if (!datos.contacto?.email) faltan.push("email");
     for (const c of servicio.campos) if (c.requerido && !String(datos.respuestas?.[c.id] ?? "").trim()) faltan.push(c.etiqueta);
-    const fotos = servicio.acepta_fotos ? (req.files ?? []) : [];
-    if (faltan.length && !(fotos.length && faltan.every((f) => servicio.campos.some((c) => c.etiqueta === f)))) {
+    const adjuntos = servicio.adjuntos ? (req.files ?? []) : [];
+    // Si mandó archivos, los campos del servicio pueden venir en ellos; nombre y email siempre son obligatorios.
+    const faltanDatosBasicos = faltan.some((f) => !servicio.campos.some((c) => c.etiqueta === f));
+    if (faltan.length && (faltanDatosBasicos || !adjuntos.length)) {
       return res.status(400).json({ error: `Faltan datos: ${faltan.join(", ")}` });
     }
 
@@ -77,9 +91,9 @@ app.post("/api/pedidos", subir.array("fotos", 8), async (req, res) => {
       opciones: datos.opciones ?? {},
       urgente: Boolean(datos.urgente),
       cotizacion,
-      cantidadFotos: fotos.length,
+      cantidadAdjuntos: adjuntos.length,
     });
-    almacen.guardarFotos(pedido.id, fotos.map((f) => ({ tipo: f.mimetype, base64: f.buffer.toString("base64") })));
+    almacen.guardarAdjuntos(pedido.id, adjuntos.map((f) => ({ tipo: f.mimetype, base64: f.buffer.toString("base64") })));
 
     const urlPago = await pagos.crearLinkDePago(pedido, URL_BASE);
     almacen.actualizar(pedido.id, { urlPago });
@@ -127,9 +141,15 @@ async function procesarPago(pedidoId, pagoId) {
 async function generar(pedidoId) {
   const pedido = almacen.actualizar(pedidoId, { estado: "generando" });
   try {
-    const entrega = await generarProducto(catalogo, { ...pedido, fotos: almacen.leerFotos(pedidoId) });
+    const entrega = await generarProducto(
+      catalogo,
+      { ...pedido, adjuntos: almacen.leerAdjuntos(pedidoId) },
+      { tablas: cargarTablas() },
+    );
     const archivos = almacen.guardarEntrega(pedidoId, entrega.archivos);
-    almacen.actualizar(pedidoId, { estado: "listo", resumen: entrega.resumen, archivos, uso: entrega.uso, modelo: entrega.modelo });
+    almacen.actualizar(pedidoId, {
+      estado: "listo", resumen: entrega.resumen, archivos, avisos: entrega.avisos, uso: entrega.uso, modelo: entrega.modelo,
+    });
     console.log(`Pedido ${pedidoId} listo: ${archivos.length} archivos`);
   } catch (e) {
     console.error(`Pedido ${pedidoId} falló:`, e);

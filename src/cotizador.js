@@ -37,7 +37,7 @@ export function cotizar(catalogo, servicioId, opciones = {}, extras = {}) {
 
   let subtotal = lineas.reduce((s, l) => s + l.importe, 0);
 
-  if (extras.urgente) {
+  if (extras.urgente && catalogo.recargos?.urgente) {
     const r = catalogo.recargos.urgente;
     const importe = Math.round((subtotal * r.porcentaje) / 100);
     lineas.push({ concepto: `${r.nombre} (+${r.porcentaje}%)`, importe });

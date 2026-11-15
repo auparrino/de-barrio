@@ -59,3 +59,6 @@ footer { text-align: center; padding: 2rem 1rem; color: #777; font-size: .9rem; 
   form { grid-template-columns: 1fr; }
   .cotizacion { grid-column: 1; grid-row: auto; position: static; }
 }
+.cat-desc { margin-top: -.5rem; color: #555; }
+.tarjeta.apagada { opacity: .55; }
+.pronto { align-self: flex-start; padding: .4rem .8rem; border-radius: 8px; background: var(--borde); font-size: .9rem; }

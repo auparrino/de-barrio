@@ -9,24 +9,42 @@ bonifica sola.
 
 ## Servicios
 
-| Servicio | Desde | Entrega |
-|---|---:|---|
-| Tarjeta de fidelidad y promos | $ 20.000 | Tarjeta de sellos y cartel para imprimir, reglas |
-| Flyer / volante | $ 25.000 | A5 para imprimir + post y historia para redes |
-| Ficha de Google Maps optimizada | $ 30.000 | Descripción, categorías, FAQ, respuestas a reseñas |
-| WhatsApp Business ordenado | $ 35.000 | Perfil, catálogo, mensajes automáticos, respuestas rápidas |
-| Carta / lista de precios con QR | $ 45.000 | Página liviana + cartel QR |
-| Pack de redes del mes | $ 55.000 | 12 posts + calendario |
-| Costeo y precios | $ 55.000 | Planilla de costo, margen y precio sugerido |
-| Del cuaderno a la planilla (fiado) | $ 60.000 | Transcripción de fotos del cuaderno a planilla con saldos |
-| Control de stock y reposición | $ 70.000 | Planilla de stock con mínimos y pedidos a proveedores |
-| Identidad básica | $ 80.000 | 3 logos SVG, paleta, tipografías, guía |
-| Kit de inauguración | $ 95.000 | Flyer, posts de cuenta regresiva, ficha Google, mensajes |
-| Sitio web de una página | $ 140.000 | HTML/CSS listo para publicar gratis |
-| Combo Barrio Digital | $ 190.000 | Sitio + Google Maps + WhatsApp + flyer |
+Once servicios automáticos en cinco categorías, elegidos a partir de la investigación en
+[`docs/investigacion/`](docs/investigacion/). Todos se generan solos a partir del formulario.
 
-Precios, adicionales y preguntas del formulario se editan en [`data/catalogo.json`](data/catalogo.json):
-el sitio y el cotizador se arman solos a partir de ese archivo.
+| Categoría | Servicio | Desde | Tabla vigente que usa |
+|---|---|---:|---|
+| Plata y margen | Margen real y lista de precios | $ 140.000 | — |
+| Plata y margen | Cobrá más barato | $ 75.000 | `comisiones` |
+| Plata y margen | Caja ordenada | $ 85.000 | — |
+| Mercadería y góndola | Stock mínimo y mapa de compras | $ 150.000 | — |
+| Mercadería y góndola | Precios a la vista y en regla | $ 55.000 | `normativa_precios` |
+| Clientes y fiado | Fiado bajo control | $ 75.000 | — |
+| Clientes y fiado | Clientes que vuelven | $ 65.000 | — |
+| Personal y local | Costo laboral y turnos | $ 110.000 | `escala_comercio` |
+| Personal y local | Revisión de luz y alquiler | $ 100.000 | — |
+| Vender en el barrio | Que te encuentren y te pidan | $ 120.000 | — |
+| Vender en el barrio | Promos del mes | $ 55.000 | — |
+
+Precios, adicionales, preguntas e instrucciones para Claude de cada servicio están en
+[`data/catalogo.json`](data/catalogo.json).
+
+### Exactitud
+
+- **Las cuentas no las hace el modelo.** Las planillas se entregan como `.xlsx` armados por código
+  (`src/planillas.js`) con fórmulas reales; Claude solo define filas y fórmulas. Los precios por unidad
+  de medida y los precios de promo los calcula `src/calculos.js` después de que Claude extrae los datos.
+- **Los datos que cambian viven en `data/tablas/`** (comisiones, escala de Comercio, normativa de precios),
+  con fecha, fuente y vigencia. Un servicio que usa una tabla **no se puede contratar** si la tabla no
+  está marcada `"verificado": true` o pasó su vigencia: aparece como «Muy pronto».
+- **Los QR los genera el código** (`{{QR:...}}` → SVG real), no el modelo.
+- Cada entrega trae un LEEME.md con una sección «Revisá esto» (datos faltantes, dudosos o transcriptos
+  de fotos) y una revisión automática de las fórmulas que apuntan a hojas inexistentes.
+
+### Para activar los tres servicios apagados
+
+1. Revisar `data/tablas/<tabla>.json` contra las fuentes oficiales, completar los `null`.
+2. Actualizar `fecha` y poner `"verificado": true`. No hace falta reiniciar el servidor.
 
 ## Cómo funciona
 
@@ -39,11 +57,12 @@ Descarga ◄── /pedido.html (consulta el estado) ◄── Claude genera ◄
 1. `src/cotizador.js` calcula el precio: base + adicionales + urgencia, con tope.
 2. `src/pagos.js` crea la preferencia de Checkout Pro. El webhook valida la firma (`x-signature`),
    **consulta el pago en Mercado Pago** y solo avanza si está aprobado, en ARS y por el monto cotizado.
-3. `src/prompts.js` arma el pedido para Claude: un sistema fijo con las reglas de calidad, los datos del
-   negocio, las respuestas y las fotos (para transcribir cuadernos o cartas).
-4. `src/generador.js` llama a Claude (`claude-opus-5-5`, streaming, salida estructurada en JSON con la
-   lista de archivos). Si un filtro de seguridad rechaza el pedido, la API lo reintenta en otro modelo
-   (`fallbacks: "default"`).
+3. `src/prompts.js` arma el pedido para Claude: un sistema fijo con las reglas de calidad, las
+   instrucciones del servicio, las tablas vigentes, los cálculos, los datos del negocio y los adjuntos
+   (fotos y PDF: libretas, facturas, listas de precios, contratos).
+4. `src/generador.js` llama a Claude (`claude-opus-5-5`, streaming, salida estructurada en JSON con
+   archivos de texto y especificaciones de planillas), arma los `.xlsx` y los QR. Si un filtro de
+   seguridad rechaza el pedido, la API lo reintenta en otro modelo (`fallbacks: "default"`).
 5. `src/almacen.js` guarda pedido y archivos en `data/pedidos/<id>/`. Los archivos se descargan como
    adjunto con la clave privada del pedido.
 
@@ -90,4 +109,5 @@ modelo no escapen de la carpeta, y el circuito completo (pedido → pago simulad
 - Revisión humana opcional antes de liberar la entrega, y una ronda de cambios incluida.
 - Pasar `data/pedidos/` a una base de datos y la generación a una cola si hay muchos pedidos por día.
 - Factura electrónica (AFIP/ARCA) por cada pago.
-- Probar la generación real con cada servicio y ajustar los prompts.
+- Probar la generación real con cada servicio y ajustar las instrucciones.
+- Verificar las tres tablas de `data/tablas/` para habilitar sus servicios.

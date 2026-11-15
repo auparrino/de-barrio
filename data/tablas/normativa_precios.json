@@ -1,0 +1,21 @@
+{
+  "id": "normativa_precios",
+  "titulo": "Exhibición de precios: Resolución 4/2025 de la Secretaría de Industria y Comercio",
+  "fecha": "2025-01-17",
+  "vigencia_dias": 180,
+  "verificado": false,
+  "nota_verificacion": "Resumen armado desde la investigación, no desde el texto completo. Leer la resolución, corregir las reglas si hace falta, poner la fecha de la revisión y verificado en true.",
+  "fuentes": [
+    "https://www.boletinoficial.gob.ar/detalleAviso/primera/319787/20250117",
+    "https://argentina.gob.ar/sites/default/files/exhibicion_de_precios_resolucion_4_2025_0.pdf",
+    "https://www.buenosaires.gob.ar/defensaconsumidor/lealtad-comercial-0"
+  ],
+  "reglas": [
+    "Todo producto exhibido debe mostrar su precio final en moneda de curso legal, impuestos incluidos.",
+    "Los productos envasados deben mostrar además el precio por unidad de medida (por kilo, litro, metro, etc.).",
+    "El precio por unidad de medida va en caracteres más chicos que el precio final.",
+    "En presentaciones de hasta 50 g o 50 ml, el precio por unidad de medida se expresa cada 10 g o 10 ml.",
+    "Los precios tienen que ser claros, legibles y estar junto al producto o en listas a la vista del público.",
+    "En CABA, Lealtad Comercial puede multar los incumplimientos (Ley 4827)."
+  ]
+}

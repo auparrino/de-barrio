@@ -5,16 +5,18 @@ const catalogo = await (await fetch("/api/catalogo")).json();
 let servicio = null;
 
 // ---------- Catálogo ----------
-const porRubro = Object.groupBy(catalogo.servicios, (s) => s.rubro);
-$("#catalogo").innerHTML = Object.entries(porRubro).map(([rubro, servicios]) => `
-  <h2>${rubro}</h2>
+$("#catalogo").innerHTML = catalogo.categorias.map((cat) => `
+  <h2>${cat.nombre}</h2>
+  <p class="cat-desc">${cat.descripcion}</p>
   <div class="tarjetas">
-    ${servicios.map((s) => `
-      <article class="tarjeta">
+    ${catalogo.servicios.filter((s) => s.categoria === cat.id).map((s) => `
+      <article class="tarjeta${s.disponible ? "" : " apagada"}">
         <h3>${s.nombre}</h3>
         <p>${s.descripcion}</p>
         <p class="precio">desde <strong>${pesos(s.precio_base)}</strong></p>
-        <button type="button" data-id="${s.id}">Lo quiero</button>
+        ${s.disponible
+          ? `<button type="button" data-id="${s.id}">Lo quiero</button>`
+          : `<span class="pronto">Muy pronto</span>`}
       </article>`).join("")}
   </div>`).join("");
 
@@ -32,7 +34,7 @@ const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<":
 
 function campoHtml(c) {
   const nombre = `respuestas.${c.id}`;
-  const req = c.requerido && !servicio.acepta_fotos ? "required" : "";
+  const req = c.requerido && !servicio.adjuntos ? "required" : "";
   if (c.tipo === "texto_largo") return `<label>${escapar(c.etiqueta)}<textarea name="${nombre}" rows="4" ${req}></textarea></label>`;
   if (c.tipo === "opciones") return `<label>${escapar(c.etiqueta)}<select name="${nombre}">${c.valores.map((v) => `<option>${escapar(v)}</option>`).join("")}</select></label>`;
   return `<label>${escapar(c.etiqueta)}<input name="${nombre}" ${req}></label>`;
@@ -51,8 +53,12 @@ function elegir(id) {
   $("#f-entregables").textContent = "Recibís: " + servicio.entregables.join(" · ");
   $("#f-campos").innerHTML = servicio.campos.map(campoHtml).join("");
   $("#f-opciones").innerHTML = servicio.opciones.map(opcionHtml).join("");
-  $("#f-urgente").textContent = `${catalogo.recargos.urgente.nombre} (+${catalogo.recargos.urgente.porcentaje}%)`;
-  $("#f-fotos").hidden = !servicio.acepta_fotos;
+  const urgente = catalogo.recargos?.urgente;
+  $("#f-urgente").textContent = urgente ? `${urgente.nombre} (+${urgente.porcentaje}%)` : "";
+  $("#f-urgente").parentElement.hidden = !urgente;
+  $("#f-opciones-caja").hidden = !urgente && servicio.opciones.length === 0;
+  $("#f-adjuntos").hidden = !servicio.adjuntos;
+  $("#f-adjuntos-ayuda").textContent = servicio.adjuntos_ayuda ?? "Fotos o PDF (listas de precios, facturas, la libreta, etc.; hasta 8)";
   $("#pedido").reset();
   $("#error").hidden = true;
   $("#catalogo").hidden = true;
@@ -98,7 +104,7 @@ $("#pedido").addEventListener("submit", async (e) => {
   try {
     const cuerpo = new FormData();
     cuerpo.append("datos", JSON.stringify(leerFormulario()));
-    for (const f of $("#pedido").elements.fotos.files) cuerpo.append("fotos", f);
+    for (const f of $("#pedido").elements.adjuntos.files) cuerpo.append("adjuntos", f);
     const r = await fetch("/api/pedidos", { method: "POST", body: cuerpo });
     const res = await r.json();
     if (!r.ok) throw new Error(res.error);

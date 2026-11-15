@@ -1,0 +1,34 @@
+{
+  "id": "escala_comercio",
+  "titulo": "Escala salarial y cargas de Empleados de Comercio (CCT 130/75)",
+  "fecha": "2026-11-11",
+  "vigencia_dias": 35,
+  "verificado": false,
+  "nota_verificacion": "Faltan los básicos remunerativos por categoría y los porcentajes de cargas del empleador (contribuciones, obra social, ART, seguro de vida). Completar los null con la escala oficial de FAECYS y con un contador, actualizar la fecha y poner verificado en true. Hasta entonces el servicio 'Costo laboral y turnos' no se puede contratar.",
+  "fuentes": [
+    "https://www.iprofesional.com/management/468769-cuanto-ganaran-los-empleados-de-comercio-en-noviembre-2026",
+    "https://calcularsueldo.com.ar/?p=16329"
+  ],
+  "jornada_completa_horas_semana": 48,
+  "categorias": [
+    { "categoria": "Vendedor A", "basico": null, "no_remunerativo": null, "total_inicial_referencia": 1370972 },
+    { "categoria": "Vendedor B", "basico": null, "no_remunerativo": null, "total_inicial_referencia": 1396930 },
+    { "categoria": "Cajero A", "basico": null, "no_remunerativo": null, "total_inicial_referencia": 1370972 },
+    { "categoria": "Maestranza A", "basico": 1233448, "no_remunerativo": 145000, "total_inicial_referencia": 1378448 },
+    { "categoria": "Administrativo A", "basico": null, "no_remunerativo": null, "total_inicial_referencia": 1366648 }
+  ],
+  "adicionales": {
+    "antiguedad_pct_por_anio": 1,
+    "presentismo_pct": 8.33
+  },
+  "cargas_empleador_pct": {
+    "contribuciones_seguridad_social": null,
+    "obra_social": null,
+    "art": null,
+    "seguro_de_vida_obligatorio_mensual": null
+  },
+  "provisiones": {
+    "aguinaldo_pct": 8.33,
+    "vacaciones_pct": null
+  }
+}

@@ -17,18 +17,18 @@ test.after(() => servidor.close());
 
 test("pedido pagado genera archivos descargables", async () => {
   const datos = {
-    servicio: "flyer",
+    servicio: "promos",
     negocio: { nombre: "Almacén Don Tito", rubro: "almacén" },
     contacto: { email: "tito@example.com" },
-    respuestas: { motivo: "2x1 en fideos" },
-    opciones: { dorso: true },
+    respuestas: { oferta: "Fideos 500 g a $ 1.200, 2x1 hasta el domingo" },
+    opciones: { piezas_extra: 1 },
   };
   const form = new FormData();
   form.append("datos", JSON.stringify(datos));
   const r = await fetch(`${base}/api/pedidos`, { method: "POST", body: form });
   const pedido = await r.json();
   assert.equal(r.status, 200, JSON.stringify(pedido));
-  assert.equal(pedido.cotizacion.total, 32000);
+  assert.equal(pedido.cotizacion.total, 70000);
 
   const pago = await fetch(pedido.urlPago.replace(/^http:\/\/localhost:\d+/, base), { redirect: "manual" });
   assert.equal(pago.status, 302);
@@ -40,7 +40,7 @@ test("pedido pagado genera archivos descargables", async () => {
     await new Promise((res) => setTimeout(res, 50));
   }
   assert.equal(estado.estado, "listo");
-  assert.deepEqual(estado.archivos.sort(), ["LEEME.md", "ejemplo/hola.html"]);
+  assert.deepEqual(estado.archivos.sort(), ["LEEME.md", "cartel.html", "ejemplo.xlsx"]);
 
   const archivo = await fetch(`${base}/api/pedidos/${pedido.id}/archivos/LEEME.md?clave=${pedido.clave}`);
   assert.match(await archivo.text(), /entrega de prueba/);
@@ -52,7 +52,18 @@ test("pedido pagado genera archivos descargables", async () => {
 
 test("falta un dato obligatorio", async () => {
   const form = new FormData();
-  form.append("datos", JSON.stringify({ servicio: "flyer", negocio: { nombre: "X" }, contacto: { email: "a@b.c" } }));
+  form.append("datos", JSON.stringify({ servicio: "promos", negocio: { nombre: "X" }, contacto: { email: "a@b.c" } }));
   const r = await fetch(`${base}/api/pedidos`, { method: "POST", body: form });
   assert.equal(r.status, 400);
+});
+
+test("un servicio con tablas sin verificar no se puede contratar", async () => {
+  const catalogo = await (await fetch(`${base}/api/catalogo`)).json();
+  const cobros = catalogo.servicios.find((s) => s.id === "cobros");
+  assert.equal(cobros.disponible, false);
+  assert.equal(cobros.instrucciones, undefined, "las instrucciones internas no se publican");
+  const form = new FormData();
+  form.append("datos", JSON.stringify({ servicio: "cobros", negocio: { nombre: "X" }, contacto: { email: "a@b.c" }, respuestas: { medios: "MP", montos: "100" } }));
+  const r = await fetch(`${base}/api/pedidos`, { method: "POST", body: form });
+  assert.equal(r.status, 409);
 });

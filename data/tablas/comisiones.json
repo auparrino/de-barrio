@@ -1,0 +1,36 @@
+{
+  "id": "comisiones",
+  "titulo": "Comisiones de medios de cobro para comercios",
+  "fecha": "2026-09-05",
+  "vigencia_dias": 45,
+  "verificado": false,
+  "nota_verificacion": "Valores tomados de una comparativa de terceros (YoFacturo, 05/09/2026). Antes de activar, confirmarlos en las páginas oficiales de cada procesador, actualizar la fecha y poner verificado en true.",
+  "fuentes": [
+    "https://yo-facturo.com/blog/comisiones-y-plazos-de-acreditacion-de-terminales-de-pago/",
+    "https://www.bancoprovincia.com.ar/cuentadni/contenidos/cdniComerciosFaq/"
+  ],
+  "iva_sobre_comision": 21,
+  "filas": [
+    { "proveedor": "Mercado Pago", "medio": "QR con dinero en cuenta o desde otra billetera (interoperable)", "plazo": "inmediato", "comision_pct": 0.8 },
+    { "proveedor": "Mercado Pago", "medio": "QR con débito", "plazo": "inmediato", "comision_pct": 1.35 },
+    { "proveedor": "Mercado Pago", "medio": "QR con débito", "plazo": "2 días", "comision_pct": 0.85 },
+    { "proveedor": "Mercado Pago", "medio": "QR con crédito", "plazo": "inmediato", "comision_pct": 5.99 },
+    { "proveedor": "Mercado Pago", "medio": "QR con crédito", "plazo": "10 días", "comision_pct": 4.19 },
+    { "proveedor": "Mercado Pago", "medio": "Point débito", "plazo": "inmediato", "comision_pct": 2.99 },
+    { "proveedor": "Mercado Pago", "medio": "Point débito", "plazo": "2 días", "comision_pct": 2.75 },
+    { "proveedor": "Mercado Pago", "medio": "Point crédito", "plazo": "inmediato", "comision_pct": 5.99 },
+    { "proveedor": "Mercado Pago", "medio": "Point crédito", "plazo": "5 días", "comision_pct": 5.19 },
+    { "proveedor": "Mercado Pago", "medio": "Point crédito", "plazo": "10 días", "comision_pct": 4.19 },
+    { "proveedor": "Getnet", "medio": "QR con dinero en cuenta", "plazo": "inmediato", "comision_pct": 0.8 },
+    { "proveedor": "Getnet", "medio": "Débito", "plazo": "inmediato", "comision_pct": 1.53 },
+    { "proveedor": "Getnet", "medio": "Débito", "plazo": "1 día hábil", "comision_pct": 1.0 },
+    { "proveedor": "Getnet", "medio": "Crédito en un pago", "plazo": "inmediato", "comision_pct": 7.28 },
+    { "proveedor": "Getnet", "medio": "Crédito en un pago", "plazo": "anticipado", "comision_pct": 6.75 },
+    { "proveedor": "Getnet", "medio": "Crédito en un pago", "plazo": "8 días hábiles", "comision_pct": 2.0 },
+    { "proveedor": "Cuenta DNI Comercios (Banco Provincia)", "medio": "Pago con Cuenta DNI", "plazo": "inmediato", "comision_pct": 0.6 },
+    { "proveedor": "Transferencias 3.0 (cualquier QR interoperable)", "medio": "Transferencia por QR", "plazo": "inmediato", "comision_pct": 0.8, "nota": "Tope regulado; el cliente no paga comisión." }
+  ],
+  "abonos": [
+    { "proveedor": "Getnet", "concepto": "Abono mensual de terminal", "importe_mensual": 49000, "mas_iva": true, "nota": "Bonificado el primer año para comercios nuevos." }
+  ]
+}

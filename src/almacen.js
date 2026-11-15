@@ -77,12 +77,12 @@ export function listarPedidos() {
   return readdirSync(RAIZ).map(leerPedido).filter(Boolean);
 }
 
-// Las fotos van aparte para no inflar pedido.json.
-export function guardarFotos(id, fotos) {
-  writeFileSync(join(carpeta(id), "fotos.json"), JSON.stringify(fotos));
+// Los adjuntos (fotos y PDF) van aparte para no inflar pedido.json.
+export function guardarAdjuntos(id, adjuntos) {
+  writeFileSync(join(carpeta(id), "adjuntos.json"), JSON.stringify(adjuntos));
 }
 
-export function leerFotos(id) {
-  const archivo = join(carpeta(id), "fotos.json");
+export function leerAdjuntos(id) {
+  const archivo = join(carpeta(id), "adjuntos.json");
   return existsSync(archivo) ? JSON.parse(readFileSync(archivo, "utf8")) : [];
 }
