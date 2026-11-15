@@ -1,21 +1,43 @@
 {
   "id": "normativa_precios",
-  "titulo": "Exhibición de precios: Resolución 4/2025 de la Secretaría de Industria y Comercio",
-  "fecha": "2025-01-17",
+  "titulo": "Exhibición de precios: Resolución 4/2025 de la Secretaría de Industria y Comercio (vigente, sin modificaciones a noviembre de 2026)",
+  "fecha": "2026-11-15",
   "vigencia_dias": 180,
-  "verificado": false,
-  "nota_verificacion": "Resumen armado desde la investigación, no desde el texto completo. Leer la resolución, corregir las reglas si hace falta, poner la fecha de la revisión y verificado en true.",
+  "verificado": true,
+  "nota_verificacion": "Reglas cotejadas el 2026-11-15 con el texto original de la Res. SIC 4/2025 (Boletín Oficial 17/01/2025 y argentina.gob.ar); no se halló norma que modifique sus arts. 2 y 3.",
   "fuentes": [
     "https://www.boletinoficial.gob.ar/detalleAviso/primera/319787/20250117",
-    "https://argentina.gob.ar/sites/default/files/exhibicion_de_precios_resolucion_4_2025_0.pdf",
-    "https://www.buenosaires.gob.ar/defensaconsumidor/lealtad-comercial-0"
+    "https://www.boletinoficial.gob.ar/pdf/aviso/primera/319787/20260312",
+    "https://www.argentina.gob.ar/normativa/nacional/norma-408455/texto"
   ],
   "reglas": [
-    "Todo producto exhibido debe mostrar su precio final en moneda de curso legal, impuestos incluidos.",
-    "Los productos envasados deben mostrar además el precio por unidad de medida (por kilo, litro, metro, etc.).",
-    "El precio por unidad de medida va en caracteres más chicos que el precio final.",
-    "En presentaciones de hasta 50 g o 50 ml, el precio por unidad de medida se expresa cada 10 g o 10 ml.",
-    "Los precios tienen que ser claros, legibles y estar junto al producto o en listas a la vista del público.",
-    "En CABA, Lealtad Comercial puede multar los incumplimientos (Ley 4827)."
-  ]
+    "Todo comercio que vende a consumidores finales debe exhibir los precios según esta resolución (art. 1).",
+    "Los precios se exhiben en pesos; además pueden mostrarse en dólares u otra moneda extranjera (art. 2 inc. a).",
+    "El precio exhibido es el total y final que paga el consumidor, con todos los impuestos incluidos (art. 2 inc. b).",
+    "Junto al precio final, en letra más chica, va el precio sin IVA ni otros impuestos nacionales indirectos, con la leyenda \"PRECIO SIN IMPUESTOS NACIONALES\"; rige en el local y en la publicidad, desde el 1/4/2025 (art. 2 inc. c y art. 7).",
+    "Si el precio se muestra financiado, hay que indicar el precio de contado, la cantidad y el monto de cada cuota y el costo financiero total efectivo anual (art. 2 inc. d).",
+    "También va, en letra más chica que el precio final, el precio por unidad de medida: por 1 kg, 1 l, 1 m, 1 m² o 1 m³, o por la unidad habitual del rubro (art. 2 inc. e).",
+    "En envases de hasta 50 g o 50 ml, el precio por unidad de medida se expresa cada 10 g o 10 ml (art. 2 inc. e).",
+    "El precio de la góndola tiene que coincidir con el que se cobra en la caja (art. 2 inc. g).",
+    "Los precios se exhiben de forma clara, visible, horizontal y legible sobre cada artículo o grupo de la misma mercadería a la vista y al alcance del cliente (art. 3).",
+    "Se pueden usar listas de precios, expuestas en la entrada o en los lugares de venta o atención, a la vista del público, en papel o en formato digital (art. 3).",
+    "Nunca se puede impedir que el cliente vea los precios antes de decidir la compra (art. 3).",
+    "Los incumplimientos se sancionan por el Decreto 274/2019 y/o la Ley 24.240; lo del precio sin impuestos, por la Ley 11.683 de procedimiento fiscal (art. 5)."
+  ],
+  "excepciones": [
+    "No hace falta el precio por unidad de medida cuando es igual al precio de venta, por ejemplo un producto que se vende por unidad (art. 2 inc. e).",
+    "Los precios financiados y el precio por unidad de medida no necesitan la leyenda de precio sin impuestos nacionales (art. 2 incs. d y e).",
+    "En comercios minoristas que venden al peso con balanza electrónica que emite ticket o etiqueta, no es obligatorio el precio sin impuestos nacionales (art. 2 inc. f).",
+    "Los servicios prestados desde, hacia o en el exterior pueden exhibir y publicitar sus precios solo en dólares (art. 2 inc. h)."
+  ],
+  "articulos_fuente": {
+    "art. 1": "Alcance: quienes ofrezcan bienes o servicios a destinatarios finales.",
+    "art. 2": "Precios a exhibir: moneda, precio final, precio sin impuestos nacionales, financiación, unidad de medida, balanzas, góndola-caja, servicios al exterior.",
+    "art. 3": "Forma de exhibición y listas.",
+    "art. 4": "Autoridad de aplicación: Subsecretaría de Defensa del Consumidor y Lealtad Comercial.",
+    "art. 5": "Sanciones.",
+    "art. 6": "Deroga las Res. 7/2002 y 55/2002.",
+    "art. 7": "El inc. c del art. 2 rige desde el 1/4/2025.",
+    "art. 8": "Vigencia desde el día siguiente a la publicación."
+  }
 }

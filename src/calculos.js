@@ -21,6 +21,12 @@ export function precioPorUnidad(precio, contenido, unidad) {
   return { valor: Math.round((precio / (contenido / factor)) * 100) / 100, por: base };
 }
 
+/** Precio sin IVA (Res. 4/2025, art. 2 inc. c). Solo con la alícuota que dio el cliente; no contempla impuestos internos. */
+export function precioSinImpuestos(precio, alicuotaIva) {
+  if (!(precio > 0) || !(alicuotaIva > 0)) return null;
+  return Math.round((precio / (1 + alicuotaIva / 100)) * 100) / 100;
+}
+
 export function precioPromo(precioNormal, descuentoPct) {
   if (!(precioNormal > 0) || !(descuentoPct > 0) || descuentoPct >= 100) return null;
   return Math.round(precioNormal * (1 - descuentoPct / 100));
@@ -29,7 +35,7 @@ export function precioPromo(precioNormal, descuentoPct) {
 // Esquemas de extracción (salida estructurada) y cálculo para cada tipo.
 export const EXTRACCIONES = {
   precio_por_unidad: {
-    instruccion: "Extraé cada producto con su precio final y su contenido neto. Si el contenido no figura claramente, dejá contenido en 0 y unidad vacía. No calcules nada.",
+    instruccion: "Extraé cada producto con su precio final, su contenido neto y la alícuota de IVA si el cliente la indicó. Si el contenido no figura claramente, dejá contenido en 0 y unidad vacía; si no indicó la alícuota, poné 0. No calcules nada.",
     esquema: {
       type: "object",
       properties: {
@@ -42,8 +48,9 @@ export const EXTRACCIONES = {
               precio: { type: "number", description: "Precio final en pesos, sin separadores de miles" },
               contenido: { type: "number", description: "Contenido neto, por ejemplo 500" },
               unidad: { type: "string", enum: ["g", "kg", "ml", "l", "m", "cm", "unidad", ""] },
+              alicuota_iva: { type: "number", description: "Alícuota de IVA del producto SOLO si el cliente la indicó (21, 10.5, 27, 0); si no la dijo, 0" },
             },
-            required: ["producto", "precio", "contenido", "unidad"],
+            required: ["producto", "precio", "contenido", "unidad", "alicuota_iva"],
             additionalProperties: false,
           },
         },
@@ -54,7 +61,13 @@ export const EXTRACCIONES = {
     calcular: ({ items }) =>
       items.map((i) => {
         const r = precioPorUnidad(i.precio, i.contenido, i.unidad);
-        return { producto: i.producto, precio_final: pesos(i.precio), precio_por_unidad: r ? `${pesos(r.valor)} por ${r.por}` : null };
+        const sinImp = precioSinImpuestos(i.precio, i.alicuota_iva);
+        return {
+          producto: i.producto,
+          precio_final: pesos(i.precio),
+          precio_por_unidad: r ? `${pesos(r.valor)} por ${r.por}` : null,
+          precio_sin_impuestos_nacionales: sinImp ? pesos(sinImp) : null,
+        };
       }),
   },
   precio_promo: {

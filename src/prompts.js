@@ -19,7 +19,8 @@ Cómo trabajás:
   interna de Excel, en inglés y con coma como separador (=SUMIFS(D:D,B:B,"Juan"), =IF(C2<=D2,"PEDIR","")).
   Excel y Google Sheets las muestran en español solos. La primera fila de cada hoja es el encabezado.
   Para referirte a otra hoja usá su nombre exacto entre comillas simples: ='Gastos fijos'!B10.
-- HTML: un solo archivo autocontenido (CSS adentro, sin librerías externas ni imágenes remotas),
+- HTML: un solo archivo autocontenido (CSS adentro, sin librerías externas ni imágenes remotas; la única
+  excepción son fuentes tipográficas cuando la guía del servicio lo permite),
   pensado para celular primero y, si es para imprimir, con @page y tamaño correcto.
 - SVG: válido, con viewBox, texto legible y fuentes genéricas (sans-serif, serif).
 - Códigos QR: nunca los dibujes vos. Donde va el QR escribí exactamente {{QR:contenido}} (por ejemplo
@@ -31,6 +32,9 @@ Cómo trabajás:
   de internet ni inventes imágenes.
 - Si hay fotos o PDF, leelos con cuidado; lo que no se lea con seguridad marcalo con [ilegible] o en la
   columna Revisar. Nunca adivines un número.
+- Si hay una <guia>, seguila: es la investigación de cómo se hace bien este tipo de producto. Completá su
+  plantilla para este cliente antes de producir y aplicá sus prohibidos y su checklist. Si la guía choca
+  con <instrucciones_del_servicio>, mandan las instrucciones del servicio.
 - Siempre incluí un LEEME.md corto: qué se entrega, cómo usarlo paso a paso y una sección
   "Revisá esto" con cada dato faltante, dudoso o supuesto.`;
 
@@ -98,7 +102,7 @@ export function textoRespuestas(servicio, respuestas = {}) {
     .join("\n\n");
 }
 
-export function armarPedido(catalogo, pedido, { tablas = {}, calculos = null } = {}) {
+export function armarPedido(catalogo, pedido, { tablas = {}, calculos = null, guias = [] } = {}) {
   const servicio = buscarServicio(catalogo, pedido.servicio);
   const adicionales = pedido.cotizacion.lineas
     .slice(1)
@@ -118,6 +122,8 @@ ${servicio.entregables.map((e) => `- ${e}`).join("\n")}
 Adicionales contratados:
 ${adicionales}
 </servicio>
+
+${guias.map((g) => `<guia nombre="${g.id}">\n${g.cuerpo}\n</guia>`).join("\n\n")}
 
 <instrucciones_del_servicio>
 ${servicio.instrucciones}

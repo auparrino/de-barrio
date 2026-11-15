@@ -252,6 +252,11 @@
           "requerido": true
         },
         {
+          "id": "iva",
+          "etiqueta": "¿Sos monotributista o responsable inscripto? Si sos inscripto, ¿qué alícuota de IVA lleva cada producto? (por ejemplo: 21% en general, 10,5% carnes, frutas y verduras)",
+          "tipo": "texto_largo"
+        },
+        {
           "id": "whatsapp",
           "etiqueta": "WhatsApp del negocio (si pediste el botón)",
           "tipo": "texto"
@@ -261,7 +266,7 @@
       "tablas": [
         "normativa_precios"
       ],
-      "instrucciones": "Seguí la tabla 'normativa_precios' de <tablas_vigentes> para qué debe tener cada cartel. El precio por unidad de medida (por kg, por litro, por unidad) NO lo calcules vos: viene calculado en <calculos> para cada producto cuyo contenido se pudo leer; usá esos valores tal cual. Si un producto no tiene contenido neto claro, poné el cartel sin precio por unidad y listalo en LEEME.md para que el cliente lo complete. Entregá: carteles-de-precios.html (A4, 8 carteles por hoja, precio final grande y precio por unidad de medida visible); lista-de-precios.html (página para celular, agrupada por categoría, autocontenida); cartel-qr.html (A5 para el mostrador con un recuadro para el QR y la explicación de cómo generarlo cuando la lista esté publicada); checklist-exhibicion.md (qué revisar en góndola según la normativa).",
+      "instrucciones": "Seguí la tabla 'normativa_precios' de <tablas_vigentes> para qué debe tener cada cartel. El precio por unidad de medida (por kg, por litro, por unidad) NO lo calcules vos: viene calculado en <calculos> para cada producto cuyo contenido se pudo leer; usá esos valores tal cual. El precio sin impuestos nacionales con su leyenda «PRECIO SIN IMPUESTOS NACIONALES» también viene en <calculos> cuando el cliente dio la alícuota; si es null, dejá en el cartel el renglón con la leyenda y «$ ______» para completar a mano, y explicá en LEEME.md cuándo corresponde según la tabla (por ejemplo, la excepción de balanzas que emiten ticket). Si un producto no tiene contenido neto claro, poné el cartel sin precio por unidad y listalo en LEEME.md para que el cliente lo complete. Entregá: carteles-de-precios.html (A4, 8 carteles por hoja, precio final grande y precio por unidad de medida visible); lista-de-precios.html (página para celular, agrupada por categoría, autocontenida); cartel-qr.html (A5 para el mostrador con un recuadro para el QR y la explicación de cómo generarlo cuando la lista esté publicada); checklist-exhibicion.md (qué revisar en góndola según la normativa).",
       "calculo": "precio_por_unidad"
     },
     {
@@ -548,6 +553,11 @@
           "requerido": true
         },
         {
+          "id": "detalle_propio",
+          "etiqueta": "Algo que solo tu negocio tiene: un hecho, no un adjetivo (desde qué año están, quién atiende, el producto que todos piden, el apodo del local…)",
+          "tipo": "texto_largo"
+        },
+        {
           "id": "datos",
           "etiqueta": "Dirección, horarios, WhatsApp, redes y medios de pago",
           "tipo": "texto_largo",
@@ -605,6 +615,11 @@
           "requerido": true
         },
         {
+          "id": "detalle_propio",
+          "etiqueta": "Algo que solo tu negocio tiene: un hecho, no un adjetivo (desde qué año están, quién atiende, el producto que todos piden, el apodo del local…)",
+          "tipo": "texto_largo"
+        },
+        {
           "id": "datos",
           "etiqueta": "Datos que tienen que figurar (dirección, WhatsApp, redes, horarios)",
           "tipo": "texto_largo"
@@ -650,6 +665,11 @@
           "etiqueta": "¿Qué vendés o hacés y qué te diferencia?",
           "tipo": "texto_largo",
           "requerido": true
+        },
+        {
+          "id": "detalle_propio",
+          "etiqueta": "Algo que solo tu negocio tiene: un hecho, no un adjetivo (desde qué año están, quién atiende, el producto que todos piden, el apodo del local…)",
+          "tipo": "texto_largo"
         },
         {
           "id": "datos",

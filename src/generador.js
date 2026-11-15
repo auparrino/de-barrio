@@ -8,6 +8,7 @@ import { buscarServicio } from "./cotizador.js";
 import { SISTEMA, ESQUEMA_ENTREGA, armarPedido, armarExtraccion } from "./prompts.js";
 import { EXTRACCIONES } from "./calculos.js";
 import { armarXlsx, revisarPlanilla } from "./planillas.js";
+import { guiasDe } from "./guias.js";
 
 const MODELO = process.env.CLAUDE_MODEL || "claude-opus-5-5";
 
@@ -102,7 +103,7 @@ export async function generarProducto(catalogo, pedido, { tablas = {} } = {}) {
 
   const r = process.env.GENERADOR === "demo"
     ? { datos: entregaDemo(pedido), uso: null, modelo: "demo" }
-    : await pedirJson({ content: armarPedido(catalogo, pedido, { tablas, calculos }), esquema: ESQUEMA_ENTREGA });
+    : await pedirJson({ content: armarPedido(catalogo, pedido, { tablas, calculos, guias: guiasDe(servicio.id) }), esquema: ESQUEMA_ENTREGA });
 
   const { archivos, avisos } = await armarArchivos(r.datos, pedido.adjuntos);
   return { resumen: r.datos.resumen, archivos, avisos, uso: r.uso, modelo: r.modelo };
