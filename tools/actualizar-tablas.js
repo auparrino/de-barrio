@@ -22,7 +22,7 @@ const MODELO = process.env.CLAUDE_MODEL || "claude-opus-5-5";
 // Qué se puede consultar y cuánto puede cambiar cada tabla de una vez.
 export const REGLAS = {
   comisiones: {
-    dominios: ["mercadopago.com.ar", "getnet.com.ar", "bancoprovincia.com.ar", "bcra.gob.ar", "modo.com.ar", "payway.com.ar", "naranjax.com", "uala.com.ar"],
+    dominios: ["mercadopago.com.ar", "getnet.net", "getnet.com.ar", "bancoprovincia.com.ar", "bcra.gob.ar", "modo.com.ar", "payway.com.ar", "naranjax.com", "uala.com.ar"],
     // puntos porcentuales: una comisión que salta más de 2 puntos se revisa a mano
     cambio_maximo: { tipo: "absoluto", valor: 2 },
     tarea: "Confirmá las comisiones, plazos y abonos vigentes de cada fila en la página oficial del proveedor.",

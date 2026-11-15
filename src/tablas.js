@@ -3,8 +3,11 @@
 // verificada por una persona y no pasó su vigencia: así el modelo nunca
 // trabaja con números viejos o inventados.
 import { readFileSync, readdirSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 
-const DIR = new URL("../data/tablas/", import.meta.url);
+const DIR = process.env.TABLAS_DIR
+  ? pathToFileURL(process.env.TABLAS_DIR.replace(/\/?$/, "/"))
+  : new URL("../data/tablas/", import.meta.url);
 const DIA = 24 * 60 * 60 * 1000;
 
 export function cargarTablas() {

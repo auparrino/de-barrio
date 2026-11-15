@@ -5,7 +5,7 @@ import { cargarCatalogo, buscarServicio, cotizar } from "./src/cotizador.js";
 import * as almacen from "./src/almacen.js";
 import * as pagos from "./src/pagos.js";
 import { generarProducto } from "./src/generador.js";
-import { cargarTablas, disponibilidad } from "./src/tablas.js";
+import { cargarTablas, disponibilidad, estadoTabla } from "./src/tablas.js";
 
 const catalogo = cargarCatalogo();
 const PUERTO = Number(process.env.PORT || 3000);
@@ -38,12 +38,21 @@ function pedidoConClave(req, res) {
 
 // ---------- Catálogo y cotización ----------
 
+const NOMBRES_TABLAS = {
+  comisiones: "comisiones de cobro",
+  escala_comercio: "sueldos de Comercio",
+  normativa_precios: "norma de exhibición de precios",
+};
+
 // Las tablas se releen en cada consulta: al verificarlas, el servicio se habilita sin reiniciar.
 const conDisponibilidad = () => {
   const tablas = cargarTablas();
   return {
     ...catalogo,
     servicios: catalogo.servicios.map(({ instrucciones, ...s }) => ({ ...s, ...disponibilidad(s, tablas) })),
+    tablas: Object.values(tablas).map((t) => ({
+      nombre: NOMBRES_TABLAS[t.id] ?? t.titulo, fecha: t.fecha, verificado: estadoTabla(t).ok,
+    })),
   };
 };
 
@@ -204,6 +213,8 @@ app.post("/api/admin/pedidos/:id/reintentar", (req, res) => {
 for (const p of almacen.listarPedidos()) {
   if (p.estado === "pagado" || p.estado === "generando") generar(p.id);
 }
+
+app.use((_req, res) => res.status(404).sendFile("404.html", { root: "public" }));
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PUERTO, () => {

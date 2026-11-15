@@ -1,64 +1,148 @@
-[hidden] { display: none !important; }
+/* Dirección de arte: ver DESIGN.md. Solo estos tokens. */
+@font-face { font-family: "Big Shoulders Display"; font-weight: 300; font-display: swap; src: url("/fuentes/big-shoulders-display-latin-300-normal.woff2") format("woff2"); }
+@font-face { font-family: "Big Shoulders Display"; font-weight: 800; font-display: swap; src: url("/fuentes/big-shoulders-display-latin-800-normal.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Next"; font-weight: 400; font-display: swap; src: url("/fuentes/atkinson-hyperlegible-next-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Next"; font-weight: 800; font-display: swap; src: url("/fuentes/atkinson-hyperlegible-next-latin-800-normal.woff2") format("woff2"); }
+
 :root {
-  --tinta: #1f2a2e;
-  --fondo: #fbf7f0;
-  --acento: #e2572b;
-  --verde: #2f7d5b;
-  --borde: #e5dccd;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  color: var(--tinta);
-  background: var(--fondo);
+  --tinta: #16130F;
+  --afiche: #FFE03A;
+  --papel: #FFFFFF;
+  --precio: #B01E18;
+  --borrado: #4F574D;
+  --renglon: rgb(22 19 15 / 0.2);
+
+  --cartel: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --lectura: "Atkinson Hyperlegible Next", "Segoe UI", sans-serif;
+
+  --t-chico: 0.9375rem;   /* 15 */
+  --t-texto: 1.1875rem;   /* 19 */
+  --t-titulo: 3rem;       /* 48 */
+  --t-cartel: 7rem;       /* 112 */
+
+  --margen: 24px;
+  --trazo: 2px solid var(--tinta);
+  --imprime: 180ms;
 }
+
+[hidden] { display: none !important; }
 * { box-sizing: border-box; }
-body { margin: 0; line-height: 1.5; }
-a { color: var(--acento); }
-main { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+html { background: var(--papel); color: var(--tinta); }
+body { margin: 0; font: 400 var(--t-texto)/1.5 var(--lectura); }
+.ancho { max-width: 1180px; margin: 0 auto; padding: 0 var(--margen); }
 
-.portada { background: var(--verde); color: #fff; padding: 2.5rem 1rem; text-align: center; }
-.portada h1 { margin: 0; font-size: 2.4rem; }
-.portada h1 a { color: #fff; text-decoration: none; }
-.portada.chica { padding: 1rem; }
-.portada p { max-width: 640px; margin: .75rem auto; font-size: 1.1rem; }
-.pasos { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem 1.5rem; padding: 0; margin: 1.5rem 0 0; list-style: none; counter-reset: paso; }
-.pasos li::before { counter-increment: paso; content: counter(paso); display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; margin-right: .4rem; border-radius: 50%; background: #fff; color: var(--verde); font-weight: 700; }
+a { color: var(--tinta); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; box-shadow: 0 0 0 6px var(--afiche); }
+.saltar { position: absolute; left: -9999px; }
+.saltar:focus { left: var(--margen); top: 8px; background: var(--papel); padding: 8px 12px; z-index: 2; }
 
-.tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-.tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 1.1rem; display: flex; flex-direction: column; }
-.tarjeta h3 { margin: 0 0 .4rem; }
-.tarjeta p { margin: 0 0 .6rem; flex: 1; }
-.tarjeta .precio { flex: 0; }
+h1, h2, h3 { font-family: var(--cartel); font-weight: 800; line-height: 0.95; margin: 0; text-transform: uppercase; }
 
-button, .boton { background: var(--acento); color: #fff; border: 0; border-radius: 8px; padding: .7rem 1.2rem; font-size: 1rem; cursor: pointer; text-decoration: none; display: inline-block; }
-button:disabled { opacity: .6; cursor: wait; }
-.volver { background: transparent; color: var(--acento); padding: 0; }
+/* ---------- Cabecera: el cartel de afiche ---------- */
+.afiche { background: var(--afiche); border-bottom: var(--trazo); padding: 28px 0 40px; }
+.marca { font: 800 var(--t-texto)/1 var(--lectura); margin: 0 0 40px; }
+.marca a { text-decoration: none; }
+.afiche h1 { font-size: var(--t-cartel); max-width: 15ch; }
+.afiche h1 span { display: block; font-weight: 300; }
+.bajada { max-width: 46ch; margin: 28px 0 0; }
 
-form { display: grid; grid-template-columns: 1fr 340px; gap: 1rem; align-items: start; }
-fieldset { grid-column: 1; background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 1rem; margin: 0; }
-legend { font-weight: 700; padding: 0 .3rem; }
-label { display: block; margin-bottom: .8rem; }
-label.check { display: flex; gap: .5rem; align-items: center; }
-input:not([type=checkbox]), textarea, select { display: block; width: 100%; margin-top: .25rem; padding: .55rem; border: 1px solid var(--borde); border-radius: 8px; font: inherit; }
-input[type=number] { width: 6rem; }
-em { color: #6b6b6b; font-style: normal; font-size: .9rem; }
-.entregables { color: #555; font-size: .95rem; }
+/* ---------- Mostrador: lista + ticket ---------- */
+.mostrador { display: grid; grid-template-columns: minmax(0, 7fr) minmax(300px, 4fr); gap: 56px; padding-top: 48px; padding-bottom: 64px; align-items: start; }
+.columna > section + section { margin-top: 64px; }
+h2 { font-size: var(--t-titulo); }
+.aclaracion { color: var(--borrado); margin: 8px 0 24px; font-size: var(--t-chico); }
 
-.cotizacion { grid-column: 2; grid-row: 1 / span 4; position: sticky; top: 1rem; background: #fff; border: 2px solid var(--verde); border-radius: 12px; padding: 1rem; }
-.cotizacion h3 { margin-top: 0; }
-.cotizacion table { width: 100%; border-collapse: collapse; font-size: .95rem; }
-.cotizacion td { padding: .25rem 0; border-bottom: 1px dashed var(--borde); }
-.cotizacion td:last-child { text-align: right; white-space: nowrap; }
-.total { font-size: 1.3rem; }
-.nota { font-size: .85rem; color: #666; }
-.error { color: #b00020; }
-
-.estado { max-width: 700px; }
-.archivos li { margin: .4rem 0; }
-footer { text-align: center; padding: 2rem 1rem; color: #777; font-size: .9rem; }
-
-@media (max-width: 800px) {
-  form { grid-template-columns: 1fr; }
-  .cotizacion { grid-column: 1; grid-row: auto; position: static; }
+/* La lista de precios: renglones con puntitos entre el nombre y el precio */
+.gondola { border-top: var(--trazo); padding: 16px 0 28px; }
+.gondola h3 { font-size: 2rem; }
+.gondola > p { margin: 4px 0 12px; color: var(--borrado); font-size: var(--t-chico); }
+.gondola ul { list-style: none; margin: 0; padding: 0; }
+.renglon {
+  display: flex; align-items: baseline; gap: 8px; width: 100%;
+  background: none; border: 0; padding: 10px 0 2px; margin: 0;
+  font: 800 var(--t-texto)/1.25 var(--lectura); color: var(--tinta); text-align: left; cursor: pointer;
 }
-.cat-desc { margin-top: -.5rem; color: #555; }
-.tarjeta.apagada { opacity: .55; }
-.pronto { align-self: flex-start; padding: .4rem .8rem; border-radius: 8px; background: var(--borde); font-size: .9rem; }
+.renglon .puntos { flex: 1; border-bottom: 3px dotted var(--renglon); transform: translateY(-5px); min-width: 24px; }
+.renglon .monto { font: 800 1.75rem/1 var(--cartel); color: var(--precio); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.renglon .monto small { font: 400 var(--t-chico) var(--lectura); color: var(--borrado); margin-right: 4px; }
+.renglon:hover .nombre { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.renglon[disabled] { cursor: default; color: var(--borrado); }
+.renglon[disabled] .monto { color: var(--borrado); font: 400 var(--t-chico) var(--lectura); }
+.detalle { margin: 0 0 10px; font-size: var(--t-chico); color: var(--borrado); max-width: 60ch; }
+
+/* ---------- Formulario: convencional ---------- */
+.volver { background: none; border: 0; padding: 0; font: 800 var(--t-chico) var(--lectura); text-decoration: underline; cursor: pointer; color: var(--tinta); margin-bottom: 20px; }
+.entregables { font-size: var(--t-chico); }
+fieldset { border: 0; border-top: var(--trazo); margin: 32px 0 0; padding: 16px 0 0; }
+legend { font: 800 1.5rem/1 var(--cartel); text-transform: uppercase; padding: 0 8px 0 0; }
+label { display: block; margin-bottom: 16px; font-weight: 800; font-size: var(--t-chico); }
+label em { font-style: normal; font-weight: 400; color: var(--borrado); }
+input:not([type=checkbox]), textarea, select {
+  display: block; width: 100%; margin-top: 6px; padding: 10px 12px;
+  font: 400 var(--t-texto) var(--lectura); color: var(--tinta);
+  background: var(--papel); border: var(--trazo); border-radius: 0;
+}
+input[type=number] { width: 7rem; }
+input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--tinta); }
+label.check { display: flex; gap: 10px; align-items: center; font-weight: 400; font-size: var(--t-texto); }
+[aria-invalid=true] { border-color: var(--precio) !important; }
+
+/* ---------- Notas de texto corrido ---------- */
+.nota h2 { font-size: 2.25rem; margin-bottom: 12px; }
+.nota p { max-width: 62ch; margin: 0 0 14px; }
+.nota small { color: var(--borrado); font-size: var(--t-chico); }
+
+/* ---------- El ticket ---------- */
+.caja { position: sticky; top: 24px; }
+.ticket {
+  background: var(--papel); border: var(--trazo); border-bottom: 0;
+  padding: 20px 20px 36px; font-variant-numeric: tabular-nums;
+  /* borde de abajo cortado como el papel de la caja */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 95% 100%, 90% calc(100% - 10px), 85% 100%, 80% calc(100% - 10px), 75% 100%, 70% calc(100% - 10px), 65% 100%, 60% calc(100% - 10px), 55% 100%, 50% calc(100% - 10px), 45% 100%, 40% calc(100% - 10px), 35% 100%, 30% calc(100% - 10px), 25% 100%, 20% calc(100% - 10px), 15% 100%, 10% calc(100% - 10px), 5% 100%, 0 calc(100% - 10px));
+}
+.ticket.activo { background: var(--afiche); }
+.ticket-cabeza { font-size: 1.75rem; text-align: center; border-bottom: 2px dashed var(--tinta); padding-bottom: 12px; }
+.ticket-cabeza span { font: 400 var(--t-chico) var(--lectura); text-transform: none; }
+.ticket-rollo { overflow: hidden; padding-top: 12px; }
+.ticket-vacio { font-size: var(--t-chico); margin: 0; }
+.ticket table { width: 100%; border-collapse: collapse; font-size: var(--t-chico); }
+.ticket td { padding: 4px 0; vertical-align: top; }
+.ticket td:last-child { text-align: right; white-space: nowrap; padding-left: 12px; }
+.ticket-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 2px dashed var(--tinta); margin: 10px 0 0; padding-top: 10px; font: 800 1.5rem var(--cartel); text-transform: uppercase; }
+.ticket-total strong { font-size: 2.5rem; color: var(--precio); }
+.ticket.imprime .ticket-rollo > * { animation: avance var(--imprime) steps(4) both; }
+@keyframes avance { from { transform: translateY(-1.4em); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ticket.imprime .ticket-rollo > * { animation: none; } }
+
+#pagar {
+  display: block; width: 100%; margin-top: 16px; padding: 14px;
+  background: var(--tinta); color: var(--afiche); border: 0; border-radius: 0;
+  font: 800 1.5rem/1 var(--cartel); text-transform: uppercase; cursor: pointer;
+}
+#pagar:disabled { cursor: wait; opacity: 0.7; }
+.ticket-pie { font-size: var(--t-chico); margin: 12px 0 0; }
+.error { color: var(--precio); font-weight: 800; font-size: var(--t-chico); }
+
+/* ---------- Pie ---------- */
+.pie { border-top: var(--trazo); padding-top: 20px; padding-bottom: 40px; font-size: var(--t-chico); color: var(--borrado); }
+.pie p { margin: 0 0 6px; max-width: 70ch; }
+
+/* ---------- Página del pedido y 404 ---------- */
+.pedido { padding-top: 40px; padding-bottom: 64px; }
+.pedido > * { max-width: 760px; }
+.pedido h1 { font-size: var(--t-titulo); margin-bottom: 16px; }
+.archivos { list-style: none; padding: 0; margin: 24px 0; border-top: var(--trazo); }
+.archivos li { border-bottom: 3px dotted var(--renglon); }
+.archivos a { display: block; padding: 10px 0; font-weight: 800; }
+.boton { display: inline-block; background: var(--tinta); color: var(--afiche); padding: 14px 20px; font: 800 1.5rem/1 var(--cartel); text-transform: uppercase; text-decoration: none; }
+
+@media (max-width: 860px) {
+  :root { --t-texto: 1.125rem; --t-titulo: 2.25rem; --t-cartel: 4rem; --margen: 16px; }
+  .mostrador { grid-template-columns: 1fr; gap: 40px; }
+  .caja { position: static; }
+  .renglon { flex-wrap: wrap; }
+  .renglon .puntos { display: none; }
+  .renglon .monto { width: 100%; }
+}
+.afiche-chico { padding: 20px 0; }
+.afiche-chico .marca { margin: 0; }

@@ -4,40 +4,53 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tu pedido · Vecino Digital</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <header class="portada chica"><h1><a href="/">Vecino Digital</a></h1></header>
-  <main class="estado">
-    <h2 id="titulo">Buscando tu pedido…</h2>
+  <header class="afiche afiche-chico">
+    <div class="ancho"><p class="marca"><a href="/">Vecino Digital</a></p></div>
+  </header>
+  <main class="ancho pedido">
+    <h1 id="titulo">Buscando tu pedido</h1>
     <p id="detalle"></p>
     <p id="accion"></p>
-    <ul id="archivos" class="archivos"></ul>
-    <p class="nota">Guardá esta página: el link es tu acceso al pedido.</p>
+    <ul id="archivos" class="archivos" hidden></ul>
+    <p class="aclaracion" id="leeme" hidden>Empezá por LEEME.md: ahí te explicamos cómo usar cada archivo y qué
+      revisar antes.</p>
+    <p class="aclaracion">Guardá el link de esta página: es tu acceso al pedido.</p>
   </main>
   <script type="module">
     const q = new URLSearchParams(location.search);
     const id = q.get("id"), clave = q.get("clave");
     const $ = (s) => document.querySelector(s);
-    const pesos = (n) => "$ " + Math.round(n).toLocaleString("es-AR");
+    const pesos = (n) => "$ " + Math.round(n).toLocaleString("es-AR");
+    const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
     const textos = {
-      cotizado: ["Falta el pago", "Cuando se acredite, empezamos a armar tu pedido."],
-      pagado: ["¡Pago recibido!", "Estamos por empezar."],
-      generando: ["Estamos armando tu pedido", "Suele tardar entre 2 y 10 minutos. Podés dejar esta página abierta."],
-      listo: ["¡Tu pedido está listo!", ""],
-      error: ["Tuvimos un problema", ""],
+      cotizado: ["Falta el pago", "Cuando se acredite empezamos a armarlo."],
+      pagado: ["Pago recibido", "Estamos por empezar."],
+      generando: ["Lo estamos armando", "Tarda entre 2 y 10 minutos. Podés dejar esta página abierta: se actualiza sola."],
+      listo: ["Tu pedido está listo", ""],
+      error: ["Se trabó tu pedido", ""],
     };
 
     async function actualizar() {
-      const r = await fetch(`/api/pedidos/${id}?clave=${clave}`);
-      if (!r.ok) { $("#titulo").textContent = "No encontramos el pedido"; return; }
+      const r = await fetch(`/api/pedidos/${encodeURIComponent(id)}?clave=${encodeURIComponent(clave)}`);
+      if (!r.ok) { $("#titulo").textContent = "No encontramos ese pedido"; return; }
       const p = await r.json();
-      const [t, d] = textos[p.estado];
-      $("#titulo").textContent = t;
-      $("#detalle").textContent = p.estado === "listo" ? p.resumen : (p.error ?? `${p.servicio} para ${p.negocio} · ${pesos(p.cotizacion.total)}. ${d}`);
-      $("#accion").innerHTML = p.urlPago ? `<a class="boton" href="${p.urlPago}">Pagar ${pesos(p.cotizacion.total)}</a>` : "";
-      $("#archivos").innerHTML = p.archivos.map((a) =>
-        `<li><a href="/api/pedidos/${id}/archivos/${a.split("/").map(encodeURIComponent).join("/")}?clave=${clave}">${a}</a></li>`).join("");
+      const [titulo, detalle] = textos[p.estado];
+      $("#titulo").textContent = titulo;
+      $("#detalle").textContent = p.estado === "listo"
+        ? p.resumen
+        : (p.error ?? `${p.servicio} para ${p.negocio}, ${pesos(p.cotizacion.total)}. ${detalle}`);
+      $("#accion").innerHTML = p.urlPago ? `<a class="boton" href="${escapar(p.urlPago)}">Pagar ${pesos(p.cotizacion.total)}</a>` : "";
+      $("#archivos").hidden = !p.archivos.length;
+      $("#leeme").hidden = !p.archivos.includes("LEEME.md");
+      $("#archivos").innerHTML = p.archivos.map((a) => {
+        const ruta = a.split("/").map(encodeURIComponent).join("/");
+        return `<li><a href="/api/pedidos/${encodeURIComponent(id)}/archivos/${ruta}?clave=${encodeURIComponent(clave)}">${escapar(a)}</a></li>`;
+      }).join("");
       if (["cotizado", "pagado", "generando"].includes(p.estado)) setTimeout(actualizar, 5000);
     }
     actualizar();

@@ -1,7 +1,7 @@
 // Recorre el circuito completo en modo demo: cotizar, pedir, pagar (simulado), descargar.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -9,6 +9,15 @@ process.env.NODE_ENV = "test";
 process.env.GENERADOR = "demo";
 process.env.DATA_DIR = mkdtempSync(join(tmpdir(), "vecino-"));
 delete process.env.MP_ACCESS_TOKEN;
+
+// Copia de las tablas con la de comisiones sin verificar, para probar que su servicio se apaga.
+const tablasDir = mkdtempSync(join(tmpdir(), "tablas-"));
+for (const f of readdirSync("data/tablas").filter((f) => f.endsWith(".json"))) {
+  const t = JSON.parse(readFileSync(join("data/tablas", f), "utf8"));
+  if (t.id === "comisiones") t.verificado = false;
+  writeFileSync(join(tablasDir, f), JSON.stringify(t));
+}
+process.env.TABLAS_DIR = tablasDir;
 
 const { default: app } = await import("../server.js");
 const servidor = app.listen(0);
@@ -66,4 +75,10 @@ test("un servicio con tablas sin verificar no se puede contratar", async () => {
   form.append("datos", JSON.stringify({ servicio: "cobros", negocio: { nombre: "X" }, contacto: { email: "a@b.c" }, respuestas: { medios: "MP", montos: "100" } }));
   const r = await fetch(`${base}/api/pedidos`, { method: "POST", body: form });
   assert.equal(r.status, 409);
+});
+
+test("las páginas que no existen devuelven la 404 propia", async () => {
+  const r = await fetch(`${base}/no-existe`);
+  assert.equal(r.status, 404);
+  assert.match(await r.text(), /salió a buscar cambio/);
 });
