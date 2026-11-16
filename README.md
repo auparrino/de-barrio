@@ -1,4 +1,4 @@
-# Vecino Digital
+# De Barrio
 
 Microconsultoría para comercios de barrio. La persona entra al sitio, elige un servicio, completa un
 formulario y recibe la cotización al instante. Si paga (Mercado Pago), el sistema le pide a Claude que

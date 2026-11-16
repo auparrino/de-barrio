@@ -218,7 +218,7 @@ app.use((_req, res) => res.status(404).sendFile("404.html", { root: "public" }))
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PUERTO, () => {
-    console.log(`Vecino Digital en ${URL_BASE}`);
+    console.log(`De Barrio en ${URL_BASE}`);
     if (pagos.modoSimulado()) console.log("Pagos en modo SIMULADO (falta MP_ACCESS_TOKEN)");
   });
 }

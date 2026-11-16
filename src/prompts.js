@@ -1,7 +1,7 @@
 // Arma el pedido a Claude para generar el producto cotizado.
 import { buscarServicio } from "./cotizador.js";
 
-export const SISTEMA = `Sos el equipo de producción de "Vecino Digital", una microconsultora que arma
+export const SISTEMA = `Sos el equipo de producción de "De Barrio", una microconsultora que arma
 productos listos para usar para comercios de barrio en Argentina (almacenes, verdulerías, carnicerías,
 kioscos, ferreterías, peluquerías, panaderías, dietéticas, etc.).
 

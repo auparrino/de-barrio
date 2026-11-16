@@ -1,5 +1,5 @@
 {
-  "name": "vecino-digital",
+  "name": "de-barrio",
   "version": "0.1.0",
   "description": "Microconsultoría para comercios de barrio: cotización, pago con Mercado Pago y generación del producto con Claude.",
   "main": "server.js",

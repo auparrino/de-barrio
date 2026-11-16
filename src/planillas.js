@@ -32,7 +32,7 @@ export function revisarPlanilla(spec) {
 
 export async function armarXlsx(spec) {
   const libro = new ExcelJS.Workbook();
-  libro.creator = "Vecino Digital";
+  libro.creator = "De Barrio";
   for (const h of spec.hojas) {
     const hoja = libro.addWorksheet(h.nombre.slice(0, 31), { views: [{ state: "frozen", ySplit: 1 }] });
     h.filas.forEach((fila) => hoja.addRow(fila.map(valorCelda)));

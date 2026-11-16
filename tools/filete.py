@@ -255,20 +255,29 @@ def banda(d, t=16):
             f'<path d="{d}" fill="none" stroke="{C["verde_luz"]}" stroke-width="1.6" transform="translate({-t * .34} {-t * .34})"/>']
 
 
-def acanto_pintado(escala=.375, dx=30, dy=33):
-    """Hoja de acanto generada como imagen (Canva), reducida a cuatro tonos planos y vectorizada con
-    potrace (tools/filete_capas.py). Las capas están en tools/filete-acanto.json; acá se pintan con la
-    paleta y se les agrega la sombra proyectada."""
+def pintado(archivo, escala, dx, dy, sombra=6):
+    """Pieza generada como imagen (Canva), reducida a tonos planos por familia de color y vectorizada
+    con potrace (tools/filete_capas.py). Se pinta con la paleta del manual y se le agrega la sombra
+    proyectada (la silueta de cada familia corrida abajo a la derecha)."""
     import json
     import os
-    datos = json.load(open(os.path.join(os.path.dirname(__file__), "filete-acanto.json")))
+    datos = json.load(open(os.path.join(os.path.dirname(__file__), archivo)))
     capas = datos["capas"]
-    s = [f'<g transform="translate({dx} {dy}) scale({escala})">',
-         f'<path d="{capas["verde_sombra"]}" fill="{C["sombra"]}" transform="translate(6 6)"/>']
-    for k in ["verde_sombra", "verde", "verde_luz", "blanco"]:
-        s.append(f'<path d="{capas[k]}" fill="{C[k]}"/>')
+    orden = datos.get("orden") or ["verde_sombra", "verde", "verde_luz", "blanco"]
+    siluetas = [k for k in orden if k.endswith("_sombra")]
+    s = [f'<g transform="translate({dx} {dy}) scale({escala})">']
+    s += [f'<path d="{capas[k]}" fill="{C["sombra"]}" transform="translate({sombra} {sombra})"/>' for k in siluetas]
+    s += [f'<path d="{capas[k]}" fill="{C[k]}"/>' for k in orden]
     s.append("</g>")
     return "\n".join(s)
+
+
+def acanto_pintado():
+    return pintado("filete-acanto.json", .375, 30, 33)
+
+
+def ramo_pintado(W=1180, H=600):
+    return pintado("filete-ramo.json", .38, W - 60 - 30 - 285, H - 60 - 30 - 130, 5)
 
 
 def letrero(W=1180, H=600):
@@ -289,7 +298,7 @@ def letrero(W=1180, H=600):
     # nivel exterior: la hoja de acanto, desplazada para que su tallo entre en la banda de arriba
     s.append(acanto_pintado())
     # nivel interior: ramo abajo a la derecha
-    s.append(f'<g transform="translate({W - m - k - 250} {H - m - k - 150})">{ramo()}</g>')
+    s.append(ramo_pintado(W, H))
     return "\n".join(s)
 
 

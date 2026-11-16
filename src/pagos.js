@@ -31,7 +31,7 @@ export async function crearLinkDePago(pedido, urlBase) {
     body: JSON.stringify({
       items: [{
         id: pedido.servicio,
-        title: `Vecino Digital - ${pedido.nombreServicio}`,
+        title: `De Barrio - ${pedido.nombreServicio}`,
         quantity: 1,
         currency_id: "ARS",
         unit_price: pedido.cotizacion.total,

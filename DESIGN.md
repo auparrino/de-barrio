@@ -1,4 +1,4 @@
-# Dirección de arte de Vecino Digital
+# Dirección de arte de De Barrio
 
 Ficha completada a partir de la plantilla «sitios web con personalidad». Cualquier cambio visual del sitio
 sale de acá; si algo no está definido, se define acá primero.
