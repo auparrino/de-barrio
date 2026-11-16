@@ -3,8 +3,16 @@ const pesos = (n) => (n < 0 ? "- " : "") + "$ " + Math.abs(Math.round(n)).toLoc
 const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const fecha = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
 
-const catalogo = await (await fetch("/api/catalogo")).json();
+import { cotizar } from "./cotizar.js";
+import { mensajeWhatsApp, linkWhatsApp } from "./pedido-texto.js";
+
+// Versión de prueba (GitHub Pages): sin servidor. El catálogo sale de un archivo, el precio se
+// calcula acá con el mismo código que el servidor y el pago muestra un aviso.
+const ESTATICO = document.documentElement.hasAttribute("data-estatico");
+
+const catalogo = await (await fetch(ESTATICO ? "api/catalogo.json" : "/api/catalogo")).json();
 const porId = Object.fromEntries(catalogo.servicios.map((s) => [s.id, s]));
+if (ESTATICO) $("#pagar").textContent = "Enviar pedido por WhatsApp";
 let servicio = null;
 
 // ---------- Qué hacemos (sin precios: el precio sale al cotizar) ----------
@@ -127,7 +135,17 @@ $("#ticket-extra").addEventListener("click", (e) => {
   if (id) elegir(id);
 });
 
+function sanear(opciones) {
+  const limpio = {};
+  for (const o of servicio.opciones) {
+    const v = opciones[o.id];
+    limpio[o.id] = o.tipo === "cantidad" ? Math.max(0, Math.min(o.max ?? 1, Math.floor(Number(v) || 0))) : v === true;
+  }
+  return limpio;
+}
+
 async function precio(opciones) {
+  if (ESTATICO) return cotizar(catalogo, servicio.id, sanear(opciones));
   const r = await fetch("/api/cotizar", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -152,6 +170,17 @@ $("#cotizar").addEventListener("click", async () => {
   boton.textContent = "Cotizando…";
   try {
     const datos = leerFormulario();
+    if (ESTATICO) {
+      const opciones = sanear(datos.opciones);
+      const res = {
+        opciones, cotizacion: cotizar(catalogo, servicio.id, opciones), preguntas: [], sugerencias: [],
+        explicacion: "Versión de prueba: en el sitio real, el cotizador lee lo que contaste y ajusta los adicionales.",
+      };
+      ponerOpciones(res.opciones);
+      mostrarTicket(res.cotizacion, res);
+      $("#ticket").scrollIntoView({ block: "nearest" });
+      return;
+    }
     const r = await fetch("/api/cotizar-agente", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -208,6 +237,20 @@ $("#pedido").addEventListener("submit", async (e) => {
     error.textContent = "Falta completar algo: te lo marcamos en rojo.";
     error.hidden = false;
     falta.focus();
+    return;
+  }
+  if (ESTATICO) {
+    // Versión de prueba: en vez de pagar y mandar a Claude, el pedido va por WhatsApp al dueño.
+    const datos = leerFormulario();
+    const texto = mensajeWhatsApp({
+      servicio,
+      datos,
+      cotizacion: cotizar(catalogo, servicio.id, sanear(datos.opciones)),
+      tablas: servicio.tablas_vigentes,
+      guias: servicio.guias,
+      adjuntos: $("#pedido").elements.adjuntos.files.length,
+    });
+    window.open(linkWhatsApp(texto, catalogo.whatsapp), "_blank", "noopener");
     return;
   }
   const boton = $("#pagar");
