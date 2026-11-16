@@ -3,6 +3,16 @@
   "tope": 200000,
   "categorias": [
     {
+      "id": "imagen",
+      "nombre": "Tu imagen",
+      "descripcion": "Lo básico para que el barrio te conozca: sitio web, flyer y redes."
+    },
+    {
+      "id": "vender",
+      "nombre": "Vender en el barrio",
+      "descripcion": "Que te encuentren, te pidan por WhatsApp y vean tus promos."
+    },
+    {
       "id": "plata",
       "nombre": "Plata y margen",
       "descripcion": "Saber cuánto ganás, cobrar más barato y tener la caja ordenada."
@@ -16,24 +26,418 @@
       "id": "clientes",
       "nombre": "Clientes y fiado",
       "descripcion": "Que el fiado no te deje sin caja y que los clientes vuelvan."
-    },
-    {
-      "id": "local",
-      "nombre": "Personal y local",
-      "descripcion": "Los costos fijos que más pesan: sueldos, luz y alquiler."
-    },
-    {
-      "id": "imagen",
-      "nombre": "Tu imagen",
-      "descripcion": "Lo básico para que el barrio te conozca: sitio web, flyer y redes."
-    },
-    {
-      "id": "vender",
-      "nombre": "Vender en el barrio",
-      "descripcion": "Que te encuentren, te pidan por WhatsApp y vean tus promos."
     }
   ],
   "servicios": [
+    {
+      "id": "sitio_web",
+      "categoria": "imagen",
+      "nombre": "Sitio web de una página",
+      "descripcion": "Una página para tu negocio que se vea bien en el celular, con la dirección, los horarios y un botón de WhatsApp.",
+      "entregables": [
+        "sitio/index.html (un solo archivo, con tus fotos adentro)",
+        "como-publicarlo.md",
+        "LEEME.md"
+      ],
+      "precio_base": 140000,
+      "opciones": [
+        {
+          "id": "secciones",
+          "nombre": "Secciones extra (carta o lista de productos, galería, preguntas frecuentes)",
+          "tipo": "cantidad",
+          "precio_unitario": 12000,
+          "max": 3
+        },
+        {
+          "id": "ingles",
+          "nombre": "Versión en inglés",
+          "tipo": "si_no",
+          "precio": 15000
+        }
+      ],
+      "campos": [
+        {
+          "id": "direccion",
+          "etiqueta": "Dirección",
+          "tipo": "texto",
+          "requerido": true
+        },
+        {
+          "id": "horarios",
+          "etiqueta": "Horarios",
+          "tipo": "texto",
+          "requerido": true,
+          "ayuda": "Ej.: lunes a sábado de 8 a 13 y de 16 a 20"
+        },
+        {
+          "id": "secciones",
+          "etiqueta": "¿Qué querés que tenga además de lo básico?",
+          "tipo": "varios",
+          "valores": [
+            "La lista de productos",
+            "Galería de fotos",
+            "Preguntas frecuentes"
+          ],
+          "ajusta": {
+            "opcion": "secciones",
+            "cuenta": true
+          }
+        },
+        {
+          "id": "ingles",
+          "etiqueta": "Quiero la página también en inglés",
+          "tipo": "si_no",
+          "ajusta": {
+            "opcion": "ingles"
+          }
+        },
+        {
+          "id": "estilo",
+          "etiqueta": "¿Qué estilo te gusta?",
+          "tipo": "elegir",
+          "valores": [
+            "Clásico de barrio",
+            "Moderno y simple",
+            "Fileteado porteño",
+            "Que lo elijan ustedes"
+          ],
+          "requerido": true
+        },
+        {
+          "id": "extra",
+          "etiqueta": "¿Algo más que quieras contarnos?",
+          "tipo": "texto_largo",
+          "requerido": false
+        }
+      ],
+      "adjuntos": true,
+      "adjuntos_ayuda": "Subí el logo y fotos del local y de los productos",
+      "tablas": [],
+      "instrucciones": "Entregá sitio/index.html: un solo archivo autocontenido, mobile first, liviano, con <title> y meta description pensados para que lo encuentren buscando el rubro y el barrio, datos estructurados schema.org LocalBusiness en JSON-LD solo con los datos que dio el cliente, y secciones: portada con nombre y frase, quiénes somos, qué ofrecemos, fotos, horarios y medios de pago, cómo llegar (link a Google Maps armado con la dirección: https://www.google.com/maps/search/?api=1&query=DIRECCION codificada; no uses iframes ni claves de API) y un botón flotante de WhatsApp (https://wa.me/NUMERO solo con dígitos y código de país 54 si figura el WhatsApp en <negocio>). Usá las fotos adjuntas con el marcador {{FOTO:n}} como valor del src de cada <img> (n empieza en 1, en el orden en que se adjuntaron; la primera suele ser el logo si el cliente lo dice). Agregá las secciones extra contratadas y, si pidió inglés, un selector ES/EN en la misma página. como-publicarlo.md: paso a paso para publicarlo gratis en Netlify Drop (arrastrar la carpeta) y cómo conectar un dominio .com.ar de NIC Argentina si quiere."
+    },
+    {
+      "id": "flyer",
+      "categoria": "imagen",
+      "nombre": "Flyer o volante",
+      "descripcion": "Un volante para imprimir y la misma pieza armada para Instagram y los estados de WhatsApp.",
+      "entregables": [
+        "flyer-a5.html (para imprimir o guardar como PDF)",
+        "post-cuadrado.svg",
+        "estado-whatsapp.svg",
+        "textos.md",
+        "LEEME.md"
+      ],
+      "precio_base": 25000,
+      "opciones": [
+        {
+          "id": "variantes",
+          "nombre": "Variantes extra de diseño",
+          "tipo": "cantidad",
+          "precio_unitario": 8000,
+          "max": 3
+        },
+        {
+          "id": "dorso",
+          "nombre": "Dorso con horarios, medios de pago y cómo llegar",
+          "tipo": "si_no",
+          "precio": 7000
+        }
+      ],
+      "campos": [
+        {
+          "id": "motivo",
+          "etiqueta": "¿Qué querés anunciar?",
+          "tipo": "elegir",
+          "valores": [
+            "Que abrimos",
+            "Envíos a domicilio",
+            "Nuevo horario",
+            "Algo nuevo que vendemos",
+            "Una oferta",
+            "Otra cosa"
+          ],
+          "requerido": true
+        },
+        {
+          "id": "mensaje",
+          "etiqueta": "Contalo en una línea",
+          "tipo": "texto",
+          "requerido": true,
+          "ayuda": "Ej.: Desde el lunes abrimos los domingos de 9 a 13"
+        },
+        {
+          "id": "versiones",
+          "etiqueta": "¿Cuántas versiones de diseño querés ver?",
+          "tipo": "elegir",
+          "valores": [
+            "Una",
+            "Dos",
+            "Tres"
+          ],
+          "requerido": true,
+          "ajusta": {
+            "opcion": "variantes",
+            "valores": {
+              "Dos": 1,
+              "Tres": 2
+            }
+          }
+        },
+        {
+          "id": "dorso",
+          "etiqueta": "Quiero dorso con horarios y cómo llegar",
+          "tipo": "si_no",
+          "ajusta": {
+            "opcion": "dorso"
+          }
+        },
+        {
+          "id": "extra",
+          "etiqueta": "¿Algo más que quieras contarnos?",
+          "tipo": "texto_largo",
+          "requerido": false
+        }
+      ],
+      "adjuntos": true,
+      "adjuntos_ayuda": "Si tenés logo o una foto del local, subila",
+      "tablas": [],
+      "instrucciones": "Entregá flyer-a5.html (A5 vertical con @page, listo para imprimir o guardar como PDF; si pidió dorso, segunda página con horarios, medios de pago y dirección), post-cuadrado.svg (1080x1080) y estado-whatsapp.svg (1080x1920) con el mismo mensaje adaptado, y textos.md con el texto para acompañar la publicación y el mensaje para la lista de difusión. Si contrató variantes, agregá flyer-variante-N.html con propuestas visuales distintas. En el HTML podés usar las fotos adjuntas con {{FOTO:n}} como src de <img>; en los SVG no uses fotos. Si el cliente dio el WhatsApp, incluí un QR con {{QR:https://wa.me/NUMERO}}. No pongas precios que el cliente no haya dado."
+    },
+    {
+      "id": "redes",
+      "categoria": "imagen",
+      "nombre": "Perfil de redes armado",
+      "descripcion": "Instagram y Facebook listos para arrancar: la bio, la foto de perfil y las primeras nueve publicaciones.",
+      "entregables": [
+        "perfil.md (bio, usuario, categoría, datos de contacto)",
+        "foto-de-perfil.svg",
+        "destacadas/*.svg",
+        "primeras-publicaciones/*.svg",
+        "textos-publicaciones.md",
+        "plan-semanal.md",
+        "LEEME.md"
+      ],
+      "precio_base": 45000,
+      "opciones": [
+        {
+          "id": "mas_posts",
+          "nombre": "Bloques de 6 publicaciones extra (incluye 9)",
+          "tipo": "cantidad",
+          "precio_unitario": 15000,
+          "max": 2
+        }
+      ],
+      "campos": [
+        {
+          "id": "arranque",
+          "etiqueta": "¿Ya tenés cuentas?",
+          "tipo": "elegir",
+          "valores": [
+            "No, arranco de cero",
+            "Tengo Instagram",
+            "Tengo Instagram y Facebook"
+          ],
+          "requerido": true
+        },
+        {
+          "id": "tono",
+          "etiqueta": "¿Cómo querés hablarle a la gente?",
+          "tipo": "elegir",
+          "valores": [
+            "Cercano",
+            "Con humor",
+            "Serio"
+          ],
+          "requerido": true
+        },
+        {
+          "id": "cantidad",
+          "etiqueta": "¿Con cuántas publicaciones arrancamos?",
+          "tipo": "elegir",
+          "valores": [
+            "9",
+            "13",
+            "17"
+          ],
+          "requerido": true,
+          "ajusta": {
+            "opcion": "mas_posts",
+            "valores": {
+              "13": 1,
+              "17": 2
+            }
+          }
+        },
+        {
+          "id": "extra",
+          "etiqueta": "¿Algo más que quieras contarnos?",
+          "tipo": "texto_largo",
+          "requerido": false
+        }
+      ],
+      "adjuntos": false,
+      "tablas": [],
+      "instrucciones": "Entregá perfil.md con: 3 opciones de nombre de usuario (verificá que tengan hasta 30 caracteres, solo letras, números, punto y guion bajo, y aclarando que hay que chequear que estén libres), nombre visible, categoría sugerida, bio de Instagram de hasta 150 caracteres (contalos), texto de 'Información' para la página de Facebook, y botón de contacto recomendado. foto-de-perfil.svg (1080x1080, legible en círculo chico: iniciales o nombre corto con los colores del cliente). destacadas/: 5 portadas 1080x1920 con ícono simple y título (por ejemplo Productos, Horarios, Envíos, Cómo pagar, Opiniones). primeras-publicaciones/: las 9 publicaciones (más las extra contratadas) en SVG 1080x1350, pensadas para verse bien juntas en la grilla: presentación, qué vendemos, horarios, cómo pedir, medios de pago, el equipo o la historia, etc. textos-publicaciones.md con el texto y hashtags del barrio y el rubro de cada una. plan-semanal.md: qué publicar cada día de la semana, ideas que se puedan sacar con el celular en el local. LEEME.md: cómo crear las cuentas, pasarlas a cuenta profesional y conectar Instagram con Facebook y WhatsApp."
+    },
+    {
+      "id": "encontrar",
+      "categoria": "vender",
+      "nombre": "Que te encuentren y te pidan",
+      "descripcion": "Tu ficha de Google Maps completa y tu WhatsApp Business ordenado, con catálogo y respuestas rápidas.",
+      "entregables": [
+        "ficha-google-maps.md",
+        "whatsapp-business.md",
+        "catalogo-whatsapp.xlsx",
+        "pedidos.xlsx",
+        "cartel-resenas.html",
+        "LEEME.md"
+      ],
+      "precio_base": 120000,
+      "opciones": [
+        {
+          "id": "productos_extra",
+          "nombre": "Bloques de 40 productos extra en el catálogo (incluye 40)",
+          "tipo": "cantidad",
+          "precio_unitario": 10000,
+          "max": 3
+        }
+      ],
+      "campos": [
+        {
+          "id": "envios",
+          "etiqueta": "¿Hacés envíos?",
+          "tipo": "elegir",
+          "valores": [
+            "No",
+            "Sí, en el barrio",
+            "Sí, a toda la zona"
+          ],
+          "requerido": true
+        },
+        {
+          "id": "catalogo",
+          "etiqueta": "¿Cuántos productos querés en el catálogo de WhatsApp?",
+          "tipo": "elegir",
+          "valores": [
+            "Hasta 40",
+            "Hasta 80",
+            "Hasta 120",
+            "Hasta 160"
+          ],
+          "requerido": true,
+          "ajusta": {
+            "opcion": "productos_extra",
+            "valores": {
+              "Hasta 80": 1,
+              "Hasta 120": 2,
+              "Hasta 160": 3
+            }
+          }
+        },
+        {
+          "id": "direccion",
+          "etiqueta": "Dirección",
+          "tipo": "texto",
+          "requerido": true
+        },
+        {
+          "id": "horarios",
+          "etiqueta": "Horarios",
+          "tipo": "texto",
+          "requerido": true
+        },
+        {
+          "id": "extra",
+          "etiqueta": "¿Algo más que quieras contarnos?",
+          "tipo": "texto_largo",
+          "requerido": false
+        }
+      ],
+      "adjuntos": true,
+      "tablas": [],
+      "instrucciones": "Entregá: ficha-google-maps.md (paso a paso para crear o reclamar la ficha, nombre exacto, categoría principal y secundarias, descripción de hasta 750 caracteres, atributos, servicios, preguntas frecuentes con respuesta, 5 respuestas modelo a reseñas buenas y malas, plan para pedir reseñas); whatsapp-business.md (perfil, mensaje de bienvenida y de ausencia, 10 respuestas rápidas, etiquetas para pedidos: nuevo/preparando/listo/entregado/pagado, cómo armar el catálogo); catalogo-whatsapp.xlsx (producto, descripción corta de hasta 100 caracteres, precio tal cual lo dio el cliente, categoría); pedidos.xlsx ('Pedidos': fecha, cliente, teléfono, detalle, importe, envío, total con fórmula, estado, pagado; 'Resumen' con totales por día y estado con fórmula); cartel-resenas.html (A5 con un recuadro para el QR del link de reseñas y cómo obtener ese link). No inventes reseñas, horarios ni datos que no dio.",
+      "adjuntos_ayuda": "Si querés, subí fotos de los productos"
+    },
+    {
+      "id": "promos",
+      "categoria": "vender",
+      "nombre": "Promos del mes",
+      "descripcion": "Piezas para redes y un volante con la oferta del mes. Si nos pasás el costo, chequeamos que no vendas a pérdida.",
+      "entregables": [
+        "flyer-a5.html",
+        "posts/*.svg",
+        "estados/*.svg",
+        "textos.md",
+        "LEEME.md"
+      ],
+      "precio_base": 55000,
+      "opciones": [
+        {
+          "id": "piezas_extra",
+          "nombre": "Bloques de 4 piezas extra (incluye 6)",
+          "tipo": "cantidad",
+          "precio_unitario": 15000,
+          "max": 2
+        }
+      ],
+      "campos": [
+        {
+          "id": "producto",
+          "etiqueta": "¿Qué producto ponés en oferta?",
+          "tipo": "texto",
+          "requerido": true
+        },
+        {
+          "id": "precio",
+          "etiqueta": "Precio normal",
+          "tipo": "texto",
+          "requerido": true,
+          "ayuda": "Ej.: 12000"
+        },
+        {
+          "id": "promo",
+          "etiqueta": "¿Qué oferta?",
+          "tipo": "elegir",
+          "valores": [
+            "10% menos",
+            "15% menos",
+            "20% menos",
+            "2x1",
+            "3x2"
+          ],
+          "requerido": true
+        },
+        {
+          "id": "piezas",
+          "etiqueta": "¿Cuántas piezas?",
+          "tipo": "elegir",
+          "valores": [
+            "6",
+            "10",
+            "14"
+          ],
+          "requerido": true,
+          "ajusta": {
+            "opcion": "piezas_extra",
+            "valores": {
+              "10": 1,
+              "14": 2
+            }
+          }
+        },
+        {
+          "id": "extra",
+          "etiqueta": "¿Algo más que quieras contarnos?",
+          "tipo": "texto_largo",
+          "requerido": false
+        }
+      ],
+      "adjuntos": true,
+      "tablas": [],
+      "instrucciones": "Usá los precios exactamente como los escribió el cliente; si la promo es un porcentaje, el precio final viene calculado en <calculos> cuando se pudo; no hagas cuentas vos. Si la oferta parece dejar el producto debajo del costo y el cliente dio el costo, avisalo en LEEME.md. Entregá flyer-a5.html (A5 para imprimir), posts/ con piezas cuadradas 1080x1080 en SVG, estados/ con piezas 1080x1920 en SVG (la cantidad total de piezas según lo contratado, repartidas entre posts y estados), y textos.md con el texto y hashtags de cada pieza y el mensaje para la lista de difusión.",
+      "calculo": "precio_promo",
+      "adjuntos_ayuda": "Si tenés foto del producto, subila"
+    },
     {
       "id": "margen",
       "categoria": "plata",
@@ -253,6 +657,70 @@
       "adjuntos": false,
       "tablas": [],
       "instrucciones": "Entregá caja.xlsx con: 'Diario' (fecha, concepto, tipo [venta/gasto/retiro del dueño/aporte], medio, importe, con columnas de saldo por medio calculadas con fórmula); 'Cierre' (efectivo inicial, ventas en efectivo, gastos en efectivo, retiros, efectivo esperado y diferencia con lo contado, todo con fórmula); 'Mes' (totales por tipo y por medio con SUMIFS sobre 'Diario', y ganancia de caja del mes); 'Categorías' (lista de categorías de gasto adaptada a su rubro). Precargá 3 filas de ejemplo claramente marcadas como EJEMPLO para que se entienda. cierre-de-caja.html: hoja A4 imprimible para completar a mano al cerrar. En LEEME.md explicá la regla: el sueldo del dueño se retira como 'retiro', nunca mezclado con gastos."
+    },
+    {
+      "id": "luz_alquiler",
+      "categoria": "plata",
+      "nombre": "Revisión de luz y alquiler",
+      "descripcion": "Leemos tu factura de luz y tu contrato de alquiler. Te decimos qué equipo gasta más y cuánto vas a pagar de alquiler el año que viene.",
+      "entregables": [
+        "luz-y-alquiler.xlsx",
+        "informe.md",
+        "LEEME.md"
+      ],
+      "precio_base": 100000,
+      "opciones": [],
+      "campos": [
+        {
+          "id": "equipos",
+          "etiqueta": "¿Qué equipos tenés en el local?",
+          "tipo": "varios",
+          "valores": [
+            "Heladera exhibidora",
+            "Freezer",
+            "Cámara de frío",
+            "Aire acondicionado",
+            "Horno",
+            "Tubos fluorescentes"
+          ]
+        },
+        {
+          "id": "ajuste",
+          "etiqueta": "¿Cada cuánto te aumentan el alquiler?",
+          "tipo": "elegir",
+          "valores": [
+            "Cada mes",
+            "Cada 3 meses",
+            "Cada 4 meses",
+            "Cada 6 meses",
+            "Una vez por año",
+            "No sé"
+          ],
+          "requerido": true
+        },
+        {
+          "id": "vence",
+          "etiqueta": "¿Cuándo vence el contrato?",
+          "tipo": "elegir",
+          "valores": [
+            "Este año",
+            "El año que viene",
+            "En 2 años o más",
+            "No sé"
+          ],
+          "requerido": true
+        },
+        {
+          "id": "extra",
+          "etiqueta": "¿Algo más que quieras contarnos?",
+          "tipo": "texto_largo",
+          "requerido": false
+        }
+      ],
+      "adjuntos": true,
+      "adjuntos_ayuda": "Subí la última factura de luz y el contrato de alquiler",
+      "tablas": [],
+      "instrucciones": "De la factura de luz tomá SOLO lo que figure impreso (tarifa, potencia, consumo en kWh, cargos, impuestos); si algo no se lee, decilo. Entregá luz-y-alquiler.xlsx con: 'Factura' (los conceptos leídos y su peso % con fórmula); 'Equipos' (equipo, cantidad, potencia estimada en W indicada como estimación, horas por día, kWh por mes con fórmula, % del consumo de la factura con fórmula); 'Alquiler' (proyección a 12 meses del alquiler con el mecanismo de ajuste del contrato, con una columna de índice mensual editable precargada con el supuesto que indiques; todos los montos con fórmula). informe.md: los 3 cambios con más ahorro (por ejemplo burletes, horarios de frío, iluminación LED, revisar potencia contratada con la distribuidora), un resumen claro del contrato (plazo, ajuste, garantías, rescisión) y argumentos para renegociar. Aclarando que no es asesoramiento legal ni técnico eléctrico."
     },
     {
       "id": "stock",
@@ -555,540 +1023,6 @@
       "adjuntos": false,
       "tablas": [],
       "instrucciones": "Entregá: tarjeta-de-sellos.html (A4 con 10 tarjetas de 85x55 mm para recortar, frente con nombre del negocio y casilleros); cartel-mostrador.html (A5 explicando el programa); calendario-de-promos.md (un mes tipo, con promos para los días flojos que contó el cliente; si no los dio, usá las semanas antes del 10 y después del 20, que es cuando más cae la compra de barrio); mensajes-de-difusion.md (cómo armar la lista de difusión de WhatsApp Business y 6 mensajes listos). Los descuentos expresalos en porcentaje o 'llevá 2 pagá 1'; no calcules precios finales."
-    },
-    {
-      "id": "costo_laboral",
-      "categoria": "local",
-      "nombre": "Costo laboral y turnos",
-      "descripcion": "Cuánto te sale de verdad un empleado de Comercio, con cargas y aguinaldo. Y una grilla de turnos para las horas de más movimiento.",
-      "entregables": [
-        "costo-y-turnos.xlsx",
-        "escenarios.md",
-        "manual-del-mostrador.md",
-        "LEEME.md"
-      ],
-      "precio_base": 110000,
-      "opciones": [],
-      "campos": [
-        {
-          "id": "empleados",
-          "etiqueta": "¿Cuántos empleados tenés o querés tener?",
-          "tipo": "elegir",
-          "valores": [
-            "1",
-            "2",
-            "3 o más"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "horario",
-          "etiqueta": "¿Qué horario hacés?",
-          "tipo": "elegir",
-          "valores": [
-            "Corrido",
-            "Cortado, mañana y tarde",
-            "Todo el día y fines de semana"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "duda",
-          "etiqueta": "¿Qué estás pensando?",
-          "tipo": "elegir",
-          "valores": [
-            "Contratar a alguien",
-            "Una media jornada",
-            "Cambiar el horario",
-            "Saber cuánto me sale lo que tengo"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
-        }
-      ],
-      "adjuntos": false,
-      "tablas": [
-        "escala_comercio"
-      ],
-      "instrucciones": "Usá EXCLUSIVAMENTE los valores de la tabla 'escala_comercio' de <tablas_vigentes> (básicos, adicionales y porcentajes de cargas). Entregá costo-y-turnos.xlsx con: 'Parámetros' (copia de la tabla usada con su fecha, editable); 'Costo' (para cada categoría y jornada que aplique: básico, adicionales, contribuciones del empleador, ART, provisión de aguinaldo y vacaciones, costo mensual total y costo por hora, TODO con fórmulas que referencien 'Parámetros', nada escrito a mano); 'Turnos' (grilla semanal por hora con quién está, horas por persona con fórmula y alerta si alguien pasa 48 horas semanales); 'Escenarios' (2 o 3 alternativas según lo que contó el cliente, con costo mensual por fórmula). En escenarios.md explicá cada escenario en criollo. Aclarando en LEEME.md que la registración del empleado la hace el contador y que es una estimación con la escala de la fecha indicada."
-    },
-    {
-      "id": "luz_alquiler",
-      "categoria": "local",
-      "nombre": "Revisión de luz y alquiler",
-      "descripcion": "Leemos tu factura de luz y tu contrato de alquiler. Te decimos qué equipo gasta más y cuánto vas a pagar de alquiler el año que viene.",
-      "entregables": [
-        "luz-y-alquiler.xlsx",
-        "informe.md",
-        "LEEME.md"
-      ],
-      "precio_base": 100000,
-      "opciones": [],
-      "campos": [
-        {
-          "id": "equipos",
-          "etiqueta": "¿Qué equipos tenés en el local?",
-          "tipo": "varios",
-          "valores": [
-            "Heladera exhibidora",
-            "Freezer",
-            "Cámara de frío",
-            "Aire acondicionado",
-            "Horno",
-            "Tubos fluorescentes"
-          ]
-        },
-        {
-          "id": "ajuste",
-          "etiqueta": "¿Cada cuánto te aumentan el alquiler?",
-          "tipo": "elegir",
-          "valores": [
-            "Cada mes",
-            "Cada 3 meses",
-            "Cada 4 meses",
-            "Cada 6 meses",
-            "Una vez por año",
-            "No sé"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "vence",
-          "etiqueta": "¿Cuándo vence el contrato?",
-          "tipo": "elegir",
-          "valores": [
-            "Este año",
-            "El año que viene",
-            "En 2 años o más",
-            "No sé"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
-        }
-      ],
-      "adjuntos": true,
-      "adjuntos_ayuda": "Subí la última factura de luz y el contrato de alquiler",
-      "tablas": [],
-      "instrucciones": "De la factura de luz tomá SOLO lo que figure impreso (tarifa, potencia, consumo en kWh, cargos, impuestos); si algo no se lee, decilo. Entregá luz-y-alquiler.xlsx con: 'Factura' (los conceptos leídos y su peso % con fórmula); 'Equipos' (equipo, cantidad, potencia estimada en W indicada como estimación, horas por día, kWh por mes con fórmula, % del consumo de la factura con fórmula); 'Alquiler' (proyección a 12 meses del alquiler con el mecanismo de ajuste del contrato, con una columna de índice mensual editable precargada con el supuesto que indiques; todos los montos con fórmula). informe.md: los 3 cambios con más ahorro (por ejemplo burletes, horarios de frío, iluminación LED, revisar potencia contratada con la distribuidora), un resumen claro del contrato (plazo, ajuste, garantías, rescisión) y argumentos para renegociar. Aclarando que no es asesoramiento legal ni técnico eléctrico."
-    },
-    {
-      "id": "encontrar",
-      "categoria": "vender",
-      "nombre": "Que te encuentren y te pidan",
-      "descripcion": "Tu ficha de Google Maps completa y tu WhatsApp Business ordenado, con catálogo y respuestas rápidas.",
-      "entregables": [
-        "ficha-google-maps.md",
-        "whatsapp-business.md",
-        "catalogo-whatsapp.xlsx",
-        "pedidos.xlsx",
-        "cartel-resenas.html",
-        "LEEME.md"
-      ],
-      "precio_base": 120000,
-      "opciones": [
-        {
-          "id": "productos_extra",
-          "nombre": "Bloques de 40 productos extra en el catálogo (incluye 40)",
-          "tipo": "cantidad",
-          "precio_unitario": 10000,
-          "max": 3
-        }
-      ],
-      "campos": [
-        {
-          "id": "envios",
-          "etiqueta": "¿Hacés envíos?",
-          "tipo": "elegir",
-          "valores": [
-            "No",
-            "Sí, en el barrio",
-            "Sí, a toda la zona"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "catalogo",
-          "etiqueta": "¿Cuántos productos querés en el catálogo de WhatsApp?",
-          "tipo": "elegir",
-          "valores": [
-            "Hasta 40",
-            "Hasta 80",
-            "Hasta 120",
-            "Hasta 160"
-          ],
-          "requerido": true,
-          "ajusta": {
-            "opcion": "productos_extra",
-            "valores": {
-              "Hasta 80": 1,
-              "Hasta 120": 2,
-              "Hasta 160": 3
-            }
-          }
-        },
-        {
-          "id": "direccion",
-          "etiqueta": "Dirección",
-          "tipo": "texto",
-          "requerido": true
-        },
-        {
-          "id": "horarios",
-          "etiqueta": "Horarios",
-          "tipo": "texto",
-          "requerido": true
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
-        }
-      ],
-      "adjuntos": true,
-      "tablas": [],
-      "instrucciones": "Entregá: ficha-google-maps.md (paso a paso para crear o reclamar la ficha, nombre exacto, categoría principal y secundarias, descripción de hasta 750 caracteres, atributos, servicios, preguntas frecuentes con respuesta, 5 respuestas modelo a reseñas buenas y malas, plan para pedir reseñas); whatsapp-business.md (perfil, mensaje de bienvenida y de ausencia, 10 respuestas rápidas, etiquetas para pedidos: nuevo/preparando/listo/entregado/pagado, cómo armar el catálogo); catalogo-whatsapp.xlsx (producto, descripción corta de hasta 100 caracteres, precio tal cual lo dio el cliente, categoría); pedidos.xlsx ('Pedidos': fecha, cliente, teléfono, detalle, importe, envío, total con fórmula, estado, pagado; 'Resumen' con totales por día y estado con fórmula); cartel-resenas.html (A5 con un recuadro para el QR del link de reseñas y cómo obtener ese link). No inventes reseñas, horarios ni datos que no dio.",
-      "adjuntos_ayuda": "Si querés, subí fotos de los productos"
-    },
-    {
-      "id": "promos",
-      "categoria": "vender",
-      "nombre": "Promos del mes",
-      "descripcion": "Piezas para redes y un volante con la oferta del mes. Si nos pasás el costo, chequeamos que no vendas a pérdida.",
-      "entregables": [
-        "flyer-a5.html",
-        "posts/*.svg",
-        "estados/*.svg",
-        "textos.md",
-        "LEEME.md"
-      ],
-      "precio_base": 55000,
-      "opciones": [
-        {
-          "id": "piezas_extra",
-          "nombre": "Bloques de 4 piezas extra (incluye 6)",
-          "tipo": "cantidad",
-          "precio_unitario": 15000,
-          "max": 2
-        }
-      ],
-      "campos": [
-        {
-          "id": "producto",
-          "etiqueta": "¿Qué producto ponés en oferta?",
-          "tipo": "texto",
-          "requerido": true
-        },
-        {
-          "id": "precio",
-          "etiqueta": "Precio normal",
-          "tipo": "texto",
-          "requerido": true,
-          "ayuda": "Ej.: 12000"
-        },
-        {
-          "id": "promo",
-          "etiqueta": "¿Qué oferta?",
-          "tipo": "elegir",
-          "valores": [
-            "10% menos",
-            "15% menos",
-            "20% menos",
-            "2x1",
-            "3x2"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "piezas",
-          "etiqueta": "¿Cuántas piezas?",
-          "tipo": "elegir",
-          "valores": [
-            "6",
-            "10",
-            "14"
-          ],
-          "requerido": true,
-          "ajusta": {
-            "opcion": "piezas_extra",
-            "valores": {
-              "10": 1,
-              "14": 2
-            }
-          }
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
-        }
-      ],
-      "adjuntos": true,
-      "tablas": [],
-      "instrucciones": "Usá los precios exactamente como los escribió el cliente; si la promo es un porcentaje, el precio final viene calculado en <calculos> cuando se pudo; no hagas cuentas vos. Si la oferta parece dejar el producto debajo del costo y el cliente dio el costo, avisalo en LEEME.md. Entregá flyer-a5.html (A5 para imprimir), posts/ con piezas cuadradas 1080x1080 en SVG, estados/ con piezas 1080x1920 en SVG (la cantidad total de piezas según lo contratado, repartidas entre posts y estados), y textos.md con el texto y hashtags de cada pieza y el mensaje para la lista de difusión.",
-      "calculo": "precio_promo",
-      "adjuntos_ayuda": "Si tenés foto del producto, subila"
-    },
-    {
-      "id": "sitio_web",
-      "categoria": "imagen",
-      "nombre": "Sitio web de una página",
-      "descripcion": "Una página para tu negocio que se vea bien en el celular, con la dirección, los horarios y un botón de WhatsApp.",
-      "entregables": [
-        "sitio/index.html (un solo archivo, con tus fotos adentro)",
-        "como-publicarlo.md",
-        "LEEME.md"
-      ],
-      "precio_base": 140000,
-      "opciones": [
-        {
-          "id": "secciones",
-          "nombre": "Secciones extra (carta o lista de productos, galería, preguntas frecuentes)",
-          "tipo": "cantidad",
-          "precio_unitario": 12000,
-          "max": 3
-        },
-        {
-          "id": "ingles",
-          "nombre": "Versión en inglés",
-          "tipo": "si_no",
-          "precio": 15000
-        }
-      ],
-      "campos": [
-        {
-          "id": "direccion",
-          "etiqueta": "Dirección",
-          "tipo": "texto",
-          "requerido": true
-        },
-        {
-          "id": "horarios",
-          "etiqueta": "Horarios",
-          "tipo": "texto",
-          "requerido": true,
-          "ayuda": "Ej.: lunes a sábado de 8 a 13 y de 16 a 20"
-        },
-        {
-          "id": "secciones",
-          "etiqueta": "¿Qué querés que tenga además de lo básico?",
-          "tipo": "varios",
-          "valores": [
-            "La lista de productos",
-            "Galería de fotos",
-            "Preguntas frecuentes"
-          ],
-          "ajusta": {
-            "opcion": "secciones",
-            "cuenta": true
-          }
-        },
-        {
-          "id": "ingles",
-          "etiqueta": "Quiero la página también en inglés",
-          "tipo": "si_no",
-          "ajusta": {
-            "opcion": "ingles"
-          }
-        },
-        {
-          "id": "estilo",
-          "etiqueta": "¿Qué estilo te gusta?",
-          "tipo": "elegir",
-          "valores": [
-            "Clásico de barrio",
-            "Moderno y simple",
-            "Fileteado porteño",
-            "Que lo elijan ustedes"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
-        }
-      ],
-      "adjuntos": true,
-      "adjuntos_ayuda": "Subí el logo y fotos del local y de los productos",
-      "tablas": [],
-      "instrucciones": "Entregá sitio/index.html: un solo archivo autocontenido, mobile first, liviano, con <title> y meta description pensados para que lo encuentren buscando el rubro y el barrio, datos estructurados schema.org LocalBusiness en JSON-LD solo con los datos que dio el cliente, y secciones: portada con nombre y frase, quiénes somos, qué ofrecemos, fotos, horarios y medios de pago, cómo llegar (link a Google Maps armado con la dirección: https://www.google.com/maps/search/?api=1&query=DIRECCION codificada; no uses iframes ni claves de API) y un botón flotante de WhatsApp (https://wa.me/NUMERO solo con dígitos y código de país 54 si figura el WhatsApp en <negocio>). Usá las fotos adjuntas con el marcador {{FOTO:n}} como valor del src de cada <img> (n empieza en 1, en el orden en que se adjuntaron; la primera suele ser el logo si el cliente lo dice). Agregá las secciones extra contratadas y, si pidió inglés, un selector ES/EN en la misma página. como-publicarlo.md: paso a paso para publicarlo gratis en Netlify Drop (arrastrar la carpeta) y cómo conectar un dominio .com.ar de NIC Argentina si quiere."
-    },
-    {
-      "id": "flyer",
-      "categoria": "imagen",
-      "nombre": "Flyer o volante",
-      "descripcion": "Un volante para imprimir y la misma pieza armada para Instagram y los estados de WhatsApp.",
-      "entregables": [
-        "flyer-a5.html (para imprimir o guardar como PDF)",
-        "post-cuadrado.svg",
-        "estado-whatsapp.svg",
-        "textos.md",
-        "LEEME.md"
-      ],
-      "precio_base": 25000,
-      "opciones": [
-        {
-          "id": "variantes",
-          "nombre": "Variantes extra de diseño",
-          "tipo": "cantidad",
-          "precio_unitario": 8000,
-          "max": 3
-        },
-        {
-          "id": "dorso",
-          "nombre": "Dorso con horarios, medios de pago y cómo llegar",
-          "tipo": "si_no",
-          "precio": 7000
-        }
-      ],
-      "campos": [
-        {
-          "id": "motivo",
-          "etiqueta": "¿Qué querés anunciar?",
-          "tipo": "elegir",
-          "valores": [
-            "Que abrimos",
-            "Envíos a domicilio",
-            "Nuevo horario",
-            "Algo nuevo que vendemos",
-            "Una oferta",
-            "Otra cosa"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "mensaje",
-          "etiqueta": "Contalo en una línea",
-          "tipo": "texto",
-          "requerido": true,
-          "ayuda": "Ej.: Desde el lunes abrimos los domingos de 9 a 13"
-        },
-        {
-          "id": "versiones",
-          "etiqueta": "¿Cuántas versiones de diseño querés ver?",
-          "tipo": "elegir",
-          "valores": [
-            "Una",
-            "Dos",
-            "Tres"
-          ],
-          "requerido": true,
-          "ajusta": {
-            "opcion": "variantes",
-            "valores": {
-              "Dos": 1,
-              "Tres": 2
-            }
-          }
-        },
-        {
-          "id": "dorso",
-          "etiqueta": "Quiero dorso con horarios y cómo llegar",
-          "tipo": "si_no",
-          "ajusta": {
-            "opcion": "dorso"
-          }
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
-        }
-      ],
-      "adjuntos": true,
-      "adjuntos_ayuda": "Si tenés logo o una foto del local, subila",
-      "tablas": [],
-      "instrucciones": "Entregá flyer-a5.html (A5 vertical con @page, listo para imprimir o guardar como PDF; si pidió dorso, segunda página con horarios, medios de pago y dirección), post-cuadrado.svg (1080x1080) y estado-whatsapp.svg (1080x1920) con el mismo mensaje adaptado, y textos.md con el texto para acompañar la publicación y el mensaje para la lista de difusión. Si contrató variantes, agregá flyer-variante-N.html con propuestas visuales distintas. En el HTML podés usar las fotos adjuntas con {{FOTO:n}} como src de <img>; en los SVG no uses fotos. Si el cliente dio el WhatsApp, incluí un QR con {{QR:https://wa.me/NUMERO}}. No pongas precios que el cliente no haya dado."
-    },
-    {
-      "id": "redes",
-      "categoria": "imagen",
-      "nombre": "Perfil de redes armado",
-      "descripcion": "Instagram y Facebook listos para arrancar: la bio, la foto de perfil y las primeras nueve publicaciones.",
-      "entregables": [
-        "perfil.md (bio, usuario, categoría, datos de contacto)",
-        "foto-de-perfil.svg",
-        "destacadas/*.svg",
-        "primeras-publicaciones/*.svg",
-        "textos-publicaciones.md",
-        "plan-semanal.md",
-        "LEEME.md"
-      ],
-      "precio_base": 45000,
-      "opciones": [
-        {
-          "id": "mas_posts",
-          "nombre": "Bloques de 6 publicaciones extra (incluye 9)",
-          "tipo": "cantidad",
-          "precio_unitario": 15000,
-          "max": 2
-        }
-      ],
-      "campos": [
-        {
-          "id": "arranque",
-          "etiqueta": "¿Ya tenés cuentas?",
-          "tipo": "elegir",
-          "valores": [
-            "No, arranco de cero",
-            "Tengo Instagram",
-            "Tengo Instagram y Facebook"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "tono",
-          "etiqueta": "¿Cómo querés hablarle a la gente?",
-          "tipo": "elegir",
-          "valores": [
-            "Cercano",
-            "Con humor",
-            "Serio"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "cantidad",
-          "etiqueta": "¿Con cuántas publicaciones arrancamos?",
-          "tipo": "elegir",
-          "valores": [
-            "9",
-            "13",
-            "17"
-          ],
-          "requerido": true,
-          "ajusta": {
-            "opcion": "mas_posts",
-            "valores": {
-              "13": 1,
-              "17": 2
-            }
-          }
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
-        }
-      ],
-      "adjuntos": false,
-      "tablas": [],
-      "instrucciones": "Entregá perfil.md con: 3 opciones de nombre de usuario (verificá que tengan hasta 30 caracteres, solo letras, números, punto y guion bajo, y aclarando que hay que chequear que estén libres), nombre visible, categoría sugerida, bio de Instagram de hasta 150 caracteres (contalos), texto de 'Información' para la página de Facebook, y botón de contacto recomendado. foto-de-perfil.svg (1080x1080, legible en círculo chico: iniciales o nombre corto con los colores del cliente). destacadas/: 5 portadas 1080x1920 con ícono simple y título (por ejemplo Productos, Horarios, Envíos, Cómo pagar, Opiniones). primeras-publicaciones/: las 9 publicaciones (más las extra contratadas) en SVG 1080x1350, pensadas para verse bien juntas en la grilla: presentación, qué vendemos, horarios, cómo pedir, medios de pago, el equipo o la historia, etc. textos-publicaciones.md con el texto y hashtags del barrio y el rubro de cada una. plan-semanal.md: qué publicar cada día de la semana, ideas que se puedan sacar con el celular en el local. LEEME.md: cómo crear las cuentas, pasarlas a cuenta profesional y conectar Instagram con Facebook y WhatsApp."
     }
   ]
 }
