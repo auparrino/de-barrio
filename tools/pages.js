@@ -45,5 +45,16 @@ for (const archivo of readdirSync(DIST).filter((f) => /\.(html|css)$/.test(f))) 
   if (archivo.endsWith(".html")) texto = texto.replace('<html lang="es-AR">', '<html lang="es-AR" data-estatico>');
   writeFileSync(ruta, texto);
 }
+// Versión en cada archivo que se pide, para que el navegador no mezcle archivos viejos con nuevos.
+const VERSION = process.env.GITHUB_SHA?.slice(0, 8) || Date.now().toString(36);
+for (const archivo of readdirSync(DIST).filter((f) => /\.(html|js|css)$/.test(f))) {
+  const ruta = join(DIST, archivo);
+  const texto = readFileSync(ruta, "utf8")
+    .replace(/(href|src)="([^"]+\.(?:css|js))"/g, `$1="$2?v=${VERSION}"`)
+    .replace(/from "(\.\/[^"]+\.js)"/g, `from "$1?v=${VERSION}"`)
+    .replace(/url\("([^"]+\.woff2)"\)/g, `url("$1?v=${VERSION}")`)
+    .replace(/(href)="([^"]+filete\.svg)(#[^"]*)?"/g, `$1="$2?v=${VERSION}$3"`);
+  writeFileSync(ruta, texto);
+}
 writeFileSync(join(DIST, ".nojekyll"), "");
 console.log(`dist/ lista para ${BASE}`);
