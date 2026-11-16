@@ -81,7 +81,7 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
 
     const faltan = [];
     if (!datos.negocio?.nombre) faltan.push("nombre del negocio");
-    if (!datos.contacto?.email) faltan.push("email");
+    if (!datos.contacto?.telefono && !datos.contacto?.email) faltan.push("WhatsApp");
     for (const c of servicio.campos) if (c.requerido && !textoRespuesta(datos.respuestas?.[c.id])) faltan.push(c.etiqueta);
     const adjuntos = servicio.adjuntos ? (req.files ?? []) : [];
     // Si mandó archivos, los campos del servicio pueden venir en ellos; nombre y email siempre son obligatorios.
@@ -103,7 +103,7 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
       servicio: servicio.id,
       nombreServicio: servicio.nombre,
       negocio: { nombre: datos.negocio.nombre, rubro: datos.negocio.rubro ?? "", barrio: datos.negocio.barrio ?? "" },
-      contacto: { nombre: datos.contacto.nombre ?? "", email: datos.contacto.email, telefono: datos.contacto.telefono ?? "" },
+      contacto: { nombre: datos.contacto.nombre ?? "", email: datos.contacto.email ?? "", telefono: datos.contacto.telefono ?? "" },
       respuestas: datos.respuestas ?? {},
       opciones,
       urgente: Boolean(datos.urgente),

@@ -82,18 +82,6 @@
           }
         },
         {
-          "id": "remarca",
-          "etiqueta": "¿Cada cuánto te cambian los precios los proveedores?",
-          "tipo": "elegir",
-          "valores": [
-            "Todas las semanas",
-            "Cada quince días",
-            "Una vez por mes",
-            "Casi nunca"
-          ],
-          "requerido": true
-        },
-        {
           "id": "gastos",
           "etiqueta": "¿Qué gastos fijos tenés?",
           "tipo": "varios",
@@ -105,13 +93,6 @@
             "Monotributo o impuestos",
             "Internet y teléfono"
           ]
-        },
-        {
-          "id": "montos",
-          "etiqueta": "Si sabés los montos de esos gastos, anotalos",
-          "tipo": "texto",
-          "requerido": false,
-          "ayuda": "Ej.: alquiler 400 mil, luz 80 mil"
         },
         {
           "id": "recetas",
@@ -175,17 +156,6 @@
           "requerido": true
         },
         {
-          "id": "acreditacion",
-          "etiqueta": "¿Cuándo te llega la plata de las tarjetas?",
-          "tipo": "elegir",
-          "valores": [
-            "En el momento",
-            "A los pocos días",
-            "No sé"
-          ],
-          "requerido": true
-        },
-        {
           "id": "monto",
           "etiqueta": "¿Cuánto cobrás por mes, más o menos?",
           "tipo": "elegir",
@@ -206,20 +176,6 @@
             "Un cuarto",
             "La mitad",
             "Casi todo"
-          ],
-          "requerido": true
-        },
-        {
-          "id": "provincia",
-          "etiqueta": "¿Dónde está el negocio?",
-          "tipo": "elegir",
-          "valores": [
-            "CABA",
-            "Provincia de Buenos Aires",
-            "Córdoba",
-            "Santa Fe",
-            "Mendoza",
-            "Otra"
           ],
           "requerido": true
         },
@@ -258,18 +214,6 @@
       ],
       "campos": [
         {
-          "id": "hoy",
-          "etiqueta": "¿Cómo anotás hoy lo que entra y sale?",
-          "tipo": "elegir",
-          "valores": [
-            "En un cuaderno",
-            "En el celular",
-            "En una planilla",
-            "No anoto"
-          ],
-          "requerido": true
-        },
-        {
           "id": "quien",
           "etiqueta": "¿Quién abre y cierra la caja?",
           "tipo": "elegir",
@@ -297,18 +241,6 @@
             "Posnet o lector de tarjetas",
             "Cuenta DNI",
             "MODO"
-          ]
-        },
-        {
-          "id": "pagos",
-          "etiqueta": "¿Qué pagás con la plata de la caja?",
-          "tipo": "varios",
-          "valores": [
-            "Proveedores",
-            "Flete",
-            "Limpieza",
-            "Sueldos",
-            "Gastos de la casa"
           ]
         },
         {
@@ -368,17 +300,6 @@
           }
         },
         {
-          "id": "proveedores",
-          "etiqueta": "¿Cuántos proveedores tenés?",
-          "tipo": "elegir",
-          "valores": [
-            "1 o 2",
-            "3 a 5",
-            "Más de 5"
-          ],
-          "requerido": true
-        },
-        {
           "id": "compra",
           "etiqueta": "¿Cómo comprás?",
           "tipo": "elegir",
@@ -396,13 +317,6 @@
           "ajusta": {
             "opcion": "etiquetas"
           }
-        },
-        {
-          "id": "mas_vendidos",
-          "etiqueta": "Los productos que más vendés",
-          "tipo": "texto",
-          "requerido": false,
-          "ayuda": "Si no subiste fotos"
         },
         {
           "id": "extra",
@@ -484,13 +398,6 @@
           }
         },
         {
-          "id": "whatsapp",
-          "etiqueta": "WhatsApp del negocio",
-          "tipo": "texto",
-          "requerido": false,
-          "ayuda": "Solo si pediste el botón"
-        },
-        {
           "id": "items",
           "etiqueta": "Si no subiste fotos, pegá la lista de precios",
           "tipo": "texto_largo",
@@ -553,17 +460,6 @@
               "Más de 30": 3
             }
           }
-        },
-        {
-          "id": "clientes",
-          "etiqueta": "¿A cuántos clientes les fiás?",
-          "tipo": "elegir",
-          "valores": [
-            "Menos de 10",
-            "10 a 30",
-            "Más de 30"
-          ],
-          "requerido": true
         },
         {
           "id": "plazo",
@@ -650,12 +546,6 @@
           ]
         },
         {
-          "id": "producto",
-          "etiqueta": "Si ya sabés qué regalar, ¿qué es?",
-          "tipo": "texto",
-          "requerido": false
-        },
-        {
           "id": "extra",
           "etiqueta": "¿Algo más que quieras contarnos?",
           "tipo": "texto_largo",
@@ -681,17 +571,6 @@
       "opciones": [],
       "campos": [
         {
-          "id": "equipo",
-          "etiqueta": "¿Quiénes atienden hoy?",
-          "tipo": "elegir",
-          "valores": [
-            "Solo yo",
-            "Yo y la familia",
-            "Tengo empleados"
-          ],
-          "requerido": true
-        },
-        {
           "id": "empleados",
           "etiqueta": "¿Cuántos empleados tenés o querés tener?",
           "tipo": "elegir",
@@ -712,19 +591,6 @@
             "Todo el día y fines de semana"
           ],
           "requerido": true
-        },
-        {
-          "id": "pico",
-          "etiqueta": "¿Cuándo hay más movimiento?",
-          "tipo": "varios",
-          "valores": [
-            "A la mañana",
-            "Al mediodía",
-            "A la tarde",
-            "A la noche",
-            "Los sábados",
-            "Los domingos"
-          ]
         },
         {
           "id": "duda",
@@ -792,19 +658,6 @@
           "requerido": true
         },
         {
-          "id": "indice",
-          "etiqueta": "¿Con qué índice?",
-          "tipo": "elegir",
-          "valores": [
-            "Inflación (IPC)",
-            "ICL",
-            "Casa Propia",
-            "Un monto fijo",
-            "No sé"
-          ],
-          "requerido": true
-        },
-        {
           "id": "vence",
           "etiqueta": "¿Cuándo vence el contrato?",
           "tipo": "elegir",
@@ -853,17 +706,6 @@
       ],
       "campos": [
         {
-          "id": "maps",
-          "etiqueta": "¿Ya aparecés en Google Maps?",
-          "tipo": "elegir",
-          "valores": [
-            "No",
-            "Sí, pero está incompleto",
-            "No sé"
-          ],
-          "requerido": true
-        },
-        {
           "id": "envios",
           "etiqueta": "¿Hacés envíos?",
           "tipo": "elegir",
@@ -893,19 +735,6 @@
               "Hasta 160": 3
             }
           }
-        },
-        {
-          "id": "preguntas",
-          "etiqueta": "¿Qué te preguntan más?",
-          "tipo": "varios",
-          "valores": [
-            "Los horarios",
-            "Los precios",
-            "Si tienen tal cosa",
-            "Si hacen envíos",
-            "Cómo se paga",
-            "Dónde quedan"
-          ]
         },
         {
           "id": "direccion",
@@ -981,17 +810,6 @@
           "requerido": true
         },
         {
-          "id": "cuando",
-          "etiqueta": "¿Hasta cuándo?",
-          "tipo": "elegir",
-          "valores": [
-            "Esta semana",
-            "El fin de semana",
-            "Todo el mes"
-          ],
-          "requerido": true
-        },
-        {
           "id": "piezas",
           "etiqueta": "¿Cuántas piezas?",
           "tipo": "elegir",
@@ -1008,13 +826,6 @@
               "14": 2
             }
           }
-        },
-        {
-          "id": "costo",
-          "etiqueta": "Lo que te cuesta a vos",
-          "tipo": "texto",
-          "requerido": false,
-          "ayuda": "Para chequear que no pierdas plata"
         },
         {
           "id": "extra",
@@ -1070,12 +881,6 @@
           "ayuda": "Ej.: lunes a sábado de 8 a 13 y de 16 a 20"
         },
         {
-          "id": "whatsapp",
-          "etiqueta": "WhatsApp del negocio",
-          "tipo": "texto",
-          "requerido": true
-        },
-        {
           "id": "secciones",
           "etiqueta": "¿Qué querés que tenga además de lo básico?",
           "tipo": "varios",
@@ -1110,13 +915,6 @@
           "requerido": true
         },
         {
-          "id": "detalle_propio",
-          "etiqueta": "Algo que solo tu negocio tiene",
-          "tipo": "texto",
-          "requerido": false,
-          "ayuda": "Desde qué año están, el producto que todos piden…"
-        },
-        {
           "id": "extra",
           "etiqueta": "¿Algo más que quieras contarnos?",
           "tipo": "texto_largo",
@@ -1126,7 +924,7 @@
       "adjuntos": true,
       "adjuntos_ayuda": "Subí el logo y fotos del local y de los productos",
       "tablas": [],
-      "instrucciones": "Entregá sitio/index.html: un solo archivo autocontenido, mobile first, liviano, con <title> y meta description pensados para que lo encuentren buscando el rubro y el barrio, datos estructurados schema.org LocalBusiness en JSON-LD solo con los datos que dio el cliente, y secciones: portada con nombre y frase, quiénes somos, qué ofrecemos, fotos, horarios y medios de pago, cómo llegar (link a Google Maps armado con la dirección: https://www.google.com/maps/search/?api=1&query=DIRECCION codificada; no uses iframes ni claves de API) y un botón flotante de WhatsApp (https://wa.me/NUMERO solo con dígitos y código de país 54 si el cliente dio el número). Usá las fotos adjuntas con el marcador {{FOTO:n}} como valor del src de cada <img> (n empieza en 1, en el orden en que se adjuntaron; la primera suele ser el logo si el cliente lo dice). Agregá las secciones extra contratadas y, si pidió inglés, un selector ES/EN en la misma página. como-publicarlo.md: paso a paso para publicarlo gratis en Netlify Drop (arrastrar la carpeta) y cómo conectar un dominio .com.ar de NIC Argentina si quiere."
+      "instrucciones": "Entregá sitio/index.html: un solo archivo autocontenido, mobile first, liviano, con <title> y meta description pensados para que lo encuentren buscando el rubro y el barrio, datos estructurados schema.org LocalBusiness en JSON-LD solo con los datos que dio el cliente, y secciones: portada con nombre y frase, quiénes somos, qué ofrecemos, fotos, horarios y medios de pago, cómo llegar (link a Google Maps armado con la dirección: https://www.google.com/maps/search/?api=1&query=DIRECCION codificada; no uses iframes ni claves de API) y un botón flotante de WhatsApp (https://wa.me/NUMERO solo con dígitos y código de país 54 si figura el WhatsApp en <negocio>). Usá las fotos adjuntas con el marcador {{FOTO:n}} como valor del src de cada <img> (n empieza en 1, en el orden en que se adjuntaron; la primera suele ser el logo si el cliente lo dice). Agregá las secciones extra contratadas y, si pidió inglés, un selector ES/EN en la misma página. como-publicarlo.md: paso a paso para publicarlo gratis en Netlify Drop (arrastrar la carpeta) y cómo conectar un dominio .com.ar de NIC Argentina si quiere."
     },
     {
       "id": "flyer",
@@ -1179,18 +977,6 @@
           "ayuda": "Ej.: Desde el lunes abrimos los domingos de 9 a 13"
         },
         {
-          "id": "estilo",
-          "etiqueta": "¿Qué estilo te gusta?",
-          "tipo": "elegir",
-          "valores": [
-            "Clásico de barrio",
-            "Moderno y simple",
-            "Fileteado porteño",
-            "Que lo elijan ustedes"
-          ],
-          "requerido": true
-        },
-        {
           "id": "versiones",
           "etiqueta": "¿Cuántas versiones de diseño querés ver?",
           "tipo": "elegir",
@@ -1215,12 +1001,6 @@
           "ajusta": {
             "opcion": "dorso"
           }
-        },
-        {
-          "id": "datos",
-          "etiqueta": "Dirección y WhatsApp para el volante",
-          "tipo": "texto",
-          "requerido": false
         },
         {
           "id": "extra",
@@ -1282,18 +1062,6 @@
           "requerido": true
         },
         {
-          "id": "estilo",
-          "etiqueta": "¿Qué estilo te gusta?",
-          "tipo": "elegir",
-          "valores": [
-            "Clásico de barrio",
-            "Moderno y simple",
-            "Fileteado porteño",
-            "Que lo elijan ustedes"
-          ],
-          "requerido": true
-        },
-        {
           "id": "cantidad",
           "etiqueta": "¿Con cuántas publicaciones arrancamos?",
           "tipo": "elegir",
@@ -1310,12 +1078,6 @@
               "17": 2
             }
           }
-        },
-        {
-          "id": "detalle_propio",
-          "etiqueta": "Algo que solo tu negocio tiene",
-          "tipo": "texto",
-          "requerido": false
         },
         {
           "id": "extra",

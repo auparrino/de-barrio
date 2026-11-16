@@ -54,6 +54,7 @@ ${tablas.length ? `\n<tablas_vigentes>\n${JSON.stringify(tablas)}\n</tablas_vige
 Nombre: ${n.nombre || "(no indicado)"}
 Rubro: ${n.rubro || "(no indicado)"}
 Barrio / localidad: ${n.barrio || "(no indicado)"}
+WhatsApp: ${c.telefono || "(no indicado)"}
 </negocio>
 
 <respuestas_del_cliente>

@@ -59,7 +59,7 @@
             <legend>Rubro</legend>
             <div class="casilleros"><input type="radio" id="r0" name="negocio.rubro" value="Ferretería"><label for="r0">Ferretería</label><input type="radio" id="r1" name="negocio.rubro" value="Almacén"><label for="r1">Almacén</label><input type="radio" id="r2" name="negocio.rubro" value="Verdulería"><label for="r2">Verdulería</label><input type="radio" id="r3" name="negocio.rubro" value="Kiosco"><label for="r3">Kiosco</label><input type="radio" id="r4" name="negocio.rubro" value="Panadería"><label for="r4">Panadería</label><input type="radio" id="r5" name="negocio.rubro" value="Carnicería"><label for="r5">Carnicería</label><input type="radio" id="r6" name="negocio.rubro" value="Peluquería"><label for="r6">Peluquería</label><input type="radio" id="r7" name="negocio.rubro" value="Otro"><label for="r7">Otro</label></div>
           </fieldset>
-          <label>Barrio o localidad <input name="negocio.barrio"></label>
+          <label>Tu WhatsApp <input type="tel" name="contacto.telefono" required autocomplete="tel" inputmode="tel" placeholder="Ej.: 11 5555 5555"></label>
         </fieldset>
 
         <fieldset>
@@ -70,14 +70,7 @@
           <div id="f-campos"></div>
         </fieldset>
 
-        <fieldset>
-          <legend>Dónde te avisamos</legend>
-          <label>Tu nombre <input name="contacto.nombre" autocomplete="name"></label>
-          <label>Email <input type="email" name="contacto.email" required autocomplete="email"></label>
-          <label>WhatsApp <input name="contacto.telefono" autocomplete="tel" inputmode="tel"></label>
-        </fieldset>
-
-<div class="ticket" id="ticket">
+        <div class="ticket" id="ticket">
           <h3 class="ticket-cabeza"><span class="ticket-x" aria-hidden="true">X</span>De Barrio<span>TU PEDIDO</span></h3>
           <p class="ticket-novalido">Documento no válido como factura</p>
           <div class="ticket-rollo" aria-live="polite">
@@ -88,7 +81,8 @@
           <button type="submit" id="pagar">Comprar</button>
         </div>
       </form>
-      <a class="barra-total" id="barra-total" href="#ticket"><span>Total</span> <strong id="barra-total-monto"></strong> <span class="barra-ver">Ver pedido</span></a>
+      <div class="barra-total" id="barra-total"><span>Total</span> <strong id="barra-total-monto"></strong>
+        <button type="submit" form="pedido" class="barra-comprar" id="barra-comprar">Comprar</button></div>
     </section>
 
   </main>

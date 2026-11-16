@@ -134,6 +134,7 @@ ${tablasUsadas.length ? `\n<tablas_vigentes>\n${JSON.stringify(tablasUsadas, nul
 Nombre: ${pedido.negocio.nombre}
 Rubro: ${pedido.negocio.rubro || "(no indicado)"}
 Barrio / localidad: ${pedido.negocio.barrio || "(no indicado)"}
+WhatsApp: ${pedido.contacto?.telefono || "(no indicado)"}
 </negocio>
 
 <respuestas_del_cliente>

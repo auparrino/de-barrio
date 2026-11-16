@@ -36,7 +36,7 @@ export async function crearLinkDePago(pedido, urlBase) {
         currency_id: "ARS",
         unit_price: pedido.cotizacion.total,
       }],
-      payer: { email: pedido.contacto.email, name: pedido.contacto.nombre },
+      payer: { ...(pedido.contacto.email ? { email: pedido.contacto.email } : {}), name: pedido.contacto.nombre },
       external_reference: pedido.id,
       notification_url: `${urlBase}/api/webhooks/mercadopago`,
       back_urls: { success: urlPedido, pending: urlPedido, failure: urlPedido },

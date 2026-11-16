@@ -12,7 +12,10 @@ const ESTATICO = document.documentElement.hasAttribute("data-estatico");
 
 const catalogo = await (await fetch(ESTATICO ? "api/catalogo.json" : "/api/catalogo")).json();
 const porId = Object.fromEntries(catalogo.servicios.map((s) => [s.id, s]));
-if (ESTATICO) $("#pagar").textContent = "Enviar pedido por WhatsApp";
+if (ESTATICO) {
+  $("#pagar").textContent = "Enviar pedido por WhatsApp";
+  $("#barra-comprar").textContent = "Enviar pedido";
+}
 let servicio = null;
 
 // ---------- Lista: cada servicio con su precio base ----------
@@ -78,7 +81,9 @@ function campoHtml(c) {
     const id = `c${++uid}`;
     return `<div class="pregunta pregunta-si"><input type="checkbox" id="${id}" name="${nombre}"><label for="${id}">${escapar(c.etiqueta)}${masPrecio(suma(c, true))}</label></div>`;
   }
-  if (c.tipo === "texto_largo") return `<label>${escapar(c.etiqueta)}${opcional}<textarea name="${nombre}" rows="3"></textarea></label>`;
+  if (c.tipo === "texto_largo") {
+    return `<details class="plegado"><summary>${escapar(c.etiqueta)}</summary><textarea name="${nombre}" rows="3" aria-label="${escapar(c.etiqueta)}"></textarea></details>`;
+  }
   return `<label>${escapar(c.etiqueta)}${opcional}<input name="${nombre}" placeholder="${escapar(c.ayuda ?? "")}" ${c.requerido ? "required" : ""}></label>`;
 }
 
@@ -151,7 +156,7 @@ function validar() {
     if (!el.name || el.type === "file" || el.type === "checkbox") continue;
     const esCampoDelServicio = el.name.startsWith("respuestas.");
     const vacio = el.required && !el.value.trim() && !(conArchivos && esCampoDelServicio);
-    const malEmail = el.type === "email" && el.value && !el.checkValidity();
+    const malEmail = el.type === "tel" && el.value && el.value.replace(/\D/g, "").length < 8;
     const mal = vacio || malEmail;
     el.setAttribute("aria-invalid", String(mal));
     if (mal && !primero) primero = el;

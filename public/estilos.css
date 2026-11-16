@@ -339,3 +339,33 @@ input:not([type=checkbox]), textarea, select { background: #FFFFFF; border-color
   .barra-total strong { font: 400 1.5rem var(--letra); color: #FFE3A8; }
   .barra-ver { margin-left: auto; text-decoration: underline; }
 }
+
+/* ---------- Renglón de boleta: bolita | nombre | precio, todo en la primera línea ---------- */
+.renglon { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; column-gap: 12px; align-items: start; }
+.renglon::before { margin-top: .32em; transform: none; }
+.renglon .nombre { line-height: 1.3; }
+.renglon .monto, .renglon .pronto { grid-column: 3; margin-left: 0; padding-left: 0; justify-self: end; align-self: start; text-align: right; line-height: 1.1; }
+.renglon .monto small { display: block; font-size: .72rem; line-height: 1; margin: 0 0 1px; }
+
+/* Comentarios opcionales, plegados */
+.plegado { margin: 0 0 16px; }
+.plegado summary { cursor: pointer; font: 800 var(--t-chico) var(--lectura); color: var(--azul-imprenta); text-decoration: underline; }
+.plegado textarea { margin-top: 8px; }
+
+/* Barra con el total y el botón de compra, siempre a mano */
+.barra-total {
+  display: flex; align-items: center; gap: 12px; position: sticky; bottom: 0; z-index: 3;
+  margin: 20px 0 0; padding: 10px 14px; background: var(--azul-imprenta); color: #FFFFFF;
+  font: 800 var(--t-chico) var(--lectura);
+}
+.barra-total strong { font: 400 1.5rem var(--letra); color: #FFE3A8; }
+.barra-comprar {
+  margin-left: auto; padding: 10px 18px; border: 2px solid #FFFFFF; background: var(--rojo-numeracion); color: #FFFFFF;
+  font: 400 1.15rem/1 var(--letra); cursor: pointer;
+}
+@media (max-width: 860px) {
+  .renglon { grid-template-columns: 14px minmax(0, 1fr) auto; }
+  .renglon .monto { font-size: 1.15rem; }
+  .barra-total { margin: 20px -16px 0; }
+}
+.ticket-x { display: flex; align-items: center; justify-content: center; line-height: 1; }
