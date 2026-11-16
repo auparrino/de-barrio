@@ -391,3 +391,9 @@ input:not([type=checkbox]), textarea, select { background: #FFFFFF; border-color
   .letrero h1 { text-shadow: 1px 1px 0 var(--ocre-sombra), 2px 2px 0 var(--ocre-sombra), 3px 3px 0 var(--ocre-sombra), 5px 5px 0 rgb(0 0 0 / 0.55); }
   .barra-total #pagar { font-size: 1rem; padding: 10px 12px; }
 }
+
+/* Contacto: WhatsApp o email, alcanza con uno */
+.contacto-titulo { font-weight: 800; margin: 0 0 6px; }
+.contacto.falta .contacto-titulo { color: var(--precio); }
+.fotos.falta { outline: 2px solid var(--precio); outline-offset: 4px; }
+.fotos.falta .fotos-titulo { color: var(--precio); }

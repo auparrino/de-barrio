@@ -20,7 +20,7 @@ export function mensajeCliente({ servicio, datos, cotizacion }) {
     `Negocio: ${unaLinea(datos.negocio?.nombre)}`,
     ...renglones,
     `Total: ${pesos(cotizacion.total)}`,
-    servicio.adjuntos ? "Ahora te mando las fotos por acá." : "",
+    servicio.fotos_obligatorias ? "Ahora te mando las fotos por acá." : servicio.adjuntos ? "Si tengo fotos, te las mando por acá." : "",
   ].filter(Boolean).join("\n");
 }
 

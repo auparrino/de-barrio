@@ -17,9 +17,7 @@ if (ESTATICO) {
   // pedirle el número, y las fotos las manda en el chat.
   $("#pagar").textContent = "Pedir por WhatsApp";
   $(".garantia-nota").textContent = "Se abre WhatsApp con tu pedido escrito. Lo mandás y seguimos por ahí.";
-  const tel = $("#pedido").elements["contacto.telefono"];
-  tel.required = false;
-  tel.closest("label").hidden = true;
+  $(".contacto").hidden = true;
 }
 let servicio = null;
 
@@ -98,8 +96,12 @@ function elegir(id) {
   $("#f-precio").innerHTML = `<small>desde</small> ${pesos(servicio.precio_base)}`;
   $("#f-descripcion").textContent = servicio.descripcion;
   $("#f-campos").innerHTML = servicio.campos.map(campoHtml).join("");
-  $("#f-adjuntos").hidden = ESTATICO || !servicio.adjuntos;
-  $("#f-adjuntos-ayuda").textContent = servicio.adjuntos_ayuda ?? "";
+  // Fotos: en la versión de prueba se mandan por WhatsApp; con servidor se suben acá.
+  $("#f-adjuntos").hidden = !servicio.adjuntos;
+  $("#f-adjuntos").classList.remove("falta");
+  $("#f-adjuntos .fotos-titulo").textContent = servicio.fotos_obligatorias ? "Fotos (sin fotos no arrancamos)" : "Fotos (si tenés)";
+  $("#f-adjuntos-ayuda").textContent = (servicio.adjuntos_ayuda ?? "") + (ESTATICO ? " Las mandás por WhatsApp junto con el pedido." : "");
+  $("#pedido").elements.adjuntos.hidden = ESTATICO;
   $("#pedido").reset();
   $("#error").hidden = true;
   $("#lista").hidden = true;
@@ -149,10 +151,23 @@ function validar() {
     if (!el.name || el.type === "file" || el.type === "checkbox") continue;
     const esCampoDelServicio = el.name.startsWith("respuestas.");
     const vacio = el.required && !el.value.trim() && !(conArchivos && esCampoDelServicio);
-    const malEmail = el.type === "tel" && el.value && el.value.replace(/\D/g, "").length < 8;
+    const malEmail = (el.type === "tel" && el.value && el.value.replace(/\D/g, "").length < 8)
+      || (el.type === "email" && el.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim()));
     const mal = vacio || malEmail;
     el.setAttribute("aria-invalid", String(mal));
     if (mal && !primero) primero = el;
+  }
+  if (servicio.fotos_obligatorias && !ESTATICO) {
+    const sinFotos = !$("#pedido").elements.adjuntos.files.length;
+    $("#f-adjuntos").classList.toggle("falta", sinFotos);
+    if (sinFotos && !primero) primero = $("#pedido").elements.adjuntos;
+  }
+  // WhatsApp o email: alcanza con uno.
+  if (!ESTATICO) {
+    const { "contacto.telefono": tel, "contacto.email": mail } = $("#pedido").elements;
+    const ninguno = !tel.value.trim() && !mail.value.trim();
+    $(".contacto").classList.toggle("falta", ninguno);
+    if (ninguno && !primero) primero = tel;
   }
   return primero;
 }

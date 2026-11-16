@@ -90,24 +90,13 @@
           "ajusta": {
             "opcion": "ingles"
           }
-        },
-        {
-          "id": "estilo",
-          "etiqueta": "¿Qué estilo te gusta?",
-          "tipo": "elegir",
-          "valores": [
-            "Clásico de barrio",
-            "Moderno y simple",
-            "Fileteado porteño",
-            "Que lo elijan ustedes"
-          ],
-          "requerido": true
         }
       ],
       "adjuntos": true,
-      "adjuntos_ayuda": "Subí el logo y fotos del local y de los productos",
+      "adjuntos_ayuda": "Fotos de lo que ya tengas: la marquesina, la vidriera, un folleto viejo, el menú, una bolsa o un ticket con el logo. De ahí salen los colores y las letras. Y fotos del local y de los productos.",
       "tablas": [],
-      "instrucciones": "Entregá sitio/index.html: un solo archivo autocontenido, mobile first, liviano, con <title> y meta description pensados para que lo encuentren buscando el rubro y el barrio, datos estructurados schema.org LocalBusiness en JSON-LD solo con los datos que dio el cliente, y secciones: portada con nombre y frase, quiénes somos, qué ofrecemos, fotos, horarios y medios de pago, cómo llegar (link a Google Maps armado con la dirección: https://www.google.com/maps/search/?api=1&query=DIRECCION codificada; no uses iframes ni claves de API) y un botón flotante de WhatsApp (https://wa.me/NUMERO solo con dígitos y código de país 54 si figura el WhatsApp en <negocio>). Usá las fotos adjuntas con el marcador {{FOTO:n}} como valor del src de cada <img> (n empieza en 1, en el orden en que se adjuntaron; la primera suele ser el logo si el cliente lo dice). Agregá las secciones extra contratadas y, si pidió inglés, un selector ES/EN en la misma página. como-publicarlo.md: paso a paso para publicarlo gratis en Netlify Drop (arrastrar la carpeta) y cómo conectar un dominio .com.ar de NIC Argentina si quiere."
+      "instrucciones": "Entregá sitio/index.html: un solo archivo autocontenido, mobile first, liviano, con <title> y meta description pensados para que lo encuentren buscando el rubro y el barrio, datos estructurados schema.org LocalBusiness en JSON-LD solo con los datos que dio el cliente, y secciones: portada con nombre y frase, quiénes somos, qué ofrecemos, fotos, horarios y medios de pago, cómo llegar (link a Google Maps armado con la dirección: https://www.google.com/maps/search/?api=1&query=DIRECCION codificada; no uses iframes ni claves de API) y un botón flotante de WhatsApp (https://wa.me/NUMERO solo con dígitos y código de país 54 si figura el WhatsApp en <negocio>). Usá las fotos adjuntas con el marcador {{FOTO:n}} como valor del src de cada <img> (n empieza en 1, en el orden en que se adjuntaron; la primera suele ser el logo si el cliente lo dice). Agregá las secciones extra contratadas y, si pidió inglés, un selector ES/EN en la misma página. como-publicarlo.md: paso a paso para publicarlo gratis en Netlify Drop (arrastrar la carpeta) y cómo conectar un dominio .com.ar de NIC Argentina si quiere.\n\nCada pieza es única. Los colores, las letras y la composición salen de las fotos del negocio (marquesina, vidriera, folletos, menú, bolsas): no uses plantillas ni un estilo fijo, y dos negocios nunca reciben la misma pieza con otro nombre. Si las fotos no alcanzan para sacar colores o letras, decilo en los avisos en vez de inventar.",
+      "fotos_obligatorias": true
     },
     {
       "id": "flyer",
@@ -187,9 +176,10 @@
         }
       ],
       "adjuntos": true,
-      "adjuntos_ayuda": "Si tenés logo o una foto del local, subila",
+      "adjuntos_ayuda": "Fotos de lo que ya tengas: la marquesina, la vidriera, un folleto viejo, el menú, una bolsa o un ticket con el logo. De ahí salen los colores y las letras.",
       "tablas": [],
-      "instrucciones": "Entregá flyer-a5.html (A5 vertical con @page, listo para imprimir o guardar como PDF; si pidió dorso, segunda página con horarios, medios de pago y dirección), post-cuadrado.svg (1080x1080) y estado-whatsapp.svg (1080x1920) con el mismo mensaje adaptado, y textos.md con el texto para acompañar la publicación y el mensaje para la lista de difusión. Si contrató variantes, agregá flyer-variante-N.html con propuestas visuales distintas. En el HTML podés usar las fotos adjuntas con {{FOTO:n}} como src de <img>; en los SVG no uses fotos. Si el cliente dio el WhatsApp, incluí un QR con {{QR:https://wa.me/NUMERO}}. No pongas precios que el cliente no haya dado."
+      "instrucciones": "Entregá flyer-a5.html (A5 vertical con @page, listo para imprimir o guardar como PDF; si pidió dorso, segunda página con horarios, medios de pago y dirección), post-cuadrado.svg (1080x1080) y estado-whatsapp.svg (1080x1920) con el mismo mensaje adaptado, y textos.md con el texto para acompañar la publicación y el mensaje para la lista de difusión. Si contrató variantes, agregá flyer-variante-N.html con propuestas visuales distintas. En el HTML podés usar las fotos adjuntas con {{FOTO:n}} como src de <img>; en los SVG no uses fotos. Si el cliente dio el WhatsApp, incluí un QR con {{QR:https://wa.me/NUMERO}}. No pongas precios que el cliente no haya dado.\n\nCada pieza es única. Los colores, las letras y la composición salen de las fotos del negocio (marquesina, vidriera, folletos, menú, bolsas): no uses plantillas ni un estilo fijo, y dos negocios nunca reciben la misma pieza con otro nombre. Si las fotos no alcanzan para sacar colores o letras, decilo en los avisos en vez de inventar.",
+      "fotos_obligatorias": true
     },
     {
       "id": "redes",
@@ -257,9 +247,11 @@
           }
         }
       ],
-      "adjuntos": false,
+      "adjuntos": true,
       "tablas": [],
-      "instrucciones": "Entregá perfil.md con: 3 opciones de nombre de usuario (verificá que tengan hasta 30 caracteres, solo letras, números, punto y guion bajo, y aclarando que hay que chequear que estén libres), nombre visible, categoría sugerida, bio de Instagram de hasta 150 caracteres (contalos), texto de 'Información' para la página de Facebook, y botón de contacto recomendado. foto-de-perfil.svg (1080x1080, legible en círculo chico: iniciales o nombre corto con los colores del cliente). destacadas/: 5 portadas 1080x1920 con ícono simple y título (por ejemplo Productos, Horarios, Envíos, Cómo pagar, Opiniones). primeras-publicaciones/: las 9 publicaciones (más las extra contratadas) en SVG 1080x1350, pensadas para verse bien juntas en la grilla: presentación, qué vendemos, horarios, cómo pedir, medios de pago, el equipo o la historia, etc. textos-publicaciones.md con el texto y hashtags del barrio y el rubro de cada una. plan-semanal.md: qué publicar cada día de la semana, ideas que se puedan sacar con el celular en el local. LEEME.md: cómo crear las cuentas, pasarlas a cuenta profesional y conectar Instagram con Facebook y WhatsApp."
+      "instrucciones": "Entregá perfil.md con: 3 opciones de nombre de usuario (verificá que tengan hasta 30 caracteres, solo letras, números, punto y guion bajo, y aclarando que hay que chequear que estén libres), nombre visible, categoría sugerida, bio de Instagram de hasta 150 caracteres (contalos), texto de 'Información' para la página de Facebook, y botón de contacto recomendado. foto-de-perfil.svg (1080x1080, legible en círculo chico: iniciales o nombre corto con los colores del cliente). destacadas/: 5 portadas 1080x1920 con ícono simple y título (por ejemplo Productos, Horarios, Envíos, Cómo pagar, Opiniones). primeras-publicaciones/: las 9 publicaciones (más las extra contratadas) en SVG 1080x1350, pensadas para verse bien juntas en la grilla: presentación, qué vendemos, horarios, cómo pedir, medios de pago, el equipo o la historia, etc. textos-publicaciones.md con el texto y hashtags del barrio y el rubro de cada una. plan-semanal.md: qué publicar cada día de la semana, ideas que se puedan sacar con el celular en el local. LEEME.md: cómo crear las cuentas, pasarlas a cuenta profesional y conectar Instagram con Facebook y WhatsApp.\n\nCada pieza es única. Los colores, las letras y la composición salen de las fotos del negocio (marquesina, vidriera, folletos, menú, bolsas): no uses plantillas ni un estilo fijo, y dos negocios nunca reciben la misma pieza con otro nombre. Si las fotos no alcanzan para sacar colores o letras, decilo en los avisos en vez de inventar.",
+      "fotos_obligatorias": true,
+      "adjuntos_ayuda": "Fotos de lo que ya tengas: la marquesina, la vidriera, un folleto viejo, el menú, una bolsa o un ticket con el logo. De ahí salen los colores y las letras. Y fotos del local y de lo que vendés."
     },
     {
       "id": "encontrar",
@@ -404,9 +396,10 @@
       ],
       "adjuntos": true,
       "tablas": [],
-      "instrucciones": "Usá los precios exactamente como los escribió el cliente; si la promo es un porcentaje, el precio final viene calculado en <calculos> cuando se pudo; no hagas cuentas vos. Si la oferta parece dejar el producto debajo del costo y el cliente dio el costo, avisalo en LEEME.md. Entregá flyer-a5.html (A5 para imprimir), posts/ con piezas cuadradas 1080x1080 en SVG, estados/ con piezas 1080x1920 en SVG (la cantidad total de piezas según lo contratado, repartidas entre posts y estados), y textos.md con el texto y hashtags de cada pieza y el mensaje para la lista de difusión.",
+      "instrucciones": "Usá los precios exactamente como los escribió el cliente; si la promo es un porcentaje, el precio final viene calculado en <calculos> cuando se pudo; no hagas cuentas vos. Si la oferta parece dejar el producto debajo del costo y el cliente dio el costo, avisalo en LEEME.md. Entregá flyer-a5.html (A5 para imprimir), posts/ con piezas cuadradas 1080x1080 en SVG, estados/ con piezas 1080x1920 en SVG (la cantidad total de piezas según lo contratado, repartidas entre posts y estados), y textos.md con el texto y hashtags de cada pieza y el mensaje para la lista de difusión.\n\nCada pieza es única. Los colores, las letras y la composición salen de las fotos del negocio (marquesina, vidriera, folletos, menú, bolsas): no uses plantillas ni un estilo fijo, y dos negocios nunca reciben la misma pieza con otro nombre. Si las fotos no alcanzan para sacar colores o letras, decilo en los avisos en vez de inventar.",
       "calculo": "precio_promo",
-      "adjuntos_ayuda": "Si tenés foto del producto, subila"
+      "adjuntos_ayuda": "Fotos de lo que ya tengas: la marquesina, la vidriera, un folleto viejo, el menú, una bolsa o un ticket con el logo. De ahí salen los colores y las letras. Y una foto del producto, si tenés.",
+      "fotos_obligatorias": true
     },
     {
       "id": "margen",

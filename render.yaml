@@ -22,3 +22,11 @@ services:
         value: demo
       - key: ADMIN_TOKEN
         generateValue: true
+      - key: SMTP_URL               # smtps://usuario:clave@smtp.proveedor.com:465 de la casilla de De Barrio
+        sync: false
+      - key: CORREO_DESDE           # "De Barrio <pedidos@...>"
+        sync: false
+      - key: CORREO_CASILLA         # donde te llegan los pedidos
+        sync: false
+      - key: REVISAR_ANTES          # 1: Claude arranca cuando confirmás desde el mail; 0: arranca solo al pagar
+        value: "1"

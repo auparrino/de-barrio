@@ -69,6 +69,10 @@ Descarga ◄── /pedido.html (consulta el estado) ◄── Claude genera ◄
    seguridad rechaza el pedido, la API lo reintenta en otro modelo (`fallbacks: "default"`).
 5. `src/almacen.js` guarda pedido y archivos en `data/pedidos/<id>/`. Los archivos se descargan como
    adjunto con la clave privada del pedido.
+6. `src/correo.js` manda los mails: cuando entra un pago, a tu casilla (`CORREO_CASILLA`) con el
+   resumen, el prompt (`prompt.txt`) y las fotos; con `REVISAR_ANTES=1` Claude arranca recién cuando
+   tocás «Mandar a Claude» en ese mail. Cuando está listo, al cliente le llega el link para ver la muestra
+   y aprobar (eso libera la plata), y a vos un mail con un link de WhatsApp con el aviso ya escrito.
 
 ## Correrlo
 
@@ -97,6 +101,9 @@ node --env-file=.env server.js
 | `PUBLIC_URL` | URL pública (Mercado Pago tiene que poder llegar al webhook) |
 | `ADMIN_TOKEN` | `GET /api/admin/pedidos` y `POST /api/admin/pedidos/:id/reintentar` |
 | `GENERADOR=demo` | No llamar a Claude |
+| `SMTP_URL` | Casilla que manda los mails (`smtps://usuario:clave@servidor:465`). Sin esto se muestran en la consola |
+| `CORREO_DESDE` / `CORREO_CASILLA` | Remitente y casilla donde te llegan los pedidos |
+| `REVISAR_ANTES=1` | Claude arranca cuando confirmás desde el mail, no solo al pagar |
 
 ## Pruebas
 

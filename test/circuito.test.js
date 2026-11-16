@@ -9,6 +9,9 @@ process.env.NODE_ENV = "test";
 process.env.GENERADOR = "demo";
 process.env.DATA_DIR = mkdtempSync(join(tmpdir(), "vecino-"));
 delete process.env.MP_ACCESS_TOKEN;
+delete process.env.SMTP_URL;
+process.env.CORREO_CASILLA = "pedidos@debarrio.test";
+process.env.ADMIN_TOKEN = "admin-de-prueba";
 
 // Copia de las tablas con la de comisiones sin verificar, para probar que su servicio se apaga.
 const tablasDir = mkdtempSync(join(tmpdir(), "tablas-"));
@@ -20,8 +23,12 @@ for (const f of readdirSync("data/tablas").filter((f) => f.endsWith(".json"))) {
 process.env.TABLAS_DIR = tablasDir;
 
 const { default: app } = await import("../server.js");
+const { enviados } = await import("../src/correo.js");
 const servidor = app.listen(0);
 const base = `http://localhost:${servidor.address().port}`;
+// Una foto de la marquesina (PNG de 1x1): los servicios gráficos no arrancan sin fotos.
+const FOTO = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+const conFoto = (form) => (form.append("adjuntos", new Blob([FOTO], { type: "image/png" }), "marquesina.png"), form);
 test.after(() => servidor.close());
 
 test("pedido pagado genera archivos descargables", async () => {
@@ -32,6 +39,7 @@ test("pedido pagado genera archivos descargables", async () => {
     respuestas: { producto: "Fideos 500 g", precio: "1200", promo: "2x1", cuando: "Esta semana", piezas: "10" },
   };
   const form = new FormData();
+  conFoto(form);
   form.append("datos", JSON.stringify(datos));
   const r = await fetch(`${base}/api/pedidos`, { method: "POST", body: form });
   const pedido = await r.json();
@@ -62,6 +70,16 @@ test("pedido pagado genera archivos descargables", async () => {
   assert.match(await archivo.text(), /entrega de prueba/);
   assert.match(archivo.headers.get("content-disposition"), /attachment/);
 
+  // Correos: pedido nuevo a la casilla (con el prompt), listo al cliente y a la casilla, aprobado.
+  const asuntos = enviados.map((c) => `${c.to} · ${c.subject}`);
+  assert.ok(asuntos.some((a) => a.startsWith("pedidos@debarrio.test · Pedido nuevo: ")), asuntos.join("\n"));
+  const nuevo = enviados.find((c) => c.subject.startsWith("Pedido nuevo"));
+  assert.match(nuevo.attachments.find((a) => a.filename === "prompt.txt").content, /respuestas_del_cliente/);
+  const alCliente = enviados.find((c) => c.to === "tito@example.com");
+  assert.match(alCliente.text, new RegExp(`pedido.html\\?id=${pedido.id}&clave=${pedido.clave}`));
+  assert.doesNotMatch(alCliente.text, /claude|prompt/i, "el cliente no ve cómo se arma");
+  assert.ok(asuntos.some((a) => a.includes("Aprobado: ")));
+
   const sinClave = await fetch(`${base}/api/pedidos/${pedido.id}?clave=mal`);
   assert.equal(sinClave.status, 404);
 });
@@ -79,6 +97,7 @@ test("un servicio con tablas sin verificar no se puede contratar", async () => {
   assert.equal(cobros.disponible, false);
   assert.equal(cobros.instrucciones, undefined, "las instrucciones internas no se publican");
   const form = new FormData();
+  conFoto(form);
   form.append("datos", JSON.stringify({ servicio: "cobros", negocio: { nombre: "X" }, contacto: { email: "a@b.c" }, respuestas: { medios: ["Efectivo"], posnet: "Getnet", acreditacion: "En el momento", monto: "2 a 5 millones", tarjeta: "La mitad", provincia: "CABA" } }));
   const r = await fetch(`${base}/api/pedidos`, { method: "POST", body: form });
   assert.equal(r.status, 409);
@@ -103,6 +122,7 @@ test("cotizar: lo que tildó el cliente fija los adicionales y el precio lo calc
 
 test("si la muestra no le sirve, se devuelve el pago y no se puede descargar", async () => {
   const form = new FormData();
+  conFoto(form);
   form.append("datos", JSON.stringify({
     servicio: "promos", negocio: { nombre: "Almacén Tito" }, contacto: { telefono: "11 5555 5555" },
     respuestas: { producto: "Yerba 1 kg", precio: "4500", promo: "2x1", piezas: "6" },
@@ -123,4 +143,43 @@ test("si la muestra no le sirve, se devuelve el pago y no se puede descargar", a
   assert.deepEqual(despues.archivos, []);
   const archivo = await fetch(`${base}/api/pedidos/${pedido.id}/archivos/LEEME.md?clave=${pedido.clave}`);
   assert.equal(archivo.status, 410);
+});
+
+test("con REVISAR_ANTES, Claude arranca recién cuando se confirma desde el correo", async () => {
+  process.env.REVISAR_ANTES = "1";
+  try {
+    const form = new FormData();
+    conFoto(form);
+    form.append("datos", JSON.stringify({
+      servicio: "promos", negocio: { nombre: "Ferretería López" }, contacto: { telefono: "11 5555 5555" },
+      respuestas: { producto: "Tornillos", precio: "500", promo: "2x1", piezas: "10" },
+    }));
+    const pedido = await (await fetch(`${base}/api/pedidos`, { method: "POST", body: form })).json();
+    await fetch(pedido.urlPago.replace(/^http:\/\/localhost:\d+/, base), { redirect: "manual" });
+    const correo = enviados.findLast((c) => c.subject.startsWith("Pedido nuevo") && c.subject.includes("López"));
+    const link = correo.text.match(/http\S+\/generar\?firma=\w+/)[0].replace(/^http:\/\/localhost:\d+/, base);
+    const estado = async () => (await (await fetch(`${base}/api/pedidos/${pedido.id}?clave=${pedido.clave}`)).json()).estado;
+    assert.equal(await estado(), "pagado");
+    await fetch(link); // abrir el link (o que lo abra un antivirus) no dispara nada
+    assert.equal(await estado(), "pagado");
+    assert.equal((await fetch(link.replace(/firma=\w+/, "firma=mal"), { method: "POST" })).status, 404);
+    await fetch(link, { method: "POST" });
+    for (let i = 0; i < 20 && (await estado()) !== "listo"; i++) await new Promise((r) => setTimeout(r, 50));
+    assert.equal(await estado(), "listo");
+    const listo = enviados.findLast((c) => c.subject.startsWith("Listo:") && c.subject.includes("López"));
+    assert.match(listo.text, /wa\.me\/5491155555555\?text=/);
+  } finally {
+    delete process.env.REVISAR_ANTES;
+  }
+});
+
+test("un flyer sin fotos no se puede pedir", async () => {
+  const form = new FormData();
+  form.append("datos", JSON.stringify({ servicio: "flyer", negocio: { nombre: "Ferretería López" }, contacto: { telefono: "1155555555" },
+    respuestas: { motivo: "Una oferta", mensaje: "2x1 en tornillos", versiones: "Una" } }));
+  const r = await fetch(`${base}/api/pedidos`, { method: "POST", body: form });
+  assert.equal(r.status, 400);
+  assert.match((await r.json()).error, /fotos/);
+  const conFotos = await fetch(`${base}/api/pedidos`, { method: "POST", body: conFoto(form) });
+  assert.equal(conFotos.status, 200);
 });

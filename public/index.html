@@ -58,7 +58,11 @@
         <fieldset>
           <legend>Tu negocio</legend>
           <label>Nombre del negocio <input name="negocio.nombre" required autocomplete="organization"></label>
-          <label>Tu WhatsApp <input type="tel" name="contacto.telefono" required autocomplete="tel" inputmode="tel" placeholder="Ej.: 11 5555 5555"></label>
+          <div class="contacto">
+            <p class="contacto-titulo">¿Dónde te avisamos cuando esté listo?</p>
+            <label>WhatsApp <input type="tel" name="contacto.telefono" autocomplete="tel" inputmode="tel" placeholder="Ej.: 11 5555 5555"></label>
+            <label>Email <input type="email" name="contacto.email" autocomplete="email" inputmode="email" placeholder="Si preferís que te llegue por mail"></label>
+          </div>
         </fieldset>
 
       </form>
