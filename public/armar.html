@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Armar pedido · De Barrio</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="estilos.css">
+  <style>
+    .armar textarea { width: 100%; font: 15px/1.4 ui-monospace, monospace; padding: 10px; border: 2px solid var(--tinta); }
+    .armar pre { white-space: pre-wrap; background: #fff; border: 2px solid var(--tinta); padding: 12px; font-size: 14px; }
+    .armar .resumen { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main class="ancho pedido armar">
+    <h1>Armar el pedido</h1>
+    <p>Página para vos, no está enlazada en el sitio. Copiá el mensaje que te mandó el cliente y pegalo acá.</p>
+    <label>Mensaje del cliente <textarea id="mensaje" rows="10"></textarea></label>
+    <label>WhatsApp del cliente <input id="telefono" type="tel" placeholder="Ej.: 11 5555 5555"></label>
+    <p class="error" id="error" role="alert" hidden></p>
+    <div id="salida" hidden>
+      <p class="resumen" id="resumen"></p>
+      <p><button type="button" class="boton" id="copiar">Copiar el prompt</button>
+        Pegalo en el proyecto «De Barrio» de Claude, con las fotos que te mandó.</p>
+      <pre id="prompt"></pre>
+    </div>
+  </main>
+  <script type="module">
+    import { leerMensaje, promptClaude } from "./pedido-texto.js";
+    const $ = (s) => document.querySelector(s);
+    const pesos = (n) => "$ " + Math.round(n).toLocaleString("es-AR");
+    const catalogo = await (await fetch(document.documentElement.hasAttribute("data-estatico") ? "api/catalogo.json" : "/api/catalogo")).json();
+    function armar() {
+      const texto = $("#mensaje").value;
+      $("#error").hidden = true;
+      $("#salida").hidden = true;
+      if (!texto.trim()) return;
+      try {
+        const p = leerMensaje(catalogo, texto);
+        $("#resumen").textContent = `${p.servicio.nombre} para ${p.datos.negocio.nombre || "(sin nombre)"}: ${pesos(p.cotizacion.total)}`;
+        $("#prompt").textContent = promptClaude({ ...p, telefono: $("#telefono").value });
+        $("#salida").hidden = false;
+      } catch (e) {
+        $("#error").textContent = e.message;
+        $("#error").hidden = false;
+      }
+    }
+    $("#mensaje").addEventListener("input", armar);
+    $("#telefono").addEventListener("input", armar);
+    $("#copiar").addEventListener("click", async () => {
+      await navigator.clipboard.writeText($("#prompt").textContent);
+      $("#copiar").textContent = "Copiado";
+      setTimeout(() => ($("#copiar").textContent = "Copiar el prompt"), 1500);
+    });
+  </script>
+</body>
+</html>

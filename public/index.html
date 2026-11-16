@@ -45,25 +45,20 @@
       <h2 id="f-titulo"></h2>
       <p class="f-precio" id="f-precio"></p>
       <p id="f-descripcion"></p>
-      <p class="entregables"><b>Te llevás:</b> <span id="f-entregables"></span></p>
 
       <form id="pedido" novalidate>
         <fieldset>
-          <legend>Tu negocio</legend>
-          <label>Nombre del negocio <input name="negocio.nombre" required autocomplete="organization"></label>
-          <fieldset class="pregunta">
-            <legend>Rubro</legend>
-            <div class="casilleros"><input type="radio" id="r0" name="negocio.rubro" value="Ferretería"><label for="r0">Ferretería</label><input type="radio" id="r1" name="negocio.rubro" value="Almacén"><label for="r1">Almacén</label><input type="radio" id="r2" name="negocio.rubro" value="Verdulería"><label for="r2">Verdulería</label><input type="radio" id="r3" name="negocio.rubro" value="Kiosco"><label for="r3">Kiosco</label><input type="radio" id="r4" name="negocio.rubro" value="Panadería"><label for="r4">Panadería</label><input type="radio" id="r5" name="negocio.rubro" value="Carnicería"><label for="r5">Carnicería</label><input type="radio" id="r6" name="negocio.rubro" value="Peluquería"><label for="r6">Peluquería</label><input type="radio" id="r7" name="negocio.rubro" value="Otro"><label for="r7">Otro</label></div>
-          </fieldset>
-          <label>Tu WhatsApp <input type="tel" name="contacto.telefono" required autocomplete="tel" inputmode="tel" placeholder="Ej.: 11 5555 5555"></label>
-        </fieldset>
-
-        <fieldset>
-          <legend>Contanos</legend>
+          <legend>Tu pedido</legend>
           <label id="f-adjuntos" class="fotos" hidden><span class="fotos-titulo">Fotos</span> <span id="f-adjuntos-ayuda"></span>
             <input type="file" name="adjuntos" accept="image/*,application/pdf" multiple>
           </label>
           <div id="f-campos"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Tu negocio</legend>
+          <label>Nombre del negocio <input name="negocio.nombre" required autocomplete="organization"></label>
+          <label>Tu WhatsApp <input type="tel" name="contacto.telefono" required autocomplete="tel" inputmode="tel" placeholder="Ej.: 11 5555 5555"></label>
         </fieldset>
 
       </form>

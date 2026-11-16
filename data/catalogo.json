@@ -102,12 +102,6 @@
             "Que lo elijan ustedes"
           ],
           "requerido": true
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -190,12 +184,6 @@
           "ajusta": {
             "opcion": "dorso"
           }
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -267,12 +255,6 @@
               "17": 2
             }
           }
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": false,
@@ -345,12 +327,6 @@
           "etiqueta": "Horarios",
           "tipo": "texto",
           "requerido": true
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -424,12 +400,6 @@
               "14": 2
             }
           }
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -505,12 +475,6 @@
           "ajusta": {
             "opcion": "recetas"
           }
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -582,12 +546,6 @@
             "Casi todo"
           ],
           "requerido": true
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -646,12 +604,6 @@
             "Cuenta DNI",
             "MODO"
           ]
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": false,
@@ -709,12 +661,6 @@
             "No sé"
           ],
           "requerido": true
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -785,12 +731,6 @@
           "ajusta": {
             "opcion": "etiquetas"
           }
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -870,12 +810,6 @@
           "etiqueta": "Si no subiste fotos, pegá la lista de precios",
           "tipo": "texto_largo",
           "requerido": false
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -950,12 +884,6 @@
             "Sí, fijo"
           ],
           "requerido": true
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": true,
@@ -1012,12 +940,6 @@
             "Los días de lluvia",
             "Los feriados"
           ]
-        },
-        {
-          "id": "extra",
-          "etiqueta": "¿Algo más que quieras contarnos?",
-          "tipo": "texto_largo",
-          "requerido": false
         }
       ],
       "adjuntos": false,

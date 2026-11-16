@@ -4,7 +4,7 @@ const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<":
 const fecha = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
 
 import { cotizar, opcionesDesdeRespuestas } from "./cotizar.js";
-import { mensajeWhatsApp, linkWhatsApp } from "./pedido-texto.js";
+import { mensajeCliente, linkWhatsApp } from "./pedido-texto.js";
 
 // Versión de prueba (GitHub Pages): sin servidor. El catálogo sale de un archivo, el precio se
 // calcula acá con el mismo código que el servidor y el pago muestra un aviso.
@@ -12,7 +12,15 @@ const ESTATICO = document.documentElement.hasAttribute("data-estatico");
 
 const catalogo = await (await fetch(ESTATICO ? "api/catalogo.json" : "/api/catalogo")).json();
 const porId = Object.fromEntries(catalogo.servicios.map((s) => [s.id, s]));
-if (ESTATICO) $("#pagar").textContent = "Enviar pedido";
+if (ESTATICO) {
+  // Sin servidor: el pedido sale por WhatsApp desde el teléfono del cliente, así que no hace falta
+  // pedirle el número, y las fotos las manda en el chat.
+  $("#pagar").textContent = "Pedir por WhatsApp";
+  $(".garantia-nota").textContent = "Se abre WhatsApp con tu pedido escrito. Lo mandás y seguimos por ahí.";
+  const tel = $("#pedido").elements["contacto.telefono"];
+  tel.required = false;
+  tel.closest("label").hidden = true;
+}
 let servicio = null;
 
 // ---------- Lista: cada servicio con su precio base ----------
@@ -89,9 +97,8 @@ function elegir(id) {
   $("#f-titulo").textContent = servicio.nombre;
   $("#f-precio").innerHTML = `<small>desde</small> ${pesos(servicio.precio_base)}`;
   $("#f-descripcion").textContent = servicio.descripcion;
-  $("#f-entregables").textContent = servicio.entregables.join(" · ");
   $("#f-campos").innerHTML = servicio.campos.map(campoHtml).join("");
-  $("#f-adjuntos").hidden = !servicio.adjuntos;
+  $("#f-adjuntos").hidden = ESTATICO || !servicio.adjuntos;
   $("#f-adjuntos-ayuda").textContent = servicio.adjuntos_ayuda ?? "";
   $("#pedido").reset();
   $("#error").hidden = true;
@@ -163,14 +170,7 @@ $("#pedido").addEventListener("submit", async (e) => {
   if (ESTATICO) {
     // Versión de prueba: en vez de pagar y mandar a Claude, el pedido va por WhatsApp al dueño.
     const datos = leerFormulario();
-    const texto = mensajeWhatsApp({
-      servicio,
-      datos,
-      cotizacion: cotizar(catalogo, servicio.id, datos.opciones),
-      tablas: servicio.tablas_vigentes,
-      guias: servicio.guias,
-      adjuntos: $("#pedido").elements.adjuntos.files.length,
-    });
+    const texto = mensajeCliente({ servicio, datos, cotizacion: cotizar(catalogo, servicio.id, datos.opciones) });
     window.open(linkWhatsApp(texto, catalogo.whatsapp), "_blank", "noopener");
     return;
   }
