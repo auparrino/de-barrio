@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>De Barrio · Planillas, carteles y papeles para el comercio del barrio</title>
-  <meta name="description" content="Planillas de precios, stock y fiado, carteles en regla, volantes y redes para ferreterías, almacenes y comercios de barrio. Precio cerrado, de $ 25.000 a $ 200.000.">
+  <title>De Barrio · Planillas y carteles para el comercio de la cuadra</title>
+  <meta name="description" content="Planilla de precios con tus costos, el fiado pasado en limpio, carteles con el precio por kilo. Para ferreterías, almacenes y comercios de barrio. Se paga una vez.">
   <meta property="og:title" content="De Barrio">
-  <meta property="og:description" content="Te ordenamos los números del negocio. Vos seguí atendiendo.">
+  <meta property="og:description" content="Planillas y carteles para el comercio de la cuadra.">
   <meta property="og:image" content="/compartir.png">
   <meta name="theme-color" content="#23160F">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -14,118 +14,110 @@
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <a class="saltar" href="#lista">Ir a la lista de precios</a>
+  <a class="saltar" href="#lista">Ir a lo que hacemos</a>
 
   <header class="letrero">
     <div class="ancho">
       <div class="panel">
         <svg class="panel-dibujo" viewBox="0 0 1180 600" aria-hidden="true" focusable="false"><use href="/filete.svg#letrero"/></svg>
         <div class="panel-texto">
-          <p class="marca">De Barrio</p>
-          <h1>Te ordenamos los números del negocio. <span>Vos seguí atendiendo.</span></h1>
+          <h1>De Barrio</h1>
+          <p class="rubro">Planillas y carteles para el comercio de la cuadra</p>
           <p class="cinta">
             <svg viewBox="-4 0 532 90" aria-hidden="true" focusable="false" preserveAspectRatio="none"><use href="/filete.svg#cinta"/></svg>
-            <span>De $&nbsp;25.000 a $&nbsp;200.000</span>
+            <span>Se paga una vez</span>
           </p>
         </div>
       </div>
-      <p class="bajada">Para la ferretería, el almacén, la verdulería o la peluquería. Nos contás cómo trabajás,
-        pagás una vez y te llevás la planilla, el cartel o el volante listo para usar ese mismo día.</p>
+      <p class="bajada">Para el que remarca a mano cuando llega la lista del proveedor y anota el fiado en un
+        cuaderno. Nos contás cómo trabajás y te lo dejamos armado.</p>
     </div>
   </header>
 
   <main class="ancho mostrador">
-    <div class="columna">
-      <section id="lista" aria-labelledby="t-lista">
-        <h2 id="t-lista">Lista de precios</h2>
-        <svg class="llave" viewBox="0 0 600 60" aria-hidden="true" focusable="false"><use href="/filete.svg#llave"/></svg>
-        <p class="aclaracion">Precios de noviembre de 2026. Tocá un renglón para pedirlo.</p>
-        <div id="catalogo"></div>
-      </section>
+    <section id="lista" aria-labelledby="t-lista">
+      <h2 id="t-lista">Qué hacemos</h2>
+      <svg class="llave" viewBox="0 0 600 60" aria-hidden="true" focusable="false"><use href="/filete.svg#llave"/></svg>
+      <p class="aclaracion">Tocá lo que te sirva. El precio te lo pasamos cuando nos contás qué necesitás.</p>
+      <div id="catalogo"></div>
+    </section>
 
-      <section id="formulario" hidden aria-labelledby="f-titulo">
-        <button type="button" class="volver" id="volver">Volver a la lista</button>
-        <h2 id="f-titulo"></h2>
-        <p id="f-descripcion"></p>
-        <p class="entregables"><b>Te llevás:</b> <span id="f-entregables"></span></p>
+    <section id="formulario" hidden aria-labelledby="f-titulo">
+      <button type="button" class="volver" id="volver">Volver</button>
+      <h2 id="f-titulo"></h2>
+      <p id="f-descripcion"></p>
+      <p class="entregables"><b>Te llevás:</b> <span id="f-entregables"></span></p>
 
-        <form id="pedido" novalidate>
-          <fieldset>
-            <legend>Tu negocio</legend>
-            <label>Nombre del negocio <input name="negocio.nombre" required autocomplete="organization"></label>
-            <label>Rubro <input name="negocio.rubro" placeholder="Ferretería, almacén, verdulería…"></label>
-            <label>Barrio o localidad <input name="negocio.barrio"></label>
-          </fieldset>
+      <form id="pedido" novalidate>
+        <fieldset>
+          <legend>Tu negocio</legend>
+          <label>Nombre del negocio <input name="negocio.nombre" required autocomplete="organization"></label>
+          <label>Rubro <input name="negocio.rubro" placeholder="Ferretería, almacén, corralón…"></label>
+          <label>Barrio o localidad <input name="negocio.barrio"></label>
+        </fieldset>
 
-          <fieldset>
-            <legend>Lo que necesitamos saber</legend>
-            <div id="f-campos"></div>
-            <label id="f-adjuntos" hidden><span id="f-adjuntos-ayuda"></span>
-              <input type="file" name="adjuntos" accept="image/*,application/pdf" multiple>
-            </label>
-          </fieldset>
+        <fieldset>
+          <legend>Contanos</legend>
+          <div id="f-campos"></div>
+          <label id="f-adjuntos" hidden><span id="f-adjuntos-ayuda"></span>
+            <input type="file" name="adjuntos" accept="image/*,application/pdf" multiple>
+          </label>
+        </fieldset>
 
-          <fieldset id="f-opciones-caja">
-            <legend>Adicionales</legend>
-            <div id="f-opciones"></div>
-            <label class="check" hidden><input type="checkbox" name="urgente"> <span id="f-urgente"></span></label>
-          </fieldset>
+        <fieldset id="f-opciones-caja">
+          <legend>Si ya sabés que necesitás más</legend>
+          <div id="f-opciones"></div>
+        </fieldset>
 
-          <fieldset>
-            <legend>Dónde te avisamos</legend>
-            <label>Tu nombre <input name="contacto.nombre" autocomplete="name"></label>
-            <label>Email <input type="email" name="contacto.email" required autocomplete="email"></label>
-            <label>WhatsApp <input name="contacto.telefono" autocomplete="tel" inputmode="tel"></label>
-          </fieldset>
-        </form>
-      </section>
+        <fieldset>
+          <legend>Dónde te avisamos</legend>
+          <label>Tu nombre <input name="contacto.nombre" autocomplete="name"></label>
+          <label>Email <input type="email" name="contacto.email" required autocomplete="email"></label>
+          <label>WhatsApp <input name="contacto.telefono" autocomplete="tel" inputmode="tel"></label>
+        </fieldset>
 
-      <section class="nota" aria-labelledby="t-numeros">
-        <h2 id="t-numeros">Por qué empezamos por los números</h2>
-        <p>En agosto de 2026, 6 de cada 10 comercios relevados por la federación de comercio de Rosario
-          vendieron menos que el mes anterior, y el 44% dijo que lo que más le pesa son las tarifas y el
-          alquiler. Con las ventas planas, la plata está en lo que se gasta.</p>
-        <p>Un ejemplo: si cobrás $&nbsp;2,5 millones por mes con tarjeta de crédito acreditada en el acto,
-          se te van unos $&nbsp;180.000 en comisiones. La misma plata por QR con transferencia cuesta unos
-          $&nbsp;24.000. <small>(Comisiones publicadas en septiembre de 2026.)</small></p>
-      </section>
-
-      <section class="nota" aria-labelledby="t-como">
-        <h2 id="t-como">Cómo es</h2>
-        <p>Elegís un renglón de la lista y nos contás lo que sabés de tu negocio: tus precios, tus gastos, una
-          foto de la libreta o de la factura del proveedor. Pagás con Mercado Pago y en un rato tenés todo listo
-          para bajar e imprimir, desde la página de tu pedido.</p>
-        <p>Las cuentas van como fórmulas dentro de la planilla: cuando cambia un costo, cambia el precio solo.
-          Lo que no pudimos leer o confirmar te lo dejamos anotado para que lo revises antes de usarlo. Para
-          armar los textos y las planillas usamos inteligencia artificial, siempre con tus datos y nada más.</p>
-      </section>
-
-      <section class="nota" aria-labelledby="t-no">
-        <h2 id="t-no">Lo que no hacemos</h2>
-        <p>No somos contadores ni gestores. No hacemos trámites, no presentamos nada en ARCA ni en el
-          municipio y no te prometemos pagar menos impuestos. Si un servicio necesita datos que cambian
-          (comisiones, sueldos de Comercio, normas de precios), lo vendemos solo mientras esos datos están
-          verificados: si no, figura en la lista como «llega pronto».</p>
-      </section>
-    </div>
-
-    <aside class="caja" aria-labelledby="t-ticket">
-      <div class="ticket" id="ticket">
-        <h2 id="t-ticket" class="ticket-cabeza">De Barrio<br><span>Ticket de tu pedido</span></h2>
-        <div class="ticket-rollo" aria-live="polite">
-          <p class="ticket-vacio" id="ticket-vacio">Elegí un renglón de la lista y acá te sale la cuenta.</p>
-          <table id="cot-lineas"></table>
-          <p class="ticket-total" id="ticket-total" hidden>Total <strong id="cot-total"></strong></p>
-        </div>
+        <button type="button" id="cotizar" class="cotizar">Cotizar</button>
         <p class="error" id="error" role="alert" hidden></p>
-        <button type="submit" form="pedido" id="pagar" hidden>Pagar con Mercado Pago</button>
-        <p class="ticket-pie" id="ticket-pie" hidden>Pago único. Cuando se acredita, empezamos a armarlo.</p>
-      </div>
-    </aside>
+
+        <div class="ticket" id="ticket" hidden>
+          <h3 class="ticket-cabeza">De Barrio<br><span>Tu presupuesto</span></h3>
+          <div class="ticket-rollo" aria-live="polite">
+            <p class="ticket-nota" id="ticket-nota" hidden></p>
+            <table id="cot-lineas"></table>
+            <p class="ticket-total">Total <strong id="cot-total"></strong></p>
+            <ul class="ticket-extra" id="ticket-extra" hidden></ul>
+          </div>
+          <button type="submit" id="pagar">Pagar con Mercado Pago</button>
+          <p class="ticket-pie">Pagás una vez. Cuando entra el pago lo empezamos a armar.</p>
+        </div>
+      </form>
+    </section>
+
+    <section class="nota" aria-labelledby="t-comisiones">
+      <h2 id="t-comisiones">Lo que se va en comisiones</h2>
+      <p>Si cobrás $&nbsp;2,5 millones por mes con tarjeta de crédito y te lo acreditan en el día, se van unos
+        $&nbsp;180.000 de comisión. La misma plata por QR con transferencia sale unos $&nbsp;24.000.
+        <small>(Comisiones publicadas por Mercado Pago y Getnet, noviembre de 2026.)</small></p>
+      <p>Esa cuenta, con tus números, la hacemos en «Cobrá más barato».</p>
+    </section>
+
+    <section class="nota" aria-labelledby="t-como">
+      <h2 id="t-como">Cómo funciona</h2>
+      <p>Llenás el formulario. Si tenés la lista del proveedor o la libreta del fiado, sacale una foto y subila.</p>
+      <p>Te pasamos el precio. Pagás con Mercado Pago y en un rato lo bajás para imprimir.</p>
+      <p>Las planillas hacen las cuentas solas: si cambia un costo, cambia el precio de venta. Si algo de la foto
+        no se leía bien, te lo marcamos para que lo revises. Lo armamos con ayuda de inteligencia artificial y
+        con tus datos, nada inventado.</p>
+    </section>
+
+    <section class="nota" aria-labelledby="t-no">
+      <h2 id="t-no">Lo que no hacemos</h2>
+      <p>No somos contadores ni gestores. No presentamos nada en ARCA ni en la municipalidad.</p>
+    </section>
   </main>
 
   <footer class="ancho pie">
-    <p>De Barrio. Planillas, carteles y papeles para el comercio de cercanía.</p>
+    <p>De Barrio</p>
     <p id="pie-tablas"></p>
   </footer>
 

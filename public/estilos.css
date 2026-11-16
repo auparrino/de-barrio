@@ -51,13 +51,12 @@ h1, h2, h3 { font-family: var(--letra); font-weight: 400; line-height: 1.05; mar
 .panel { position: relative; aspect-ratio: 1180 / 600; container-type: inline-size; }
 .panel-dibujo { position: absolute; inset: 0; width: 100%; height: 100%; }
 .panel-texto { position: absolute; left: 30%; right: 9%; top: 15%; bottom: 13%; display: flex; flex-direction: column; }
-.marca { font: 400 2.2cqw/1 var(--letra); color: var(--celeste); margin: 0 0 2.4cqw; }
 /* Letra fileteada: frente, cuerpo en perspectiva hacia abajo a la derecha y sombra proyectada (luz arriba a la izquierda) */
 .letrero h1 {
-  font-size: 4.6cqw; line-height: 1.12; color: var(--ocre-luz); max-width: 15ch;
+  font-size: 9cqw; line-height: 1; color: var(--ocre-luz); margin-top: 1cqw;
   text-shadow: 1px 1px 0 var(--ocre-sombra), 2px 2px 0 var(--ocre-sombra), 3px 3px 0 var(--ocre-sombra), 4px 4px 0 var(--ocre-sombra), 7px 8px 0 rgb(0 0 0 / 0.55);
 }
-.letrero h1 span { display: block; margin-top: 1.2cqw; font-size: 3.1cqw; color: var(--celeste);
+.rubro { margin: 2.2cqw 0 0; font: 400 3cqw/1.15 var(--letra); color: var(--celeste); max-width: 20ch;
   text-shadow: 1px 1px 0 var(--celeste-sombra), 2px 2px 0 var(--celeste-sombra), 3px 3px 0 var(--celeste-sombra), 6px 6px 0 rgb(0 0 0 / 0.55); }
 .cinta { position: relative; margin: auto 0 0; width: 40cqw; height: 7.4cqw; display: grid; place-items: center; }
 .cinta svg { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -65,8 +64,8 @@ h1, h2, h3 { font-family: var(--letra); font-weight: 400; line-height: 1.05; mar
 .bajada { max-width: 56ch; margin: 20px 0 0; color: var(--celeste-luz); }
 
 /* ---------- Mostrador: lista + ticket ---------- */
-.mostrador { display: grid; grid-template-columns: minmax(0, 7fr) minmax(300px, 4fr); gap: 56px; padding-top: 48px; padding-bottom: 64px; align-items: start; }
-.columna > section + section { margin-top: 64px; }
+.mostrador { max-width: 860px; margin-left: max(0px, calc((100% - 1180px) / 2)); padding-top: 48px; padding-bottom: 64px; }
+.mostrador > section + section { margin-top: 64px; }
 h2 { font-size: var(--t-titulo); }
 .aclaracion { color: var(--borrado); margin: 8px 0 24px; font-size: var(--t-chico); }
 
@@ -80,12 +79,8 @@ h2 { font-size: var(--t-titulo); }
   background: none; border: 0; padding: 10px 0 2px; margin: 0;
   font: 800 var(--t-texto)/1.25 var(--lectura); color: var(--tinta); text-align: left; cursor: pointer;
 }
-.renglon .puntos { flex: 1; border-bottom: 3px dotted var(--renglon); transform: translateY(-5px); min-width: 24px; }
-.renglon .monto { font: 400 1.5rem/1 var(--letra); color: var(--precio); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.renglon .monto small { font: 400 var(--t-chico) var(--lectura); color: var(--borrado); margin-right: 4px; }
 .renglon:hover .nombre { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .renglon[disabled] { cursor: default; color: var(--borrado); }
-.renglon[disabled] .monto { color: var(--borrado); font: 400 var(--t-chico) var(--lectura); }
 .detalle { margin: 0 0 10px; font-size: var(--t-chico); color: var(--borrado); max-width: 60ch; }
 
 /* ---------- Formulario: convencional ---------- */
@@ -111,7 +106,6 @@ label.check { display: flex; gap: 10px; align-items: center; font-weight: 400; f
 .nota small { color: var(--borrado); font-size: var(--t-chico); }
 
 /* ---------- El ticket ---------- */
-.caja { position: sticky; top: 24px; }
 .ticket {
   background: var(--papel); border: var(--trazo); border-bottom: 0;
   padding: 20px 20px 36px; font-variant-numeric: tabular-nums;
@@ -160,17 +154,14 @@ label.check { display: flex; gap: 10px; align-items: center; font-weight: 400; f
   .panel { aspect-ratio: auto; container-type: normal; border: 3px solid var(--celeste); padding: 8px; }
   .panel-dibujo { display: none; }
   .panel-texto { position: static; border: 10px solid var(--verde); outline: 2px solid var(--bermellon); outline-offset: -20px; padding: 32px 26px; }
-  .marca { font-size: 1.1rem; margin-bottom: 18px; }
-  .letrero h1 { font-size: 2.1rem; }
-  .letrero h1 span { font-size: 1.5rem; margin-top: 10px; }
+  .letrero h1 { font-size: 3.2rem; }
+  .rubro { font-size: 1.35rem; margin-top: 12px; }
   .cinta { width: 100%; max-width: 340px; height: 56px; margin-top: 24px; }
   .cinta span { font-size: 0.85rem; transform: translateY(-3px); }
-  .mostrador { grid-template-columns: 1fr; gap: 40px; }
   .caja { position: static; }
   .renglon { flex-wrap: wrap; }
   .renglon .puntos { display: none; }
-  .renglon .monto { width: 100%; }
-}
+  }
 .letrero-chico { padding: 18px 0; border-bottom: 3px solid var(--celeste); }
 .letrero-chico .marca { font-size: 1.6rem; margin: 0; }
 .letrero-chico .marca a { color: var(--celeste); text-decoration: none; }
@@ -178,3 +169,23 @@ label.check { display: flex; gap: 10px; align-items: center; font-weight: 400; f
 .letrero-404 { min-height: 100vh; padding-top: 40px; }
 .letrero-404 h1 { font-size: 3rem; color: var(--ocre-luz); max-width: 18ch; margin: 24px 0; text-shadow: 3px 3px 0 var(--ocre-sombra), 6px 6px 0 rgb(0 0 0 / 0.55); }
 .letrero-404 a { color: var(--celeste-luz); }
+
+/* Lista sin precios */
+.gondola li { border-bottom: 3px dotted var(--renglon); padding-bottom: 6px; }
+.pronto { margin-left: auto; font: 400 var(--t-chico) var(--lectura); color: var(--borrado); }
+
+/* Cotizar y presupuesto, debajo del formulario */
+.cotizar, #pagar {
+  display: block; width: 100%; max-width: 420px; margin-top: 28px; padding: 14px;
+  background: var(--tinta); color: var(--ocre-luz); border: 0; border-radius: 0;
+  font: 400 1.3rem/1 var(--letra); cursor: pointer;
+}
+.cotizar:disabled { cursor: wait; opacity: .7; }
+#pedido .ticket { max-width: 420px; margin-top: 24px; background: var(--ocre-luz); }
+#pedido .ticket #pagar { max-width: none; }
+.ticket-nota { font-size: var(--t-chico); margin: 0 0 10px; }
+.ticket-extra { list-style: none; padding: 10px 0 0; margin: 10px 0 0; border-top: 2px dashed var(--tinta); font-size: var(--t-chico); }
+.ticket-extra li + li { margin-top: 6px; }
+.enlace { background: none; border: 0; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; color: var(--tinta); }
+.letrero .marca { font: 400 1.6rem/1 var(--letra); color: var(--celeste); margin: 0; }
+.letrero .marca a { color: var(--celeste); text-decoration: none; }

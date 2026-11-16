@@ -38,7 +38,7 @@
       "id": "margen",
       "categoria": "plata",
       "nombre": "Margen real y lista de precios",
-      "descripcion": "Planilla que calcula cuánto ganás de verdad con cada producto, con tus gastos fijos adentro, y te dice a cuánto vender y cuándo remarcar.",
+      "descripcion": "Una planilla con lo que te cuesta cada producto y a cuánto venderlo. Cuando el proveedor sube, cambiás el costo y te da el precio nuevo.",
       "entregables": [
         "margen-y-precios.xlsx",
         "diagnostico.md",
@@ -92,7 +92,7 @@
       "id": "cobros",
       "categoria": "plata",
       "nombre": "Cobrá más barato",
-      "descripcion": "Comparamos lo que te cuestan tus medios de cobro (QR, débito, crédito, transferencias) con las comisiones vigentes y te decimos cómo configurarlos para pagar menos cada mes.",
+      "descripcion": "Miramos con qué cobrás y cuánto te descuentan. Te decimos qué conviene cambiar y cuánto ahorrás por mes.",
       "entregables": [
         "comparativa-cobros.xlsx",
         "recomendacion.md",
@@ -130,7 +130,7 @@
       "id": "caja",
       "categoria": "plata",
       "nombre": "Caja ordenada",
-      "descripcion": "Planilla diaria de ventas, gastos y retiros que separa tu plata de la del negocio, con cierre de caja y control de lo que entra por cada billetera.",
+      "descripcion": "Una planilla para anotar lo que entra y lo que sale cada día, con tu plata separada de la del negocio. Trae una hoja para el cierre de caja.",
       "entregables": [
         "caja.xlsx",
         "cierre-de-caja.html (para imprimir)",
@@ -172,7 +172,7 @@
       "id": "stock",
       "categoria": "mercaderia",
       "nombre": "Stock mínimo y mapa de compras",
-      "descripcion": "Planilla con tus productos que más rotan, stock mínimo y punto de pedido, y una comparación de precios entre tus proveedores para saber a quién comprarle qué.",
+      "descripcion": "Tus productos con el mínimo que tenés que tener de cada uno. Te avisa qué pedir y a qué proveedor le sale más barato.",
       "entregables": [
         "stock-y-compras.xlsx",
         "calendario-de-compras.md",
@@ -221,7 +221,7 @@
       "id": "precios_regla",
       "categoria": "mercaderia",
       "nombre": "Precios a la vista y en regla",
-      "descripcion": "Carteles y lista de precios con precio final y precio por unidad de medida como pide la normativa, más tu lista o carta con QR para el mostrador.",
+      "descripcion": "Carteles de precios como pide la norma, con el precio por kilo o por litro. También la lista para colgar o para mostrar con un QR.",
       "entregables": [
         "carteles-de-precios.html (para imprimir)",
         "lista-de-precios.html (página para el QR)",
@@ -273,7 +273,7 @@
       "id": "fiado",
       "categoria": "clientes",
       "nombre": "Fiado bajo control",
-      "descripcion": "Pasamos tu libreta a una planilla con saldo y tope por cliente, te escribimos una política de fiado clara y los mensajes para cobrar por WhatsApp sin quedar mal.",
+      "descripcion": "Pasamos la libreta a una planilla con lo que debe cada cliente. Te escribimos las reglas del fiado y los mensajes para cobrar sin quedar mal.",
       "entregables": [
         "fiado.xlsx",
         "politica-de-fiado.md",
@@ -312,7 +312,7 @@
       "id": "fidelizacion",
       "categoria": "clientes",
       "nombre": "Clientes que vuelven",
-      "descripcion": "Tarjeta de sellos para imprimir, lista de difusión de clientes habituales y un calendario de promos para los días flojos del mes.",
+      "descripcion": "Tarjeta de sellos para imprimir, con un premio cada tantas compras. Y un calendario de promos para los días flojos del mes.",
       "entregables": [
         "tarjeta-de-sellos.html (para imprimir)",
         "cartel-mostrador.html",
@@ -348,7 +348,7 @@
       "id": "costo_laboral",
       "categoria": "local",
       "nombre": "Costo laboral y turnos",
-      "descripcion": "Cuánto te cuesta de verdad un empleado de comercio con todo incluido, comparado con tus horas de más venta, y una grilla de turnos que cierre.",
+      "descripcion": "Cuánto te sale de verdad un empleado de Comercio, con cargas y aguinaldo. Y una grilla de turnos para las horas de más movimiento.",
       "entregables": [
         "costo-y-turnos.xlsx",
         "escenarios.md",
@@ -386,7 +386,7 @@
       "id": "luz_alquiler",
       "categoria": "local",
       "nombre": "Revisión de luz y alquiler",
-      "descripcion": "Leemos tu factura de luz y tu contrato de alquiler: dónde se va la plata, qué equipos consumen más, cuánto vas a pagar de alquiler los próximos 12 meses y con qué argumentos negociar.",
+      "descripcion": "Leemos tu factura de luz y tu contrato de alquiler. Te decimos qué equipo gasta más y cuánto vas a pagar de alquiler el año que viene.",
       "entregables": [
         "luz-y-alquiler.xlsx",
         "informe.md",
@@ -422,7 +422,7 @@
       "id": "encontrar",
       "categoria": "vender",
       "nombre": "Que te encuentren y te pidan",
-      "descripcion": "Todo para tu ficha de Google Maps y tu WhatsApp Business: textos, categorías, catálogo, mensajes automáticos, zona y costo de envío, y una planilla para anotar pedidos.",
+      "descripcion": "Tu ficha de Google Maps completa y tu WhatsApp Business ordenado, con catálogo y respuestas rápidas.",
       "entregables": [
         "ficha-google-maps.md",
         "whatsapp-business.md",
@@ -478,7 +478,7 @@
       "id": "promos",
       "categoria": "vender",
       "nombre": "Promos del mes",
-      "descripcion": "Piezas para redes y estados de WhatsApp y un flyer para imprimir, todas sobre una oferta real que te conviene.",
+      "descripcion": "Piezas para redes y un volante con la oferta del mes. Si nos pasás el costo, chequeamos que no vendas a pérdida.",
       "entregables": [
         "flyer-a5.html",
         "posts/*.svg",
@@ -523,7 +523,7 @@
       "id": "sitio_web",
       "categoria": "imagen",
       "nombre": "Sitio web de una página",
-      "descripcion": "Tu página web propia, rápida y pensada para celular: quiénes son, qué venden, fotos, mapa, horarios y botón de WhatsApp. Lista para publicar gratis.",
+      "descripcion": "Una página para tu negocio que se vea bien en el celular, con la dirección, los horarios y un botón de WhatsApp.",
       "entregables": [
         "sitio/index.html (un solo archivo, con tus fotos adentro)",
         "como-publicarlo.md",
@@ -583,7 +583,7 @@
       "id": "flyer",
       "categoria": "imagen",
       "nombre": "Flyer o volante",
-      "descripcion": "Un volante para imprimir y su versión para redes y estados de WhatsApp: para anunciar el local, un servicio nuevo, horarios, envíos o lo que necesites.",
+      "descripcion": "Un volante para imprimir y la misma pieza armada para Instagram y los estados de WhatsApp.",
       "entregables": [
         "flyer-a5.html (para imprimir o guardar como PDF)",
         "post-cuadrado.svg",
@@ -639,7 +639,7 @@
       "id": "redes",
       "categoria": "imagen",
       "nombre": "Perfil de redes armado",
-      "descripcion": "Tu Instagram y Facebook listos para arrancar: nombre de usuario, bio, foto de perfil, portadas de destacadas, las primeras 9 publicaciones y una guía de qué publicar cada semana.",
+      "descripcion": "Instagram y Facebook listos para arrancar: la bio, la foto de perfil y las primeras nueve publicaciones.",
       "entregables": [
         "perfil.md (bio, usuario, categoría, datos de contacto)",
         "foto-de-perfil.svg",

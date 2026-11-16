@@ -82,3 +82,16 @@ test("las páginas que no existen devuelven la 404 propia", async () => {
   assert.equal(r.status, 404);
   assert.match(await r.text(), /salió a buscar cambio/);
 });
+
+test("cotizar con agente: sin clave de API usa lo que marcó el cliente y calcula el precio en el servidor", async () => {
+  const r = await fetch(`${base}/api/cotizar-agente`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ servicio: "stock", respuestas: { productos: "180 productos" }, opciones: { productos_extra: 9, etiquetas: true } }),
+  });
+  const res = await r.json();
+  assert.equal(r.status, 200);
+  assert.equal(res.opciones.productos_extra, 2, "se limita al máximo del catálogo");
+  assert.equal(res.cotizacion.total, 150000 + 30000 + 15000);
+  assert.equal(res.agente, false);
+});

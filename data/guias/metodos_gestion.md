@@ -5,13 +5,11 @@ fuente: "Métodos estándar de gestión para comercios de barrio (margen, stock,
 
 # Guía: métodos de gestión para planillas de comercios de barrio
 
-Una planilla de gestión hecha por IA falla de formas previsibles: confunde margen con recargo y el precio
-sugerido queda corto; calcula el margen sobre un costo con IVA que el responsable inscripto recupera (o sin
-el IVA que el monotributista no recupera); escribe números a mano dentro de las fórmulas; suma los retiros
-del dueño como gastos; inventa precios de proveedores; reparte la deuda del fiado por antigüedad sin
-aplicar los pagos a lo más viejo; y suma al costo del empleador los aportes que se descuentan del recibo.
-Esta guía fija el método correcto para cada cálculo. Lo que no se pueda calcular con los datos del cliente
-queda vacío y anotado, nunca estimado en silencio.
+Una planilla de gestión hecha por IA falla de formas previsibles: confunde margen con recargo, mezcla
+costos con y sin IVA, escribe números dentro de las fórmulas, suma los retiros del dueño como gastos,
+inventa precios de proveedores y suma al costo del empleador los aportes que salen del recibo. Esta guía
+fija el método de cada cálculo. Lo que no se pueda calcular con los datos del cliente queda vacío y
+anotado, nunca estimado en silencio.
 
 ## Principios
 
@@ -26,12 +24,10 @@ queda vacío y anotado, nunca estimado en silencio.
    LEEME.md.
 4. **Base fiscal explícita.** Cada planilla de precios declara si el comercio es monotributista o
    responsable inscripto, y todo el cálculo usa esa base.
-5. **Precio a costo de reposición.** Con inflación se remarca con lo que cuesta volver a comprar, no con
-   lo que se pagó.
+5. **Precio a costo de reposición**, no a lo que se pagó.
 6. **Lo de la caja no es lo del dueño.** Ventas, gastos, retiros y aportes son tipos distintos.
-7. **Trato digno y datos cuidados.** Ninguna planilla ni mensaje expone a un deudor ante terceros.
-8. **Tablas vigentes, no memoria.** Los valores laborales salen solo de `escala_comercio`; los de
-   comisiones, de `comisiones`; los de exhibición de precios, de `normativa_precios`.
+7. **Trato digno y datos cuidados.** Nada expone a un deudor ante terceros.
+8. **Tablas vigentes, no memoria:** `escala_comercio`, `comisiones`, `normativa_precios`.
 
 ## 1. Margen, precio sugerido y remarcación (servicio margen)
 
@@ -72,10 +68,9 @@ v = 1 %, redondeo 50.
 **Remarcación.** Columna costo de reposición (último precio del proveedor) junto al costo anterior.
 Regla: `=IF(C2="","",IF(ABS(Creposicion/Canterior-1)>=Parametros!$B$4,"REMARCAR",""))`, con umbral
 editable (por ejemplo 3 %). Al remarcar se recalcula todo el stock existente, no solo lo que entra: si no,
-lo que se vendió no alcanza para reponerlo. En diagnostico.md, la regla en una frase con el umbral elegido.
+lo vendido no alcanza para reponer. En diagnostico.md, la regla en una frase con el umbral.
 
-**Errores comunes.** Calcular `C*(1+m)` creyendo que da margen m; comparar márgenes con y sin IVA
-mezclados; olvidar la comisión del cobro; redondear para abajo; usar el promedio simple de márgenes.
+**Errores comunes.** `C*(1+m)` creyendo que da margen m; olvidar la comisión; redondear para abajo.
 
 ## 2. Margen de contribución y punto de equilibrio (servicio margen)
 
@@ -88,16 +83,15 @@ retiro que necesita: el equilibrio se muestra **sin** y **con** esa línea.
 unidades ni por promedio simple.
 `MC%_pond = SUMPRODUCT(ventas_familia, MC%_familia) / SUM(ventas_familia)` y
 `Venta de equilibrio = CF / MC%_pond`. En Excel: `='Gastos fijos'!B20/SUMPRODUCT(Equilibrio!B2:B6,Equilibrio!C2:C6)*SUM(Equilibrio!B2:B6)`
-(o calcular el ponderado en una celda aparte). Si el cliente no dio ventas por familia, usar la mezcla de
-su lista de productos y anotarlo como supuesto en LEEME.md. Margen de seguridad:
+(o calcular el ponderado en una celda aparte). Sin ventas por familia, usar la mezcla de la lista y anotar el
+supuesto. Margen de seguridad:
 `(venta actual − venta de equilibrio) / venta actual`.
 
 **Ejemplo.** CF $2.000.000 (+ sueldo dueño $1.200.000). Mezcla: almacén 60 % de las ventas con MC 25 %,
 fiambrería 25 % con MC 35 %, bebidas 15 % con MC 20 %. Ponderado `0,15 + 0,0875 + 0,03 = 26,75 %`.
 Equilibrio sin dueño `2.000.000 / 0,2675 = $7.476.636`; con dueño `3.200.000 / 0,2675 = $11.962.617` al mes.
 
-**Errores comunes.** Usar el margen del producto estrella; dejar afuera el sueldo del dueño sin decirlo;
-meter la mercadería comprada en los costos fijos.
+**Errores comunes.** Usar el margen del producto estrella; meter la mercadería en los costos fijos.
 
 ## 3. Costeo por receta / escandallo (opción recetas)
 
@@ -107,15 +101,14 @@ Por ingrediente: `rendimiento = peso neto útil / peso bruto` (1 − merma de li
 `Costo por unidad = SUM(costo de líneas) / unidades vendibles`, donde
 `unidades vendibles = unidades que rinde * (1 − merma de producción)` (rotas, quemadas, degustación).
 Precio con costo de materia prima objetivo `fc`: `P = costo por unidad / fc`, redondeado hacia arriba.
-Gas, luz del horno y envases: envases como línea; energía como porcentaje parámetro marcado [estimado].
+Envases como línea; energía como porcentaje parámetro marcado [estimado].
 
 **Ejemplo (48 empanadas).** Carne: 2 kg netos, rendimiento 90 % → 2,222 kg × $9.000 = $20.000. Cebolla:
 1 kg neto, rendimiento 85 % → 1,176 kg × $1.200 = $1.412. Tapas: 4 docenas × $2.500 = $10.000. Otros:
 $1.500. Total $32.912. Merma de producción 4 % → 46 vendibles → **$715,5 por unidad**. Con fc 35 %:
 `715,5/0,35 = 2.044` → **$2.100**.
 
-**Errores comunes.** Usar peso bruto como neto; dividir por las unidades que rinde y no por las vendibles;
-olvidar envases.
+**Errores comunes.** Peso bruto como neto; dividir por lo que rinde y no por lo vendible.
 
 ## 4. Stock mínimo, punto de pedido y compras (servicio stock)
 
@@ -143,16 +136,14 @@ hasta 95 %, C el resto. Contar A cada semana, B cada mes, C cada trimestre (prá
 
 **Perecederos.** Tope de pedido por vida útil:
 `cantidad <= d * (días de vida útil − días de margen para vender)`; rotación FEFO (sale primero lo que
-vence primero). Marcar la columna "vence" y no usar el método estadístico con productos de menos de una
-semana de vida.
+vence primero). Columna "vence".
 
 **Comparación de proveedores.** Precio comparable por unidad de medida (`precio / contenido`), con la
 misma base de IVA, descuentos y flete incluidos. Más barato: `=MIN(C2:E2)`; quién:
 `=INDEX($C$1:$E$1,MATCH(MIN(C2:E2),C2:E2,0))`; diferencia `=MAX(C2:E2)/MIN(C2:E2)-1`. Solo precios que
 dio el cliente; hoja vacía si no hay.
 
-**Errores comunes.** Dividir la venta semanal por 7 y la demora contarla en días hábiles; inventar la
-desviación; pedir sin redondear al bulto; pedir de un perecedero más de lo que vence.
+**Errores comunes.** Mezclar días corridos y hábiles; inventar la desviación; no redondear al bulto.
 
 ## 5. Caja diaria, arqueo, retiros y billeteras (servicio caja)
 
@@ -165,8 +156,8 @@ traspaso, explicarlo en LEEME.md. Saldo acumulado por medio (columna por medio):
 
 **Retiros vs gastos.** Todo lo que el dueño saca para su casa, incluso un gasto personal pagado con la
 caja, es **retiro**. Gasto es solo lo del negocio. Ganancia de caja del mes = ventas − gastos (sin
-retiros, sin aportes, sin traspasos). Aclarar que es flujo, no resultado contable: si se compró más
-mercadería de la que se vendió, la ganancia de caja sale menor.
+retiros, sin aportes, sin traspasos). Es flujo, no resultado contable: si se compró más mercadería de
+la que se vendió, sale menor.
 
 **Arqueo (hoja Cierre).** Efectivo esperado
 `= fondo inicial + ventas efectivo + aportes efectivo − gastos efectivo − retiros efectivo − traspasos salientes`.
@@ -182,12 +173,11 @@ fondo y se depositan $252.500.
 
 **Billeteras y banco.** Por medio: `neto acreditado = bruto − comisión − IVA sobre comisión − retenciones`
 (comisión según tabla `comisiones` y el plazo elegido). La venta se anota bruta; la comisión, como gasto
-"comisiones". Conciliar semanal: saldo de la planilla contra el saldo de la app o el resumen; las
-diferencias típicas son dinero a liberar, retenciones de impuestos que hace la plataforma, contracargos y
-devoluciones. Una línea "conciliación" con la explicación, nunca un ajuste sin texto.
+"comisiones". Conciliar cada semana planilla contra app o resumen; las diferencias típicas son dinero
+a liberar, retenciones, contracargos y devoluciones: van en una línea "conciliación" con su explicación.
 
-**Errores comunes.** Saldo con fórmulas que se rompen al insertar filas (usar tablas o rangos completos);
-mezclar retiros con gastos; anotar la venta por el neto acreditado; contar el fondo como venta.
+**Errores comunes.** Saldos que se rompen al insertar filas (usar rangos completos); contar el fondo
+como venta.
 
 ## 6. Fiado (servicio fiado)
 
@@ -208,8 +198,8 @@ Resumen = suma de cada tramo.
 16/11: saldo $38.000 (63 % del tope); 0–30: `MIN(38.000; 25.000+15.000) = 38.000`. Estado: 15 días desde
 el pago → OK.
 
-**Topes.** Los fija el comerciante; sugerencia razonable: tope por cliente cerca de lo que compra en una
-quincena, y total en la calle no mayor a lo que vende en X días (parámetro, informar en diagnóstico).
+**Topes.** Los fija el comerciante; sugerencia: cerca de lo que el cliente compra en una quincena, y total
+en la calle no mayor a lo que se vende en X días (parámetro).
 
 **Recargos.** Por defecto, el fiado **sin interés**. Cobrar interés o recargo lo convierte en crédito al
 consumo: la Ley 24.240 art. 36 exige informar por escrito tasa efectiva anual y costo financiero total, bajo
@@ -218,18 +208,15 @@ del pago es una forma de indexación: no proponerlo; si el cliente lo pide, [con
 
 **Cobranza y trato digno (Ley 24.240 art. 8 bis).** Prohibido poner a alguien en situación vergonzante,
 vejatoria o intimidatoria: nada de listas de deudores en el local, mensajes a familiares, vecinos o
-grupos, amenazas, ni nombrar la deuda frente a otros clientes. Mensajes privados, a la persona, en
-horario razonable, con el monto exacto y una salida (pagar en partes). Escalón: recordatorio amable →
-recordatorio con monto y fecha → propuesta de plan → aviso de suspensión del fiado (nunca amenazas
-judiciales que no se van a ejecutar).
+grupos, amenazas, ni nombrar la deuda frente a otros clientes. Mensajes privados, en horario
+razonable, con monto exacto y una salida. Escalón: recordatorio amable → monto y fecha → plan de pagos →
+aviso de suspensión del fiado (sin amenazas).
 
-**Datos (Ley 25.326).** Nombre, teléfono y deuda son datos personales: usarlos solo para la cuenta, con
-consentimiento del cliente (al anotarlo), sin compartirlos ni publicarlos; borrar cuando lo pida y la
-cuenta esté saldada; la planilla en un dispositivo con clave. El cartel de política habla de reglas,
-nunca de personas.
+**Datos (Ley 25.326).** Nombre, teléfono y deuda son datos personales: solo para la cuenta, con
+consentimiento, sin compartirlos ni publicarlos; borrarlos si lo pide y la cuenta está saldada; planilla
+con clave. El cartel habla de reglas, nunca de personas.
 
-**Errores comunes.** Inventar montos ilegibles (va "Revisar = SI"); aging por fecha del primer cargo sin
-aplicar pagos; un estado que tapa otro peor.
+**Errores comunes.** Inventar montos ilegibles (va "Revisar = SI"); aging sin aplicar pagos.
 
 ## 7. Costo laboral y turnos (servicio costo_laboral)
 
@@ -243,9 +230,8 @@ se arman igual; no se completa con números de memoria ni de esta guía.
 - Presentismo `= (B + antigüedad) * presentismo_pct/100`.
 - `R = B + antigüedad + presentismo`. Sumas no remunerativas (NR) con su propia antigüedad y
   presentismo, si la tabla las trae [verificar: las liquidaciones de 2026 las calculan así].
-- Contribuciones del empleador = `R * contribuciones_seguridad_social`; obra social con la base que
-  indique la tabla (en 2026 la base de OSECAC incluye las NR [verificar]); ART = porcentaje + fijo; seguro
-  de vida obligatorio, seguro de vida del convenio, INACAP y aportes fijos como montos por persona (no se
+- Contribuciones = `R * contribuciones_seguridad_social`; obra social con la base de la tabla (en 2026
+  incluye las NR [verificar]); ART = % + fijo; seguros de vida, INACAP y aportes fijos por persona (no se
   prorratean en jornada parcial).
 - Provisión de aguinaldo `= R * aguinaldo_pct/100`, **más sus contribuciones**.
 - Provisión de vacaciones: si la tabla trae `vacaciones_pct`, usarlo; si no, calcular en Parámetros
@@ -270,19 +256,17 @@ por hora sube.
 menos de 12 h entre fin y comienzo de jornada (LCT art. 197); sin un descanso semanal de 35 h corridas
 (LCT art. 204, sábado 13 h a domingo 24 h o franco compensatorio en comercio). Jornada parcial: desde la
 Ley 27.802 es parcial toda jornada menor a la completa y no admite horas extra [verificar el texto vigente
-y el convenio]. Comparar la grilla con las horas pico del cliente: personas por franja contra el
-movimiento declarado.
+y el convenio]. Contrastar personas por franja con las horas pico declaradas.
 
-**Errores comunes.** Escribir el básico en la fórmula; olvidar cargas sobre aguinaldo y vacaciones;
-prorratear fijos en media jornada; sumar aportes del empleado; no avisar que la registración la hace el
-contador.
+**Errores comunes.** Olvidar cargas sobre aguinaldo y vacaciones; prorratear fijos; sumar aportes del
+empleado.
 
 ## Plantilla por cliente (se completa antes de armar la planilla)
 
-**A. Comercio:** rubro; condición fiscal (monotributo/RI, alícuotas de IVA); IIBB y cómo lo paga; días y
-horario de apertura; ventas mensuales y mezcla por familia; medios de cobro y plazo de acreditación.
-**B. Datos recibidos:** productos con costo y precio (cuántos sin costo); gastos fijos; proveedores con
-visita, demora y bulto; libreta de fiado (líneas dudosas); equipo, horas y antigüedad.
+**A. Comercio:** rubro; monotributo o RI y alícuotas; IIBB; días de apertura; ventas y mezcla por familia;
+medios de cobro y plazos.
+**B. Datos recibidos:** productos (cuántos sin costo); gastos fijos; proveedores (visita, demora, bulto);
+líneas dudosas del fiado; equipo, horas y antigüedad.
 **C. Parámetros elegidos:** margen objetivo y redondeo por familia; umbral de remarcación; días de
 seguridad; fondo de cambio y tolerancia; tope y "cerca del tope"; tabla laboral usada y fecha.
 **D. Supuestos y faltantes:** cada uno, con dónde está la celda vacía.
@@ -295,13 +279,10 @@ seguridad; fondo de cambio y tolerancia; tope y "cerca del tope"; tabla laboral 
 | `SI(`, `;`, `LET`, `XLOOKUP` en el xlsx | `IF`, comas, `INDEX/MATCH`, `SUMIFS` |
 | Precio = costo × (1 + margen) | `costo / (1 − margen − variables)` |
 | Margen sobre costo con IVA en un RI, o sin IVA en un monotributista | Base fiscal declarada y aplicada a toda la hoja |
-| `ROUND` del precio | `CEILING` al múltiplo de la familia |
 | Remarcar solo lo que entra | Costo de reposición para todo el stock |
 | Promedio simple de márgenes en el equilibrio | `SUMPRODUCT` ponderado por ventas en pesos |
 | Stock actual tipeado; precios de proveedor inventados | `SUMIFS` desde Movimientos; hoja vacía con encabezado |
-| σ estadístico sin historial | Días de cobertura |
 | Retiros del dueño como gasto; corregir el diario para que cierre | Tipo retiro; línea "diferencia de caja" |
-| Venta anotada por lo acreditado | Venta bruta + comisión como gasto |
 | Intereses o actualización del fiado sin aviso; listas de deudores | Fiado sin interés; mensajes privados y respetuosos |
 | Valores laborales de memoria; aportes del empleado en el costo | Hoja Parámetros desde `escala_comercio`; solo contribuciones del empleador |
 
@@ -309,13 +290,13 @@ seguridad; fondo de cambio y tolerancia; tope y "cerca del tope"; tabla laboral 
 
 - ¿Toda celda calculada tiene fórmula y toda constante está en Parámetros o Familias?
 - ¿Las fórmulas están en inglés con coma, y abren sin `#NAME?` en Excel y Google Sheets?
-- ¿Base fiscal declarada? ¿Precios redondeados hacia arriba? ¿Comisión incluida?
+- ¿Base fiscal declarada? ¿`CEILING`, no `ROUND`? ¿Comisión incluida? ¿Ventas anotadas brutas?
 - ¿Equilibrio con y sin sueldo del dueño, con mezcla ponderada?
 - ¿PEDIR redondea al bulto y respeta vencimientos?
 - ¿Arqueo con fondo, denominaciones y diferencia registrada? ¿Retiros separados?
 - ¿Aging aplicando pagos a lo más viejo? ¿Líneas dudosas en "Revisar"? ¿Mensajes sin exponer a nadie?
 - ¿Costo laboral solo desde Parámetros, con fecha y "[completar con contador]" donde falte?
-- ¿Las filas EJEMPLO están marcadas? ¿Cada faltante y supuesto en LEEME.md?
+- ¿Filas EJEMPLO marcadas? ¿Faltantes y supuestos en LEEME.md?
 
 ## Instrucciones para el modelo
 
@@ -329,23 +310,15 @@ You tend to improvise business formulas and fill gaps with plausible numbers. Do
    SUMPRODUCT, CEILING, MAXIFS, MINIFS, IFERROR). Never write Spanish function names or semicolons into
    the xlsx. Avoid LET, LAMBDA, XLOOKUP and dynamic arrays. Put every constant in a labelled parameter
    cell referenced absolutely; no literals inside formulas except 0, 1 and "".
-3. Apply the exact methods above: price = cost/(1 − margin − variable%), rounded with CEILING; RI on net
-   cost then add VAT, monotributista on gross cost; reprice at replacement cost with a threshold
-   parameter; break-even = fixed costs / sales-weighted contribution margin, shown with and without the
-   owner's salary; recipe cost with yield and production loss; ROP = d·L + SS, order-up-to max rounded to
-   pack size, capped by shelf life; statistical safety stock only with ≥ 8 weeks of history; stock from
-   SUMIFS over movements; signed cash ledger with owner withdrawals and transfers as their own types;
-   arqueo by denomination with the difference recorded as a line; sales recorded gross, fees as expense;
-   credit aging FIFO (payments clear oldest charges); labor cost only from Parámetros, employer
-   contributions on wages, SAC and vacation provisions, fixed per-head charges not prorated, employee
-   withholdings excluded.
+3. Apply the methods of sections 1 to 7 exactly, including their definitions (margin on price, VAT
+   basis, CEILING rounding, sales-weighted break-even with and without the owner's salary, FIFO credit
+   aging, employer-only contributions with provisions). Do not substitute a simpler or different method.
 4. Missing or null values: leave the cell blank, make dependent formulas return "", and list them in
    LEEME.md. Never guess an amount from a photo; mark the row Revisar = SI.
-5. Legal floor: no interest or indexation on fiado by default (Ley 24.240 art. 36 disclosure applies if
-   charged); collection messages private, respectful and never exposing the debtor (art. 8 bis); personal
-   data used only for the account and never published (Ley 25.326); shift grid alerts for > 48 h/week,
-   daily limit, < 12 h between shifts and no 35 h weekly rest. State that the accountant registers the
-   employee and that figures are estimates as of the table date.
+5. Legal floor: no interest or indexation on fiado by default; private, respectful collection messages
+   (Ley 24.240 art. 8 bis); debtor data never published (Ley 25.326); shift alerts for weekly and daily
+   hours, 12 h rest and 35 h weekly rest. State that the accountant registers the employee and that labor
+   figures are estimates as of the table date.
 6. Keep items marked [verificar] visible as notes in LEEME.md; do not present them as settled.
 7. After building, self-audit against the Prohibidos table and the Checklist, and report any hit in
    LEEME.md under "Control de método".

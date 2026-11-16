@@ -4,21 +4,20 @@ const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<":
 const fecha = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
 
 const catalogo = await (await fetch("/api/catalogo")).json();
+const porId = Object.fromEntries(catalogo.servicios.map((s) => [s.id, s]));
 let servicio = null;
 
-// ---------- Lista de precios ----------
+// ---------- Qué hacemos (sin precios: el precio sale al cotizar) ----------
 $("#catalogo").innerHTML = catalogo.categorias.map((cat) => `
   <section class="gondola" aria-labelledby="g-${cat.id}">
     <h3 id="g-${cat.id}">${escapar(cat.nombre)}</h3>
-    <p>${escapar(cat.descripcion)}</p>
     <ul>
       ${catalogo.servicios.filter((s) => s.categoria === cat.id).map((s) => `
         <li>
           <button type="button" class="renglon" data-id="${s.id}" ${s.disponible ? "" : "disabled"}
             aria-describedby="d-${s.id}">
             <span class="nombre">${escapar(s.nombre)}</span>
-            <span class="puntos" aria-hidden="true"></span>
-            <span class="monto">${s.disponible ? `<small>desde</small>${pesos(s.precio_base)}` : "llega pronto"}</span>
+            ${s.disponible ? "" : `<span class="pronto">en preparación</span>`}
           </button>
           <p class="detalle" id="d-${s.id}">${escapar(s.descripcion)}</p>
         </li>`).join("")}
@@ -34,14 +33,12 @@ $("#volver").addEventListener("click", () => {
   servicio = null;
   $("#formulario").hidden = true;
   $("#lista").hidden = false;
-  mostrarTicket(null);
   $("#lista").scrollIntoView();
 });
 
-// Pie: cuándo se verificaron los datos que usan los servicios
 const tablas = catalogo.tablas ?? [];
 if (tablas.length) {
-  $("#pie-tablas").textContent = "Datos verificados: " + tablas
+  $("#pie-tablas").textContent = "Datos revisados: " + tablas
     .map((t) => `${t.nombre} ${t.verificado ? `al ${fecha(t.fecha)}` : "(en revisión)"}`)
     .join("; ") + ".";
 }
@@ -50,22 +47,20 @@ if (tablas.length) {
 function campoHtml(c) {
   const nombre = `respuestas.${c.id}`;
   const req = c.requerido ? "required" : "";
-  const marca = c.requerido ? "" : " <em>(opcional)</em>";
+  const marca = c.requerido ? "" : " <em>(si querés)</em>";
   if (c.tipo === "texto_largo") return `<label>${escapar(c.etiqueta)}${marca}<textarea name="${nombre}" rows="4" ${req}></textarea></label>`;
   if (c.tipo === "opciones") return `<label>${escapar(c.etiqueta)}<select name="${nombre}">${c.valores.map((v) => `<option>${escapar(v)}</option>`).join("")}</select></label>`;
   return `<label>${escapar(c.etiqueta)}${marca}<input name="${nombre}" ${req}></label>`;
 }
 
 function opcionHtml(o) {
-  if (o.tipo === "si_no") {
-    return `<label class="check"><input type="checkbox" name="opciones.${o.id}"> ${escapar(o.nombre)} <em>+${pesos(o.precio)}</em></label>`;
-  }
-  return `<label>${escapar(o.nombre)} <em>${pesos(o.precio_unitario)} cada uno, hasta ${o.max}</em>
+  if (o.tipo === "si_no") return `<label class="check"><input type="checkbox" name="opciones.${o.id}"> ${escapar(o.nombre)}</label>`;
+  return `<label>${escapar(o.nombre)} <em>(hasta ${o.max})</em>
     <input type="number" name="opciones.${o.id}" min="0" max="${o.max}" value="0" inputmode="numeric"></label>`;
 }
 
 function elegir(id) {
-  servicio = catalogo.servicios.find((s) => s.id === id);
+  servicio = porId[id];
   $("#f-titulo").textContent = servicio.nombre;
   $("#f-descripcion").textContent = servicio.descripcion;
   $("#f-entregables").textContent = servicio.entregables.join(" · ");
@@ -74,42 +69,56 @@ function elegir(id) {
   $("#f-opciones-caja").hidden = servicio.opciones.length === 0;
   $("#f-adjuntos").hidden = !servicio.adjuntos;
   $("#f-adjuntos-ayuda").textContent = servicio.adjuntos_ayuda
-    ?? "Fotos o PDF que ayuden: listas de precios, facturas, la libreta (hasta 8). Si los subís, podés dejar en blanco lo que ya esté ahí.";
+    ?? "Fotos o PDF que ayuden: la lista del proveedor, facturas, la libreta (hasta 8).";
   $("#pedido").reset();
   $("#error").hidden = true;
+  $("#ticket").hidden = true;
   $("#lista").hidden = true;
   $("#formulario").hidden = false;
   $("#formulario").scrollIntoView();
   $("#f-titulo").setAttribute("tabindex", "-1");
   $("#f-titulo").focus({ preventScroll: true });
-  recotizar();
 }
 
 function leerFormulario() {
   const datos = { servicio: servicio.id, negocio: {}, contacto: {}, respuestas: {}, opciones: {} };
   for (const el of $("#pedido").elements) {
-    if (!el.name || el.type === "file" || el.name === "urgente") continue;
+    if (!el.name || el.type === "file") continue;
     const [grupo, clave] = el.name.split(".");
     datos[grupo][clave] = el.type === "checkbox" ? el.checked : el.value;
   }
   return datos;
 }
 
-// ---------- Ticket ----------
+function ponerOpciones(opciones) {
+  for (const [id, valor] of Object.entries(opciones)) {
+    const el = $("#pedido").elements[`opciones.${id}`];
+    if (!el) continue;
+    if (el.type === "checkbox") el.checked = Boolean(valor);
+    else el.value = valor;
+  }
+}
+
+// ---------- Presupuesto ----------
 let ultimoTotal = null;
-function mostrarTicket(cot) {
+function mostrarTicket(cot, agente) {
   const ticket = $("#ticket");
-  const hay = Boolean(cot);
-  ticket.classList.toggle("activo", hay);
-  $("#ticket-vacio").hidden = hay;
-  $("#ticket-total").hidden = !hay;
-  $("#pagar").hidden = !hay;
-  $("#ticket-pie").hidden = !hay;
-  $("#cot-lineas").innerHTML = hay
-    ? cot.lineas.map((l) => `<tr><td>${escapar(l.concepto)}</td><td>${pesos(l.importe)}</td></tr>`).join("")
-    : "";
-  if (!hay) { ultimoTotal = null; return; }
+  ticket.hidden = false;
+  $("#cot-lineas").innerHTML = cot.lineas.map((l) => `<tr><td>${escapar(l.concepto)}</td><td>${pesos(l.importe)}</td></tr>`).join("");
   $("#cot-total").textContent = pesos(cot.total);
+
+  if (agente) {
+    $("#ticket-nota").textContent = agente.explicacion;
+    $("#ticket-nota").hidden = !agente.explicacion;
+    const extra = [
+      ...agente.preguntas.map((p) => `<li><b>Una pregunta:</b> ${escapar(p)}</li>`),
+      ...agente.sugerencias.map((s) => porId[s.servicio]
+        ? `<li><b>${escapar(porId[s.servicio].nombre)}:</b> ${escapar(s.motivo)} <button type="button" class="enlace" data-id="${s.servicio}">Ver</button></li>`
+        : ""),
+    ].join("");
+    $("#ticket-extra").innerHTML = extra;
+    $("#ticket-extra").hidden = !extra;
+  }
   // El único movimiento del sitio: el papel avanza cuando cambia el total.
   if (cot.total !== ultimoTotal) {
     ticket.classList.remove("imprime");
@@ -119,28 +128,76 @@ function mostrarTicket(cot) {
   ultimoTotal = cot.total;
 }
 
-async function recotizar() {
-  const { servicio: id, opciones } = leerFormulario();
+$("#ticket-extra").addEventListener("click", (e) => {
+  const id = e.target.dataset?.id;
+  if (id) elegir(id);
+});
+
+async function precio(opciones) {
   const r = await fetch("/api/cotizar", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ servicio: id, opciones }),
+    body: JSON.stringify({ servicio: servicio.id, opciones }),
   });
-  mostrarTicket(await r.json());
+  return r.json();
 }
 
-$("#pedido").addEventListener("change", (e) => {
-  if (e.target.name?.startsWith("opciones.")) recotizar();
+// Cotizar: el agente lee lo que contaste y ajusta los adicionales; el precio lo calcula el servidor.
+$("#cotizar").addEventListener("click", async () => {
+  const error = $("#error");
+  error.hidden = true;
+  const falta = validar(false);
+  if (falta) {
+    error.textContent = "Falta completar algo: te lo marcamos en rojo.";
+    error.hidden = false;
+    falta.focus();
+    return;
+  }
+  const boton = $("#cotizar");
+  boton.disabled = true;
+  boton.textContent = "Cotizando…";
+  try {
+    const datos = leerFormulario();
+    const r = await fetch("/api/cotizar-agente", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        servicio: datos.servicio,
+        respuestas: datos.respuestas,
+        opciones: datos.opciones,
+        adjuntos: $("#pedido").elements.adjuntos.files.length,
+      }),
+    });
+    const res = await r.json();
+    if (!r.ok) throw new Error(res.error);
+    ponerOpciones(res.opciones);
+    mostrarTicket(res.cotizacion, res);
+    $("#ticket").scrollIntoView({ block: "nearest" });
+  } catch (err) {
+    error.textContent = err.message || "No pudimos cotizar. Probá de nuevo en un rato.";
+    error.hidden = false;
+  } finally {
+    boton.disabled = false;
+    boton.textContent = "Volver a cotizar";
+  }
+});
+
+// Si después de cotizar cambia un adicional a mano, el total se actualiza al momento.
+$("#pedido").addEventListener("change", async (e) => {
+  if (!$("#ticket").hidden && e.target.name?.startsWith("opciones.")) {
+    mostrarTicket(await precio(leerFormulario().opciones));
+  }
 });
 
 // ---------- Envío ----------
-function validar() {
+function validar(conPago = true) {
   const conArchivos = servicio.adjuntos && $("#pedido").elements.adjuntos.files.length > 0;
   let primero = null;
   for (const el of $("#pedido").elements) {
-    if (!el.name) continue;
+    if (!el.name || el.type === "file" || el.type === "checkbox") continue;
     const esCampoDelServicio = el.name.startsWith("respuestas.");
-    const vacio = el.required && !el.value.trim() && !(conArchivos && esCampoDelServicio);
+    const esContacto = el.name.startsWith("contacto.");
+    const vacio = el.required && !el.value.trim() && !(conArchivos && esCampoDelServicio) && (conPago || !esContacto);
     const malEmail = el.type === "email" && el.value && !el.checkValidity();
     const mal = vacio || malEmail;
     el.setAttribute("aria-invalid", String(mal));
@@ -152,9 +209,9 @@ function validar() {
 $("#pedido").addEventListener("submit", async (e) => {
   e.preventDefault();
   const error = $("#error");
-  const falta = validar();
+  const falta = validar(true);
   if (falta) {
-    error.textContent = "Falta completar un dato: te lo marcamos en rojo.";
+    error.textContent = "Falta completar algo: te lo marcamos en rojo.";
     error.hidden = false;
     falta.focus();
     return;

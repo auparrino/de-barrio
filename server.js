@@ -5,6 +5,7 @@ import { cargarCatalogo, buscarServicio, cotizar } from "./src/cotizador.js";
 import * as almacen from "./src/almacen.js";
 import * as pagos from "./src/pagos.js";
 import { generarProducto } from "./src/generador.js";
+import { cotizarConAgente } from "./src/cotizador-agente.js";
 import { cargarTablas, disponibilidad, estadoTabla } from "./src/tablas.js";
 
 const catalogo = cargarCatalogo();
@@ -62,6 +63,26 @@ app.post("/api/cotizar", (req, res) => {
   try {
     const { servicio, opciones, urgente } = req.body ?? {};
     res.json(cotizar(catalogo, servicio, opciones, { urgente: Boolean(urgente) }));
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+// El agente lee las respuestas y elige los adicionales; el precio lo calcula cotizar(), con el tope.
+app.post("/api/cotizar-agente", async (req, res) => {
+  try {
+    const { servicio, respuestas, opciones, adjuntos } = req.body ?? {};
+    const s = buscarServicio(catalogo, servicio);
+    if (!s) return res.status(400).json({ error: "Elegí un servicio" });
+    let r;
+    try {
+      r = await cotizarConAgente(catalogo, s.id, respuestas ?? {}, opciones ?? {}, Number(adjuntos) || 0);
+    } catch (e) {
+      // Si el agente falla, se cotiza con lo que marcó el cliente: nunca se queda sin precio.
+      console.error("Agente cotizador:", e.message);
+      r = { opciones: opciones ?? {}, explicacion: "", preguntas: [], sugerencias: [], agente: false };
+    }
+    res.json({ ...r, cotizacion: cotizar(catalogo, s.id, r.opciones) });
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
