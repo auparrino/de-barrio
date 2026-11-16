@@ -46,13 +46,13 @@ inscripto o monotributista que la usa en su actividad, y **21%** para consumidor
 IVA, según fuentes contables; confirmar con lo impreso). A los responsables inscriptos algunas facturas les suman una
 **percepción de IVA** (suele verse un 3% adicional). Para el responsable inscripto el IVA es crédito fiscal: el costo
 real es el neto. Para el monotributista el IVA es costo. Tasas municipales y fondos provinciales varían (en Buenos
-Aires el alumbrado suele figurar como «Ley 10.740»); la Nación prohibió en 2024 cargar conceptos ajenos al servicio y
-la provincia lo discute: se informa lo que figura, sin opinar si es legal.
+Aires el alumbrado suele figurar como «Ley 10.740»); una medida nacional de 2024 prohibió cargar conceptos ajenos al servicio
+y la provincia lo discute: se informa lo que figura, sin opinar si es legal.
 
 **Hoja 'Factura' del xlsx.** Una fila por concepto impreso, columna de importe y columna «peso %» =
 `importe / total`. Agregar dos filas calculadas: `$/kWh efectivo = total / kWh` y `$/kWh variable = cargo variable
-total / kWh`. El primero sirve para valorizar ahorros (cada kWh menos ahorra aproximadamente el variable más los
-impuestos proporcionales, no el fijo).
+total / kWh`. Los ahorros se valorizan con el segundo más los impuestos proporcionales: el
+cargo fijo no baja aunque se consuma menos.
 
 **Potencia contratada (T2/T3).** La Secretaría de Energía recomienda alinearla con la demandada según el historial
 y pedir la reducción a la distribuidora. Si la contratada supera a la registrada en varios períodos:
@@ -92,7 +92,7 @@ Valorizar cada uno como `kWh ahorrados × $/kWh variable con impuestos`, en peso
 | Cortinas o tapas nocturnas en exhibidoras abiertas | ~20% con 8 h de uso por noche, si están bien colocadas | US DOE 1996, citado por guías del Reino Unido |
 | Puertas o paneles en muebles abiertos | hasta 30% | Oficina Federal de Energía de Suiza |
 | Aire acondicionado a 24-25 °C en verano, 18-21 °C en invierno, horarios y filtros limpios | 2-15% según medida | Secretaría de Energía, 2024 |
-| Recambio por equipo certificado (Energy Star, EE. UU.) | heladera comercial de puerta de vidrio ~400 kWh/año; freezer ~900 kWh/año | EPA Energy Star |
+| Recambio por equipo certificado (Energy Star, EE. UU.) | heladera comercial de puerta de vidrio ~400 kWh/año; freezer ~900 kWh/año | EPA Energy Star (frente a un modelo estándar de EE. UU.) |
 
 Los porcentajes **no se suman**: se aplican en cadena. Un recambio de equipo va solo con repago
 (`precio / ahorro mensual`), con el precio que dé el cliente o [completar].
@@ -149,19 +149,6 @@ Se entregan como argumentos, no como derechos:
   meses de gracia por mejoras que hace el inquilino; historial de pago al día.
 - **Peso sobre las ventas:** `alquiler / ventas mensuales`, si el cliente las dio.
 
-## Plantilla
-
-**luz-y-alquiler.xlsx:** 'Factura' (conceptos leídos, importe, peso % y $/kWh); 'Equipos' (equipo, cantidad, W
-estimados, horas, ciclo, kWh/mes, % de la factura, fila de control); 'Alquiler' (12 meses, índice editable, fórmulas,
-sensibilidad); 'Supuestos' (cada supuesto con fecha y fuente).
-
-**informe.md:** 1) Dónde se va la plata (3 renglones con %); 2) Los 3 cambios con más ahorro, en $ por mes y año, con
-la cuenta; 3) Resumen del contrato: partes, destino, plazo y vencimiento, precio, índice y frecuencia, garantías,
-quién paga impuestos y expensas, rescisión; 4) Cuánto vas a pagar en 12 meses y con qué supuesto; 5) Argumentos para
-negociar; 6) Lo que no se pudo leer; 7) Aviso: «Esto no es asesoramiento legal, contable ni técnico eléctrico».
-
-**comparativa-cobros.xlsx y recomendacion.md:** según el método de la sección 6 y las instrucciones del catálogo.
-
 ## 6. Costo de cobro: el método
 
 Las comisiones salen **solo** de la tabla `comisiones` que llega en `<tablas_vigentes>`, con su fecha. Esta guía no
@@ -171,9 +158,8 @@ repite valores.
 
 `costo % = comisión × (1 + IVA de la comisión) + otros descuentos % + costo de demora % + abono prorrateado %`
 
-- **IVA de la comisión** (el porcentaje está en la tabla): para el **monotributista** es costo; para el **responsable
-  inscripto** es crédito fiscal, así que su costo económico es la comisión sin IVA (pero igual sale de la caja). Si la
-  fila de la tabla aclara que la comisión ya incluye IVA, no se suma otra vez.
+- **IVA de la comisión** (alícuota en la tabla): costo para el **monotributista**; crédito fiscal para el
+  **responsable inscripto** (igual sale de la caja). Si la fila aclara que ya incluye IVA, no se suma otra vez.
 - **Ingresos Brutos sobre acreditaciones:** los bancos (SIRCREB, cuentas CBU) y las billeteras (SIRCUPA, cuentas
   CVU, en las provincias adheridas) retienen un porcentaje que depende del padrón de cada CUIT; puede llegar a 5% a
   quien no está inscripto o tiene deuda. **No es comisión**: es un pago a cuenta del impuesto. Solo es costo si se
@@ -185,26 +171,37 @@ repite valores.
   espera, `demora % = 1 − 1 / (1 + π)^(d/30)`. Con π = 2%: 2 días ≈ 0,13%; 10 días ≈ 0,66%. Los días hábiles se
   pasan a corridos (8 hábiles ≈ 11-12 corridos). `π` es editable, con el último IPC
   publicado y su fecha; si el cliente necesita la plata en el día, decirlo como condición.
-- **Abono de terminal:** `abono % = abono mensual × (1 + IVA) / monto mensual cobrado con esa terminal`. Volumen de
-  equilibrio para que convenga una terminal con abono frente a otra opción sin abono: `V = abono con IVA /
-  (costo % alternativa − costo % terminal)`. Tener en cuenta bonificaciones con fecha de fin.
+- **Abono de terminal:** `abono % = abono × (1 + IVA) / monto mensual cobrado con esa terminal`. Volumen de
+  equilibrio frente a una opción sin abono: `V = abono con IVA / (costo % alternativa − costo % terminal)`. Ojo con
+  bonificaciones que vencen.
 
 **Lógica de recomendación:**
 1. Calcular el costo efectivo de lo que el cliente usa hoy, con sus montos.
 2. Para cada tipo de pago que recibe (dinero en cuenta o QR, débito, crédito en un pago), buscar en la tabla la opción
    de menor costo efectivo **incluida la demora**, no la de menor comisión a secas.
 3. Ahorro mensual = costo actual − costo alternativo, y anual × 12.
-4. Ordenar: primero lo que no requiere cambiar de proveedor (elegir otro plazo de acreditación), después lo que
-   requiere un alta nueva, al final lo que requiere comprar equipo.
+4. Ordenar: primero cambiar el plazo de acreditación, después un alta nueva, al final comprar equipo.
 
 **¿Se puede cobrar recargo o hacer descuento por efectivo?** A noviembre de 2026, el art. 37 inc. c de la Ley 25.065
 sigue vigente («no efectuar diferencias de precio entre operaciones al contado y con tarjeta»): el DNU 70/2023
-derogó otros artículos de esa ley, no este. La Resolución 51/2017 de la Secretaría de Comercio lo aplica a todo pago
-único (débito, crédito, prepaga u otro medio electrónico); y en 2026 se siguieron confirmando multas por recargos.
-Un «descuento por pago en efectivo» frente a tarjeta en un pago es la misma diferencia de precio con otro nombre y es
-sancionable. Lo que sí se puede: precio distinto en **cuotas**, mostrando precio de contado, cuotas y costo financiero
-total (Res. 4/2025, tabla `normativa_precios`); y pedir o promocionar el medio más barato **sin cambiar el precio**.
-Incertidumbre: no se encontró una norma de 2025-2026 que derogue la Res. 51/2017; tratarla como vigente.
+derogó otros artículos de esa ley, no este. La Res. 51/2017 de la Secretaría de Comercio lo aplica a todo pago único
+(débito, crédito u otro medio electrónico), y hay multas confirmadas por recargos (Salta). Un «descuento por
+efectivo» frente a tarjeta en un pago es la misma diferencia con otro nombre: sancionable. Sí se puede: precio distinto en **cuotas**, con precio de contado, cuotas y CFT (Res. 4/2025, tabla
+`normativa_precios`), y promocionar el medio más barato **sin cambiar el precio**. No se halló norma que derogue la
+Res. 51/2017 (la Res. 4/2025 derogó la 7/2002, no esta): tratarla como vigente.
+
+## Plantilla
+
+**luz-y-alquiler.xlsx:** 'Factura' (conceptos leídos, importe, peso % y $/kWh); 'Equipos' (equipo, cantidad, W
+estimados, horas, ciclo, kWh/mes, % de la factura, fila de control); 'Alquiler' (12 meses, índice editable, fórmulas,
+sensibilidad); 'Supuestos' (cada supuesto con fecha y fuente).
+
+**informe.md:** 1) Dónde se va la plata (% por concepto y por equipo); 2) Los 3 cambios con más ahorro ($/mes y
+$/año, con la cuenta); 3) Resumen del contrato (plazo y vencimiento, precio, ajuste, garantías, impuestos y
+expensas, rescisión); 4) Alquiler de los próximos 12 meses y su supuesto; 5) Argumentos para negociar; 6) Lo que no
+se pudo leer; 7) Aviso de que no es asesoramiento legal, contable ni técnico eléctrico.
+
+**comparativa-cobros.xlsx y recomendacion.md:** método de la sección 6; hojas según el catálogo; en recomendacion.md, qué cambiar, en qué orden, ahorro y fecha de la tabla.
 
 ## Prohibidos por defecto y qué usar en su lugar
 
@@ -295,6 +292,8 @@ Consultadas el 16/11/2026. Las marcadas «prensa» o «secundaria» no son norma
 - Ley 25.065, texto actualizado: https://www.argentina.gob.ar/normativa/nacional/ley-25065-55556/actualizacion
 - Resolución 51/2017 SC, resumen (secundaria): https://aldiaargentina.microjuris.com/2017/01/25/los-comercios-deberan-exhibir-el-costo-de-los-productos-en-efectivo-y-el-financiamiento-total-si-se-compra-con-pago-en-cuotas/
   y Derecho Fácil: https://www.argentina.gob.ar/justicia/derechofacil/leysimple/precios-transparentes
+- Cámara Civil y Comercial de Salta, multa por recargo con tarjeta (Diario Judicial, nota de 2017):
+  https://www.diariojudicial.com/news-78888-sin-extra-por-tarjeta-de-credito
 - Recargos y «descuento por contado», Cadena 3, 2026 (prensa):
   https://www.cadena3.com/noticia/radioinforme-3/la-rebelion-del-billete-por-que-pagar-con-tarjeta-o-qr-es-hasta-un-20-mas-caro_543088
 - Derogación de retenciones IVA/Ganancias en cobros electrónicos (RG 5554/2024), La Nación, 04/09/2024 (prensa):
