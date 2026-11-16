@@ -12,10 +12,7 @@ const ESTATICO = document.documentElement.hasAttribute("data-estatico");
 
 const catalogo = await (await fetch(ESTATICO ? "api/catalogo.json" : "/api/catalogo")).json();
 const porId = Object.fromEntries(catalogo.servicios.map((s) => [s.id, s]));
-if (ESTATICO) {
-  $("#pagar").textContent = "Enviar pedido por WhatsApp";
-  $("#barra-comprar").textContent = "Enviar pedido";
-}
+if (ESTATICO) $("#pagar").textContent = "Enviar pedido";
 let servicio = null;
 
 // ---------- Lista: cada servicio con su precio base ----------
@@ -122,21 +119,10 @@ function leerFormulario() {
   return datos;
 }
 
-// ---------- Presupuesto: siempre a la vista, se arma mientras se tilda ----------
-let ultimoTotal = null;
+// ---------- Total: en la barra, se actualiza mientras se tilda ----------
 function actualizarPresupuesto() {
   const cot = cotizar(catalogo, servicio.id, leerFormulario().opciones);
-  $("#cot-lineas").innerHTML = cot.lineas.map((l) => `<tr><td>${escapar(l.concepto)}</td><td>${pesos(l.importe)}</td></tr>`).join("");
-  $("#cot-total").textContent = pesos(cot.total);
   $("#barra-total-monto").textContent = pesos(cot.total);
-  const ticket = $("#ticket");
-  // El único movimiento del sitio: el papel avanza cuando cambia el total.
-  if (ultimoTotal !== null && cot.total !== ultimoTotal) {
-    ticket.classList.remove("imprime");
-    void ticket.offsetWidth;
-    ticket.classList.add("imprime");
-  }
-  ultimoTotal = cot.total;
 }
 $("#pedido").addEventListener("change", (e) => {
   if (servicio && e.target.name?.startsWith("respuestas.")) actualizarPresupuesto();
@@ -204,6 +190,6 @@ $("#pedido").addEventListener("submit", async (e) => {
     error.textContent = err.message || "No pudimos crear el pedido. Probá de nuevo en un rato.";
     error.hidden = false;
     boton.disabled = false;
-    boton.textContent = "Comprar";
+    boton.textContent = "Pagar con Mercado Pago";
   }
 });

@@ -16,7 +16,14 @@
     <h1 id="titulo">Buscando tu pedido</h1>
     <p id="detalle"></p>
     <p id="accion"></p>
+    <p class="aclaracion" id="archivos-titulo" hidden></p>
     <ul id="archivos" class="archivos" hidden></ul>
+    <div class="garantia" id="garantia" hidden>
+      <p><b>¿Te sirve?</b> Mirá las muestras. Si te sirve, aprobalo y se habilitan las descargas.
+        Si no, te devolvemos la plata. <span id="plazo"></span></p>
+      <button type="button" class="boton" id="conforme">Aprobar y descargar</button>
+      <button type="button" class="enlace" id="devolver">No me sirve, quiero la devolución</button>
+    </div>
     <p class="aclaracion" id="leeme" hidden>Empezá por LEEME.md: ahí te explicamos cómo usar cada archivo y qué
       revisar antes.</p>
     <p class="aclaracion">Guardá el link de esta página: es tu acceso al pedido.</p>
@@ -33,6 +40,8 @@
       generando: ["Lo estamos armando", "Tarda entre 2 y 10 minutos. Podés dejar esta página abierta: se actualiza sola."],
       listo: ["Tu pedido está listo", ""],
       error: ["Se trabó tu pedido", ""],
+      conforme: ["Listo para descargar", ""],
+      devuelto: ["Te devolvimos la plata", "La devolución se hizo por Mercado Pago. Puede tardar unos días en verse en tu cuenta."],
     };
 
     async function actualizar() {
@@ -41,18 +50,37 @@
       const p = await r.json();
       const [titulo, detalle] = textos[p.estado];
       $("#titulo").textContent = titulo;
-      $("#detalle").textContent = p.estado === "listo"
+      $("#detalle").textContent = ["listo", "conforme"].includes(p.estado)
         ? p.resumen
         : (p.error ?? `${p.servicio} para ${p.negocio}, ${pesos(p.cotizacion.total)}. ${detalle}`);
       $("#accion").innerHTML = p.urlPago ? `<a class="boton" href="${escapar(p.urlPago)}">Pagar ${pesos(p.cotizacion.total)}</a>` : "";
+      // Antes de aprobar: muestras con marca de agua. Después: descargas.
+      const tipo = p.descargable ? "archivos" : "muestra";
       $("#archivos").hidden = !p.archivos.length;
-      $("#leeme").hidden = !p.archivos.includes("LEEME.md");
+      $("#archivos-titulo").hidden = !p.archivos.length;
+      $("#archivos-titulo").textContent = p.descargable ? "Tus archivos:" : "Muestras (se abren en otra pestaña, con marca de agua):";
+      $("#leeme").hidden = !(p.descargable && p.archivos.includes("LEEME.md"));
       $("#archivos").innerHTML = p.archivos.map((a) => {
         const ruta = a.split("/").map(encodeURIComponent).join("/");
-        return `<li><a href="/api/pedidos/${encodeURIComponent(id)}/archivos/${ruta}?clave=${encodeURIComponent(clave)}">${escapar(a)}</a></li>`;
+        const destino = p.descargable ? "" : ' target="_blank" rel="noopener"';
+        return `<li><a href="/api/pedidos/${encodeURIComponent(id)}/${tipo}/${ruta}?clave=${encodeURIComponent(clave)}"${destino}>${escapar(a)}</a></li>`;
       }).join("");
+      $("#garantia").hidden = p.estado !== "listo";
+      $("#plazo").textContent = p.aprobarAntesDe
+        ? `Si no nos decís nada, se aprueba solo el ${new Date(p.aprobarAntesDe).toLocaleString("es-AR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}.`
+        : "";
       if (["cotizado", "pagado", "generando"].includes(p.estado)) setTimeout(actualizar, 5000);
     }
+    async function conformidad(conforme) {
+      if (!conforme && !confirm("¿Seguro? Te devolvemos el pago completo y el pedido se cancela.")) return;
+      const r = await fetch(`/api/pedidos/${encodeURIComponent(id)}/conformidad?clave=${encodeURIComponent(clave)}`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conforme }),
+      });
+      if (!r.ok) alert((await r.json()).error);
+      actualizar();
+    }
+    $("#conforme").addEventListener("click", () => conformidad(true));
+    $("#devolver").addEventListener("click", () => conformidad(false));
     actualizar();
   </script>
 </body>

@@ -31,9 +31,9 @@ generada: los adornos se dibujan con código (`tools/filete.py`) siguiendo las r
 ## Tokens
 
 ### Tipografía
-- **Letras del letrero y títulos:** Rye (OFL, vía Fontsource): toscana con espuelas, cercana a la letra
-  de pincel con colas de pescado. En el letrero lleva frente, cuerpo en perspectiva y sombra proyectada
-  abajo a la derecha, como pide el manual.
+- **Letras del letrero y títulos:** Yeseva One (OFL, vía Fontsource): romana de mucho contraste y remates
+  abiertos, cercana a las romanas de pincel del fileteado (Rye se descartó: es toscana de cartel del Far
+  West). En el letrero lleva frente, cuerpo en perspectiva y sombra proyectada abajo a la derecha.
 - **Lectura:** Atkinson Hyperlegible Next (OFL), 400 y 800, con cifras tabulares en el ticket y la lista.
 - **Escala:** 15 / 19 / 44 px y el letrero escalado al ancho (4,6 % del panel).
 

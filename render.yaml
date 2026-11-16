@@ -1,0 +1,24 @@
+# Despliegue del sitio completo (con servidor: Mercado Pago, muestras, devoluciones) en Render.
+# En Render: New > Blueprint > elegir este repositorio. Después cargar las variables marcadas sync: false.
+services:
+  - type: web
+    name: de-barrio
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: MP_ACCESS_TOKEN        # token de PRUEBA de Mercado Pago (empieza con TEST-) para probar
+        sync: false
+      - key: MP_WEBHOOK_SECRET
+        sync: false
+      - key: PUBLIC_URL             # la URL que te da Render, por ejemplo https://de-barrio.onrender.com
+        sync: false
+      - key: ANTHROPIC_API_KEY      # sin esto, usar GENERADOR=demo
+        sync: false
+      - key: GENERADOR
+        value: demo
+      - key: ADMIN_TOKEN
+        generateValue: true

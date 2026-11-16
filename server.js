@@ -5,6 +5,7 @@ import { cargarCatalogo, buscarServicio, cotizar, opcionesDesdeRespuestas, texto
 import * as almacen from "./src/almacen.js";
 import * as pagos from "./src/pagos.js";
 import { generarProducto } from "./src/generador.js";
+import { armarMuestra } from "./src/muestra.js";
 import { cargarTablas, disponibilidad, estadoTabla } from "./src/tablas.js";
 
 const catalogo = cargarCatalogo();
@@ -121,9 +122,24 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
   }
 });
 
+// ---------- Muestra, aprobación y devolución ----------
+// Después de pagar, el cliente ve una muestra con marca de agua. Recién al aprobarla se habilitan las
+// descargas; si no le sirve, se le devuelve el pago mientras no haya aprobado. Pasadas 48 horas sin
+// respuesta, el pedido se aprueba solo para que la plata no quede trabada.
+const HORAS_PARA_APROBAR = 48;
+
+function aprobarSiVencio(p) {
+  const listo = p.estado === "listo" && p.listo;
+  if (listo && Date.now() - new Date(p.listo).getTime() > HORAS_PARA_APROBAR * 36e5) {
+    return almacen.actualizar(p.id, { estado: "conforme", conforme: new Date().toISOString(), aprobadoSolo: true });
+  }
+  return p;
+}
+
 app.get("/api/pedidos/:id", (req, res) => {
-  const p = pedidoConClave(req, res);
+  let p = pedidoConClave(req, res);
   if (!p) return;
+  p = aprobarSiVencio(p);
   res.json({
     id: p.id,
     estado: p.estado,
@@ -132,18 +148,54 @@ app.get("/api/pedidos/:id", (req, res) => {
     cotizacion: p.cotizacion,
     urlPago: p.estado === "cotizado" ? p.urlPago : undefined,
     resumen: p.resumen,
-    archivos: p.archivos ?? [],
-    error: p.estado === "error" ? "Hubo un problema generando tu pedido. Ya nos avisaron y lo resolvemos." : undefined,
+    // Antes de aprobar se listan para ver la muestra; después, para descargar.
+    archivos: p.estado === "devuelto" ? [] : (p.archivos ?? []),
+    descargable: p.estado === "conforme",
+    aprobarAntesDe: p.estado === "listo" && p.listo ? new Date(new Date(p.listo).getTime() + HORAS_PARA_APROBAR * 36e5).toISOString() : undefined,
+    error: p.estado === "error" ? "Hubo un problema armando tu pedido. Ya nos avisaron y lo resolvemos." : undefined,
   });
 });
 
-app.get("/api/pedidos/:id/archivos/*", (req, res) => {
+app.get("/api/pedidos/:id/muestra/*", async (req, res) => {
   const p = pedidoConClave(req, res);
   if (!p) return;
+  if (p.estado === "devuelto") return res.status(410).send("Este pedido fue devuelto.");
+  const ruta = almacen.rutaArchivoEntrega(p.id, req.params[0]);
+  if (!ruta) return res.status(404).send("Archivo no encontrado");
+  // La muestra se sirve en una caja de arena: sin scripts y con origen propio.
+  res.set("Content-Security-Policy", "sandbox; default-src 'none'; img-src data:; style-src 'unsafe-inline' https:; font-src data: https:");
+  res.type("html").send(await armarMuestra(ruta, req.params[0]));
+});
+
+app.get("/api/pedidos/:id/archivos/*", (req, res) => {
+  let p = pedidoConClave(req, res);
+  if (!p) return;
+  p = aprobarSiVencio(p);
+  if (p.estado === "devuelto") return res.status(410).send("Este pedido fue devuelto.");
+  if (p.estado !== "conforme") return res.status(403).send("Aprobá la muestra para descargar los archivos.");
   const ruta = almacen.rutaArchivoEntrega(p.id, req.params[0]);
   if (!ruta) return res.status(404).send("Archivo no encontrado");
   // Se descarga siempre como adjunto: el HTML generado no se sirve en nuestro dominio.
   res.download(ruta);
+});
+
+app.post("/api/pedidos/:id/conformidad", async (req, res) => {
+  let p = pedidoConClave(req, res);
+  if (!p) return;
+  p = aprobarSiVencio(p);
+  if (!["listo", "error"].includes(p.estado)) return res.status(409).json({ error: "Este pedido ya no se puede cambiar." });
+  if (req.body?.conforme === true) {
+    almacen.actualizar(p.id, { estado: "conforme", conforme: new Date().toISOString() });
+    return res.json({ estado: "conforme" });
+  }
+  try {
+    const devolucion = await pagos.devolverPago(p.pagoId);
+    almacen.actualizar(p.id, { estado: "devuelto", devolucion, motivoDevolucion: String(req.body?.motivo ?? "").slice(0, 500) });
+    res.json({ estado: "devuelto" });
+  } catch (e) {
+    console.error("Devolución:", e);
+    res.status(502).json({ error: "No pudimos hacer la devolución. Escribinos y lo resolvemos." });
+  }
 });
 
 // ---------- Pago y generación ----------
@@ -165,7 +217,7 @@ async function generar(pedidoId) {
     );
     const archivos = almacen.guardarEntrega(pedidoId, entrega.archivos);
     almacen.actualizar(pedidoId, {
-      estado: "listo", resumen: entrega.resumen, archivos, avisos: entrega.avisos, uso: entrega.uso, modelo: entrega.modelo,
+      estado: "listo", listo: new Date().toISOString(), resumen: entrega.resumen, archivos, avisos: entrega.avisos, uso: entrega.uso, modelo: entrega.modelo,
     });
     console.log(`Pedido ${pedidoId} listo: ${archivos.length} archivos`);
   } catch (e) {

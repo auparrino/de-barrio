@@ -50,6 +50,14 @@ test("pedido pagado genera archivos descargables", async () => {
   assert.equal(estado.estado, "listo");
   assert.deepEqual(estado.archivos.sort(), ["LEEME.md", "cartel.html", "ejemplo.xlsx"]);
 
+  const antes = await fetch(`${base}/api/pedidos/${pedido.id}/archivos/LEEME.md?clave=${pedido.clave}`);
+  assert.equal(antes.status, 403, "no se descarga antes de aprobar la muestra");
+  const muestra = await fetch(`${base}/api/pedidos/${pedido.id}/muestra/ejemplo.xlsx?clave=${pedido.clave}`);
+  assert.match(muestra.headers.get("content-security-policy"), /sandbox/);
+  assert.match(await muestra.text(), /MUESTRA/);
+  await fetch(`${base}/api/pedidos/${pedido.id}/conformidad?clave=${pedido.clave}`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conforme: true }),
+  });
   const archivo = await fetch(`${base}/api/pedidos/${pedido.id}/archivos/LEEME.md?clave=${pedido.clave}`);
   assert.match(await archivo.text(), /entrega de prueba/);
   assert.match(archivo.headers.get("content-disposition"), /attachment/);
@@ -91,4 +99,28 @@ test("cotizar: lo que tildó el cliente fija los adicionales y el precio lo calc
   const res = await r.json();
   assert.equal(r.status, 200);
   assert.equal(res.total, 150000 + 30000 + 15000);
+});
+
+test("si la muestra no le sirve, se devuelve el pago y no se puede descargar", async () => {
+  const form = new FormData();
+  form.append("datos", JSON.stringify({
+    servicio: "promos", negocio: { nombre: "Almacén Tito" }, contacto: { telefono: "11 5555 5555" },
+    respuestas: { producto: "Yerba 1 kg", precio: "4500", promo: "2x1", piezas: "6" },
+  }));
+  const pedido = await (await fetch(`${base}/api/pedidos`, { method: "POST", body: form })).json();
+  await fetch(pedido.urlPago.replace(/^http:\/\/localhost:\d+/, base), { redirect: "manual" });
+  let estado;
+  for (let i = 0; i < 20; i++) {
+    estado = await (await fetch(`${base}/api/pedidos/${pedido.id}?clave=${pedido.clave}`)).json();
+    if (estado.estado === "listo") break;
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  const r = await fetch(`${base}/api/pedidos/${pedido.id}/conformidad?clave=${pedido.clave}`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conforme: false }),
+  });
+  assert.equal((await r.json()).estado, "devuelto");
+  const despues = await (await fetch(`${base}/api/pedidos/${pedido.id}?clave=${pedido.clave}`)).json();
+  assert.deepEqual(despues.archivos, []);
+  const archivo = await fetch(`${base}/api/pedidos/${pedido.id}/archivos/LEEME.md?clave=${pedido.clave}`);
+  assert.equal(archivo.status, 410);
 });

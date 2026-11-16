@@ -10,7 +10,7 @@
   <meta property="og:image" content="/compartir.png">
   <meta name="theme-color" content="#23160F">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="/fuentes/rye-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fuentes/yeseva-one-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
@@ -66,19 +66,11 @@
           <div id="f-campos"></div>
         </fieldset>
 
-        <div class="ticket" id="ticket">
-          <h3 class="ticket-cabeza"><span class="ticket-x" aria-hidden="true">X</span>De Barrio<span>TU PEDIDO</span></h3>
-          <p class="ticket-novalido">Documento no válido como factura</p>
-          <div class="ticket-rollo" aria-live="polite">
-            <table id="cot-lineas"></table>
-            <p class="ticket-total">Total <strong id="cot-total"></strong></p>
-          </div>
-          <p class="error" id="error" role="alert" hidden></p>
-          <button type="submit" id="pagar">Comprar</button>
-        </div>
       </form>
+      <p class="error error-pedido" id="error" role="alert" hidden></p>
       <div class="barra-total" id="barra-total"><span>Total</span> <strong id="barra-total-monto"></strong>
-        <button type="submit" form="pedido" class="barra-comprar" id="barra-comprar">Comprar</button></div>
+        <span class="garantia-nota">Ves una muestra antes de descargar. Si no te sirve, te devolvemos la plata.</span>
+        <button type="submit" form="pedido" class="barra-comprar" id="pagar">Pagar con Mercado Pago</button></div>
     </section>
 
   </main>

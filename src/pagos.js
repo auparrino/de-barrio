@@ -74,3 +74,14 @@ export async function consultarPago(pagoId) {
     moneda: p.currency_id,
   };
 }
+
+/** Devuelve el pago completo (garantía de satisfacción). En modo simulado no llama a nadie. */
+export async function devolverPago(pagoId) {
+  if (modoSimulado() || String(pagoId).startsWith("simulado")) return { id: `devolucion-simulada-${Date.now()}`, simulado: true };
+  const r = await mp(`/v1/payments/${encodeURIComponent(pagoId)}/refunds`, {
+    method: "POST",
+    headers: { "X-Idempotency-Key": `devolucion-${pagoId}` },
+    body: JSON.stringify({}),
+  });
+  return { id: String(r.id), estado: r.status };
+}
