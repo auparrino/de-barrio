@@ -189,3 +189,70 @@ label.check { display: flex; gap: 10px; align-items: center; font-weight: 400; f
 .enlace { background: none; border: 0; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; color: var(--tinta); }
 .letrero .marca { font: 400 1.6rem/1 var(--letra); color: var(--celeste); margin: 0; }
 .letrero .marca a { color: var(--celeste); text-decoration: none; }
+
+/* ---------- Papel de boleta: debajo del letrero, como un talonario de imprenta ---------- */
+:root {
+  --papel-boleta: #F4F2EC;
+  --azul-imprenta: #23408E;
+  --rojo-numeracion: #C8261C;
+  --renglon-azul: rgb(35 64 142 / 0.28);
+}
+html, body { background: var(--papel-boleta); color: var(--tinta); }
+
+/* La lista es una boleta: marco azul, número en rojo, renglones */
+#lista { border: 2px solid var(--azul-imprenta); background: var(--papel-boleta); padding: 0 0 8px; }
+.boleta-cabeza { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap;
+  padding: 16px 20px 12px; border-bottom: 2px solid var(--azul-imprenta); }
+.boleta-cabeza h2 { color: var(--azul-imprenta); font-size: 2.4rem; text-shadow: none; }
+.boleta-numero { font: 800 1.05rem var(--lectura); color: var(--rojo-numeracion); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.boleta-numero small { color: var(--azul-imprenta); font-weight: 400; letter-spacing: 0; margin-right: 6px; }
+#lista .llave { margin: 10px 20px 0; }
+#lista .aclaracion { margin: 4px 20px 8px; color: var(--azul-imprenta); }
+.boleta-columnas { display: flex; justify-content: space-between; margin: 0; padding: 6px 20px;
+  background: var(--azul-imprenta); color: var(--papel-boleta); font: 800 var(--t-chico) var(--lectura); }
+
+.gondola { --c: #1D6B33; --c-claro: #3FAE5A; padding: 14px 20px 6px; border-top: 0; }
+.gondola + .gondola { border-top: 2px solid var(--azul-imprenta); }
+.gondola-rosa { --c: #A8334B; --c-claro: #E8607A; }
+.gondola-celeste { --c: #2F6E99; --c-claro: #7EC3E6; }
+.gondola-ocre { --c: #8A5A12; --c-claro: #F6CB6B; }
+.gondola h3 { color: var(--c); font-size: 1.7rem; padding-bottom: 4px; border-bottom: 3px solid var(--c-claro); display: inline-block; }
+.gondola ul { margin-top: 4px; }
+.gondola li { border-bottom: 1px solid var(--renglon-azul); padding: 2px 0 6px; }
+.gondola li:last-child { border-bottom: 0; }
+.renglon { gap: 12px; color: var(--tinta); }
+.renglon::before { content: ""; flex: none; width: 14px; height: 14px; border-radius: 50%; transform: translateY(1px);
+  background: radial-gradient(circle at 35% 35%, #FFFFFF 0 18%, var(--c-claro) 20% 55%, var(--c) 57%); }
+.renglon:hover .nombre, .renglon:focus-visible .nombre { color: var(--c); }
+.renglon[disabled] { color: var(--borrado); }
+.renglon[disabled]::before { opacity: .4; }
+.detalle { color: var(--borrado); padding-left: 26px; }
+.pronto { color: var(--borrado); }
+
+/* Formulario sobre el papel */
+#formulario h2 { color: var(--azul-imprenta); }
+.volver { color: var(--azul-imprenta); }
+fieldset { border-top: 2px solid var(--azul-imprenta); }
+legend { color: var(--azul-imprenta); }
+input:not([type=checkbox]), textarea, select { background: #FFFFFF; border-color: var(--azul-imprenta); border-width: 1.5px; }
+.cotizar { background: var(--azul-imprenta); color: #FFFFFF; }
+.error { color: var(--precio); }
+:focus-visible { outline: 3px solid var(--rojo-numeracion); outline-offset: 2px; box-shadow: none; }
+
+/* El presupuesto es un presupuesto de talonario */
+#pedido .ticket { background: #FFFFFF; border: 2px solid var(--azul-imprenta); color: var(--tinta); clip-path: none; padding-bottom: 20px; }
+#pedido .ticket .ticket-cabeza { color: var(--azul-imprenta); border-bottom-color: var(--azul-imprenta); }
+#pedido .ticket .ticket-cabeza span { display: block; font: 800 .85rem var(--lectura); color: var(--azul-imprenta); }
+.ticket-x { float: right; width: 34px; height: 34px; margin: -6px -6px 0 8px; border: 2px solid var(--azul-imprenta);
+  display: grid; place-items: center; font: 800 1.2rem var(--lectura); color: var(--azul-imprenta); }
+.ticket-novalido { margin: 6px 0 0; font-size: .8rem; color: var(--azul-imprenta); text-align: center; }
+#pedido .ticket td { border-bottom: 1px solid var(--renglon-azul); }
+#pedido .ticket .ticket-total { border-top-color: var(--azul-imprenta); }
+#pedido .ticket #pagar { background: var(--azul-imprenta); color: #FFFFFF; }
+
+/* Página del pedido */
+.pedido h1 { color: var(--azul-imprenta); }
+.archivos { border-top: 2px solid var(--azul-imprenta); }
+.archivos li { border-bottom: 1px solid var(--renglon-azul); }
+.archivos a { color: var(--azul-imprenta); }
+.boton { background: var(--azul-imprenta); color: #FFFFFF; }

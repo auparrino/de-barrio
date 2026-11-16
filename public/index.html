@@ -23,22 +23,20 @@
         <div class="panel-texto">
           <h1>De Barrio</h1>
           <p class="rubro">Planillas y carteles para el comercio de la cuadra</p>
-          <p class="cinta">
-            <svg viewBox="-4 0 532 90" aria-hidden="true" focusable="false" preserveAspectRatio="none"><use href="/filete.svg#cinta"/></svg>
-            <span>Se paga una vez</span>
-          </p>
         </div>
       </div>
-      <p class="bajada">Para el que remarca a mano cuando llega la lista del proveedor y anota el fiado en un
-        cuaderno. Nos contás cómo trabajás y te lo dejamos armado.</p>
     </div>
   </header>
 
   <main class="ancho mostrador">
     <section id="lista" aria-labelledby="t-lista">
-      <h2 id="t-lista">Qué hacemos</h2>
+      <div class="boleta-cabeza">
+        <h2 id="t-lista">Qué hacemos</h2>
+        <p class="boleta-numero"><small>N°</small>0001-00000001</p>
+      </div>
       <svg class="llave" viewBox="0 0 600 60" aria-hidden="true" focusable="false"><use href="/filete.svg#llave"/></svg>
       <p class="aclaracion">Tocá lo que te sirva. El precio te lo pasamos cuando nos contás qué necesitás.</p>
+      <p class="boleta-columnas" aria-hidden="true"><span>Detalle</span><span>Precio: al cotizar</span></p>
       <div id="catalogo"></div>
     </section>
 
@@ -80,7 +78,8 @@
         <p class="error" id="error" role="alert" hidden></p>
 
         <div class="ticket" id="ticket" hidden>
-          <h3 class="ticket-cabeza">De Barrio<br><span>Tu presupuesto</span></h3>
+          <h3 class="ticket-cabeza"><span class="ticket-x" aria-hidden="true">X</span>De Barrio<span>PRESUPUESTO</span></h3>
+          <p class="ticket-novalido">Documento no válido como factura</p>
           <div class="ticket-rollo" aria-live="polite">
             <p class="ticket-nota" id="ticket-nota" hidden></p>
             <table id="cot-lineas"></table>
@@ -88,38 +87,12 @@
             <ul class="ticket-extra" id="ticket-extra" hidden></ul>
           </div>
           <button type="submit" id="pagar">Pagar con Mercado Pago</button>
-          <p class="ticket-pie">Pagás una vez. Cuando entra el pago lo empezamos a armar.</p>
+          <p class="ticket-pie">Pagás una vez. Cuando entra el pago lo empezamos a armar, con ayuda de inteligencia artificial y con tus datos.</p>
         </div>
       </form>
     </section>
 
-    <section class="nota" aria-labelledby="t-comisiones">
-      <h2 id="t-comisiones">Lo que se va en comisiones</h2>
-      <p>Si cobrás $&nbsp;2,5 millones por mes con tarjeta de crédito y te lo acreditan en el día, se van unos
-        $&nbsp;180.000 de comisión. La misma plata por QR con transferencia sale unos $&nbsp;24.000.
-        <small>(Comisiones publicadas por Mercado Pago y Getnet, noviembre de 2026.)</small></p>
-      <p>Esa cuenta, con tus números, la hacemos en «Cobrá más barato».</p>
-    </section>
-
-    <section class="nota" aria-labelledby="t-como">
-      <h2 id="t-como">Cómo funciona</h2>
-      <p>Llenás el formulario. Si tenés la lista del proveedor o la libreta del fiado, sacale una foto y subila.</p>
-      <p>Te pasamos el precio. Pagás con Mercado Pago y en un rato lo bajás para imprimir.</p>
-      <p>Las planillas hacen las cuentas solas: si cambia un costo, cambia el precio de venta. Si algo de la foto
-        no se leía bien, te lo marcamos para que lo revises. Lo armamos con ayuda de inteligencia artificial y
-        con tus datos, nada inventado.</p>
-    </section>
-
-    <section class="nota" aria-labelledby="t-no">
-      <h2 id="t-no">Lo que no hacemos</h2>
-      <p>No somos contadores ni gestores. No presentamos nada en ARCA ni en la municipalidad.</p>
-    </section>
   </main>
-
-  <footer class="ancho pie">
-    <p>De Barrio</p>
-    <p id="pie-tablas"></p>
-  </footer>
 
   <script src="app.js" type="module"></script>
 </body>

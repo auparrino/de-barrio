@@ -8,8 +8,9 @@ const porId = Object.fromEntries(catalogo.servicios.map((s) => [s.id, s]));
 let servicio = null;
 
 // ---------- Qué hacemos (sin precios: el precio sale al cotizar) ----------
-$("#catalogo").innerHTML = catalogo.categorias.map((cat) => `
-  <section class="gondola" aria-labelledby="g-${cat.id}">
+const COLORES = ["verde", "rosa", "celeste", "ocre", "verde", "rosa"];
+$("#catalogo").innerHTML = catalogo.categorias.map((cat, i) => `
+  <section class="gondola gondola-${COLORES[i % COLORES.length]}" aria-labelledby="g-${cat.id}">
     <h3 id="g-${cat.id}">${escapar(cat.nombre)}</h3>
     <ul>
       ${catalogo.servicios.filter((s) => s.categoria === cat.id).map((s) => `
@@ -35,13 +36,6 @@ $("#volver").addEventListener("click", () => {
   $("#lista").hidden = false;
   $("#lista").scrollIntoView();
 });
-
-const tablas = catalogo.tablas ?? [];
-if (tablas.length) {
-  $("#pie-tablas").textContent = "Datos revisados: " + tablas
-    .map((t) => `${t.nombre} ${t.verificado ? `al ${fecha(t.fecha)}` : "(en revisión)"}`)
-    .join("; ") + ".";
-}
 
 // ---------- Formulario ----------
 function campoHtml(c) {
