@@ -4,7 +4,8 @@ const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<":
 const fecha = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
 
 import { cotizar, opcionesDesdeRespuestas } from "./cotizar.js";
-import { mensajeCliente, linkWhatsApp } from "./pedido-texto.js";
+import { leerMensaje, mensajeCliente, promptClaude } from "./pedido-texto.js";
+import { confirmacionHtml, confirmacionTexto, numeroPedido } from "./confirmacion.js";
 
 // Versión de prueba (GitHub Pages): sin servidor. El catálogo sale de un archivo, el precio se
 // calcula acá con el mismo código que el servidor y el pago muestra un aviso.
@@ -12,12 +13,19 @@ const ESTATICO = document.documentElement.hasAttribute("data-estatico");
 
 const catalogo = await (await fetch(ESTATICO ? "api/catalogo.json" : "/api/catalogo")).json();
 const porId = Object.fromEntries(catalogo.servicios.map((s) => [s.id, s]));
-if (ESTATICO) {
-  // Sin servidor: el pedido sale por WhatsApp desde el teléfono del cliente, así que no hace falta
-  // pedirle el número, y las fotos las manda en el chat.
-  $("#pagar").textContent = "Pedir por WhatsApp";
-  $(".garantia-nota").textContent = "Se abre WhatsApp con tu pedido escrito. Lo mandás y seguimos por ahí.";
-  $(".contacto").hidden = true;
+
+// Pantalla de confirmación (versión de prueba): vuelve acá después de mandar el pedido.
+function mostrarConfirmacion(datos, aviso = "") {
+  $("#lista").hidden = true;
+  $("#formulario").hidden = true;
+  $("#confirmado").innerHTML = confirmacionHtml(datos) + (aviso ? `<p class="aclaracion">${escapar(aviso)}</p>` : "")
+    + `<p><a class="volver" href="${location.pathname}">Volver a la lista</a></p>`;
+  $("#confirmado").hidden = false;
+  $("#confirmado").scrollIntoView();
+}
+const confirmadoEnLink = new URLSearchParams(location.search).get("confirmado");
+if (confirmadoEnLink) {
+  try { mostrarConfirmacion(JSON.parse(decodeURIComponent(escape(atob(confirmadoEnLink))))); } catch { /* link roto: queda la lista */ }
 }
 let servicio = null;
 
@@ -100,8 +108,7 @@ function elegir(id) {
   $("#f-adjuntos").hidden = !servicio.adjuntos;
   $("#f-adjuntos").classList.remove("falta");
   $("#f-adjuntos .fotos-titulo").textContent = servicio.fotos_obligatorias ? "Fotos (sin fotos no arrancamos)" : "Fotos (si tenés)";
-  $("#f-adjuntos-ayuda").textContent = (servicio.adjuntos_ayuda ?? "") + (ESTATICO ? " Las mandás por WhatsApp junto con el pedido." : "");
-  $("#pedido").elements.adjuntos.hidden = ESTATICO;
+  $("#f-adjuntos-ayuda").textContent = servicio.adjuntos_ayuda ?? "";
   $("#pedido").reset();
   $("#error").hidden = true;
   $("#lista").hidden = true;
@@ -157,17 +164,10 @@ function validar() {
     el.setAttribute("aria-invalid", String(mal));
     if (mal && !primero) primero = el;
   }
-  if (servicio.fotos_obligatorias && !ESTATICO) {
+  if (servicio.fotos_obligatorias) {
     const sinFotos = !$("#pedido").elements.adjuntos.files.length;
     $("#f-adjuntos").classList.toggle("falta", sinFotos);
     if (sinFotos && !primero) primero = $("#pedido").elements.adjuntos;
-  }
-  // WhatsApp o email: alcanza con uno.
-  if (!ESTATICO) {
-    const { "contacto.telefono": tel, "contacto.email": mail } = $("#pedido").elements;
-    const ninguno = !tel.value.trim() && !mail.value.trim();
-    $(".contacto").classList.toggle("falta", ninguno);
-    if (ninguno && !primero) primero = tel;
   }
   return primero;
 }
@@ -183,15 +183,12 @@ $("#pedido").addEventListener("submit", async (e) => {
     return;
   }
   if (ESTATICO) {
-    // Versión de prueba: en vez de pagar y mandar a Claude, el pedido va por WhatsApp al dueño.
-    const datos = leerFormulario();
-    const texto = mensajeCliente({ servicio, datos, cotizacion: cotizar(catalogo, servicio.id, datos.opciones) });
-    window.open(linkWhatsApp(texto, catalogo.whatsapp), "_blank", "noopener");
+    enviarPrueba(leerFormulario());
     return;
   }
   const boton = $("#pagar");
   boton.disabled = true;
-  boton.textContent = "Preparando el pago…";
+  boton.textContent = "Enviando…";
   error.hidden = true;
   try {
     const cuerpo = new FormData();
@@ -200,11 +197,61 @@ $("#pedido").addEventListener("submit", async (e) => {
     const r = await fetch("/api/pedidos", { method: "POST", body: cuerpo });
     const res = await r.json();
     if (!r.ok) throw new Error(res.error);
-    location.href = res.urlPago;
+    location.href = res.urlPedido;
   } catch (err) {
     error.textContent = err.message || "No pudimos crear el pedido. Probá de nuevo en un rato.";
     error.hidden = false;
     boton.disabled = false;
-    boton.textContent = "Pagar con Mercado Pago";
+    boton.textContent = "Confirmar pedido";
   }
 });
+
+// ---------- Versión de prueba (sin servidor) ----------
+// El pedido sale por mail con FormSubmit: a nosotros con el prompt y las fotos, y al
+// cliente una respuesta automática con la confirmación. Sin casilla configurada, solo se muestra
+// la confirmación en pantalla.
+function enviarPrueba(datos) {
+  const cotizacion = cotizar(catalogo, servicio.id, datos.opciones);
+  const numero = Date.now().toString(36).slice(-6).toUpperCase();
+  const conf = {
+    numero, servicio: servicio.nombre, negocio: datos.negocio.nombre, total: cotizacion.total,
+    email: datos.contacto.email.trim(),
+  };
+  if (!catalogo.correo_pedidos) {
+    mostrarConfirmacion(conf, "Versión de prueba: falta configurar la casilla, así que no se mandó ningún mail.");
+    return;
+  }
+  const leido = leerMensaje(catalogo, mensajeCliente({ servicio, datos, cotizacion }));
+  const campos = {
+    _subject: `Pedido N° ${numero}: ${servicio.nombre} para ${datos.negocio.nombre} (${pesos(cotizacion.total)})`,
+    _template: "box",
+    _captcha: "false",
+    _autoresponse: confirmacionTexto(conf),
+    _next: `${location.origin}${location.pathname}?confirmado=${btoa(unescape(encodeURIComponent(JSON.stringify(conf))))}`,
+    email: conf.email,
+    "Pedido": `N° ${numero}`,
+    "Servicio": servicio.nombre,
+    "Negocio": datos.negocio.nombre,
+    "WhatsApp": datos.contacto.telefono || "(no dejó)",
+    "Total": pesos(cotizacion.total),
+    "Respuestas": mensajeCliente({ servicio, datos, cotizacion }),
+    "Prompt para Claude": promptClaude({ ...leido, telefono: datos.contacto.telefono }),
+  };
+  const envio = document.createElement("form");
+  envio.method = "POST";
+  envio.enctype = "multipart/form-data";
+  envio.action = `https://formsubmit.co/${catalogo.correo_pedidos}`;
+  envio.hidden = true;
+  for (const [nombre, valor] of Object.entries(campos)) {
+    const el = document.createElement("textarea");
+    el.name = nombre;
+    el.value = valor;
+    envio.append(el);
+  }
+  const fotos = $("#pedido").elements.adjuntos;
+  if (fotos.files.length) { fotos.name = "attachment"; envio.append(fotos); }
+  document.body.append(envio);
+  $("#pagar").disabled = true;
+  $("#pagar").textContent = "Enviando…";
+  envio.submit();
+}

@@ -18,7 +18,7 @@ cpSync("public", DIST, { recursive: true });
 const catalogo = cargarCatalogo();
 const tablas = cargarTablas();
 mkdirSync(join(DIST, "api"), { recursive: true });
-// En la versión de prueba no hay servidor: el pedido viaja por WhatsApp al dueño con el prompt
+// En la versión de prueba no hay servidor: el pedido viaja por mail al dueño con el prompt
 // armado en el navegador, así que el catálogo incluye las instrucciones de cada servicio, las tablas
 // vigentes que usa y los nombres de las guías del proyecto de Claude.
 const guias = cargarGuias();
@@ -31,7 +31,8 @@ writeFileSync(join(DIST, "api", "catalogo.json"), JSON.stringify({
     guias: guias.filter((g) => g.servicios.includes(s.id)).map((g) => g.id),
   })),
   tablas: Object.values(tablas).map((t) => ({ nombre: NOMBRES[t.id] ?? t.titulo, fecha: t.fecha, verificado: estadoTabla(t).ok })),
-  whatsapp: process.env.WHATSAPP_DUENO || "",
+  // Casilla (o su alias de FormSubmit) donde llegan los pedidos de la versión de prueba.
+  correo_pedidos: process.env.CORREO_PEDIDOS || "",
 }));
 
 // Rutas absolutas a la base de Pages y marca de modo de prueba.
@@ -52,6 +53,7 @@ for (const archivo of readdirSync(DIST).filter((f) => /\.(html|js|css)$/.test(f)
   const texto = readFileSync(ruta, "utf8")
     .replace(/(href|src)="([^"]+\.(?:css|js))"/g, `$1="$2?v=${VERSION}"`)
     .replace(/from "(\.\/[^"]+\.js)"/g, `from "$1?v=${VERSION}"`)
+    .replaceAll('"api/catalogo.json"', `"api/catalogo.json?v=${VERSION}"`)
     .replace(/url\("([^"]+\.woff2)"\)/g, `url("$1?v=${VERSION}")`)
     .replace(/(href)="([^"]+filete\.svg)(#[^"]*)?"/g, `$1="$2?v=${VERSION}$3"`);
   writeFileSync(ruta, texto);

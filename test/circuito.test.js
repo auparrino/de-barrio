@@ -1,4 +1,4 @@
-// Recorre el circuito completo en modo demo: cotizar, pedir, pagar (simulado), descargar.
+// Recorre el circuito completo en modo demo: pedir, ver la muestra, pagar (simulado), descargar.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -31,7 +31,17 @@ const FOTO = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQV
 const conFoto = (form) => (form.append("adjuntos", new Blob([FOTO], { type: "image/png" }), "marquesina.png"), form);
 test.after(() => servidor.close());
 
-test("pedido pagado genera archivos descargables", async () => {
+const esperar = async (pedido, estado) => {
+  let p;
+  for (let i = 0; i < 40; i++) {
+    p = await (await fetch(`${base}/api/pedidos/${pedido.id}?clave=${pedido.clave}`)).json();
+    if (p.estado === estado) break;
+    await new Promise((res) => setTimeout(res, 50));
+  }
+  return p;
+};
+
+test("primero la muestra, después el pago y recién ahí las descargas", async () => {
   const datos = {
     servicio: "promos",
     negocio: { nombre: "Almacén Don Tito", rubro: "almacén" },
@@ -45,40 +55,41 @@ test("pedido pagado genera archivos descargables", async () => {
   const pedido = await r.json();
   assert.equal(r.status, 200, JSON.stringify(pedido));
   assert.equal(pedido.cotizacion.total, 70000);
+  assert.equal(pedido.urlPago, undefined, "no se cobra antes de la muestra");
 
-  const pago = await fetch(pedido.urlPago.replace(/^http:\/\/localhost:\d+/, base), { redirect: "manual" });
-  assert.equal(pago.status, 302);
-
-  let estado;
-  for (let i = 0; i < 20; i++) {
-    estado = await (await fetch(`${base}/api/pedidos/${pedido.id}?clave=${pedido.clave}`)).json();
-    if (estado.estado === "listo") break;
-    await new Promise((res) => setTimeout(res, 50));
-  }
-  assert.equal(estado.estado, "listo");
+  const estado = await esperar(pedido, "muestra");
+  assert.equal(estado.estado, "muestra");
   assert.deepEqual(estado.archivos.sort(), ["LEEME.md", "cartel.html", "ejemplo.xlsx"]);
+  assert.ok(estado.urlPago, "con la muestra se habilita el pago");
 
   const antes = await fetch(`${base}/api/pedidos/${pedido.id}/archivos/LEEME.md?clave=${pedido.clave}`);
-  assert.equal(antes.status, 403, "no se descarga antes de aprobar la muestra");
+  assert.equal(antes.status, 403, "no se descarga antes de pagar");
   const muestra = await fetch(`${base}/api/pedidos/${pedido.id}/muestra/ejemplo.xlsx?clave=${pedido.clave}`);
   assert.match(muestra.headers.get("content-security-policy"), /sandbox/);
   assert.match(await muestra.text(), /MUESTRA/);
-  await fetch(`${base}/api/pedidos/${pedido.id}/conformidad?clave=${pedido.clave}`, {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conforme: true }),
-  });
+
+  const pago = await fetch(estado.urlPago.replace(/^http:\/\/localhost:\d+/, base), { redirect: "manual" });
+  assert.equal(pago.status, 302);
+  assert.equal((await esperar(pedido, "pagado")).descargable, true);
   const archivo = await fetch(`${base}/api/pedidos/${pedido.id}/archivos/LEEME.md?clave=${pedido.clave}`);
   assert.match(await archivo.text(), /entrega de prueba/);
   assert.match(archivo.headers.get("content-disposition"), /attachment/);
 
-  // Correos: pedido nuevo a la casilla (con el prompt), listo al cliente y a la casilla, aprobado.
-  const asuntos = enviados.map((c) => `${c.to} · ${c.subject}`);
-  assert.ok(asuntos.some((a) => a.startsWith("pedidos@debarrio.test · Pedido nuevo: ")), asuntos.join("\n"));
-  const nuevo = enviados.find((c) => c.subject.startsWith("Pedido nuevo"));
+  // Correos: confirmación al cliente, pedido con el prompt a la casilla, muestra, pago.
+  const al = (para, asunto) => enviados.find((c) => c.to === para && c.subject.startsWith(asunto));
+  const confirmacion = al("tito@example.com", "Recibimos tu pedido");
+  assert.match(confirmacion.text, /\$ 70\.000, se paga después de ver la muestra/);
+  assert.match(confirmacion.text, /no pagás nada/);
+  const nuevo = al("pedidos@debarrio.test", "Pedido nuevo");
   assert.match(nuevo.attachments.find((a) => a.filename === "prompt.txt").content, /respuestas_del_cliente/);
-  const alCliente = enviados.find((c) => c.to === "tito@example.com");
-  assert.match(alCliente.text, new RegExp(`pedido.html\\?id=${pedido.id}&clave=${pedido.clave}`));
-  assert.doesNotMatch(alCliente.text, /claude|prompt/i, "el cliente no ve cómo se arma");
-  assert.ok(asuntos.some((a) => a.includes("Aprobado: ")));
+  assert.ok(nuevo.attachments.some((a) => a.filename === "marquesina.png"));
+  const muestraLista = al("tito@example.com", "Tu muestra está lista");
+  assert.match(muestraLista.text, new RegExp(`pedido.html\\?id=${pedido.id}&clave=${pedido.clave}`));
+  assert.ok(al("tito@example.com", "Pago recibido"));
+  assert.ok(al("pedidos@debarrio.test", "Cobrado"));
+  for (const c of enviados.filter((c) => c.to === "tito@example.com")) {
+    assert.doesNotMatch(c.text, /claude|prompt/i, "el cliente no ve cómo se arma");
+  }
 
   const sinClave = await fetch(`${base}/api/pedidos/${pedido.id}?clave=mal`);
   assert.equal(sinClave.status, 404);
@@ -120,53 +131,26 @@ test("cotizar: lo que tildó el cliente fija los adicionales y el precio lo calc
   assert.equal(res.total, 150000 + 30000 + 15000);
 });
 
-test("si la muestra no le sirve, se devuelve el pago y no se puede descargar", async () => {
-  const form = new FormData();
-  conFoto(form);
-  form.append("datos", JSON.stringify({
-    servicio: "promos", negocio: { nombre: "Almacén Tito" }, contacto: { telefono: "11 5555 5555" },
-    respuestas: { producto: "Yerba 1 kg", precio: "4500", promo: "2x1", piezas: "6" },
-  }));
-  const pedido = await (await fetch(`${base}/api/pedidos`, { method: "POST", body: form })).json();
-  await fetch(pedido.urlPago.replace(/^http:\/\/localhost:\d+/, base), { redirect: "manual" });
-  let estado;
-  for (let i = 0; i < 20; i++) {
-    estado = await (await fetch(`${base}/api/pedidos/${pedido.id}?clave=${pedido.clave}`)).json();
-    if (estado.estado === "listo") break;
-    await new Promise((r) => setTimeout(r, 50));
-  }
-  const r = await fetch(`${base}/api/pedidos/${pedido.id}/conformidad?clave=${pedido.clave}`, {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conforme: false }),
-  });
-  assert.equal((await r.json()).estado, "devuelto");
-  const despues = await (await fetch(`${base}/api/pedidos/${pedido.id}?clave=${pedido.clave}`)).json();
-  assert.deepEqual(despues.archivos, []);
-  const archivo = await fetch(`${base}/api/pedidos/${pedido.id}/archivos/LEEME.md?clave=${pedido.clave}`);
-  assert.equal(archivo.status, 410);
-});
-
 test("con REVISAR_ANTES, Claude arranca recién cuando se confirma desde el correo", async () => {
   process.env.REVISAR_ANTES = "1";
   try {
     const form = new FormData();
     conFoto(form);
     form.append("datos", JSON.stringify({
-      servicio: "promos", negocio: { nombre: "Ferretería López" }, contacto: { telefono: "11 5555 5555" },
+      servicio: "promos", negocio: { nombre: "Ferretería López" }, contacto: { telefono: "11 5555 5555", email: "lopez@example.com" },
       respuestas: { producto: "Tornillos", precio: "500", promo: "2x1", piezas: "10" },
     }));
     const pedido = await (await fetch(`${base}/api/pedidos`, { method: "POST", body: form })).json();
-    await fetch(pedido.urlPago.replace(/^http:\/\/localhost:\d+/, base), { redirect: "manual" });
     const correo = enviados.findLast((c) => c.subject.startsWith("Pedido nuevo") && c.subject.includes("López"));
     const link = correo.text.match(/http\S+\/generar\?firma=\w+/)[0].replace(/^http:\/\/localhost:\d+/, base);
     const estado = async () => (await (await fetch(`${base}/api/pedidos/${pedido.id}?clave=${pedido.clave}`)).json()).estado;
-    assert.equal(await estado(), "pagado");
+    assert.equal(await estado(), "recibido");
     await fetch(link); // abrir el link (o que lo abra un antivirus) no dispara nada
-    assert.equal(await estado(), "pagado");
+    assert.equal(await estado(), "recibido");
     assert.equal((await fetch(link.replace(/firma=\w+/, "firma=mal"), { method: "POST" })).status, 404);
     await fetch(link, { method: "POST" });
-    for (let i = 0; i < 20 && (await estado()) !== "listo"; i++) await new Promise((r) => setTimeout(r, 50));
-    assert.equal(await estado(), "listo");
-    const listo = enviados.findLast((c) => c.subject.startsWith("Listo:") && c.subject.includes("López"));
+    assert.equal((await esperar(pedido, "muestra")).estado, "muestra");
+    const listo = enviados.findLast((c) => c.subject.startsWith("Muestra lista:") && c.subject.includes("López"));
     assert.match(listo.text, /wa\.me\/5491155555555\?text=/);
   } finally {
     delete process.env.REVISAR_ANTES;
@@ -175,7 +159,7 @@ test("con REVISAR_ANTES, Claude arranca recién cuando se confirma desde el corr
 
 test("un flyer sin fotos no se puede pedir", async () => {
   const form = new FormData();
-  form.append("datos", JSON.stringify({ servicio: "flyer", negocio: { nombre: "Ferretería López" }, contacto: { telefono: "1155555555" },
+  form.append("datos", JSON.stringify({ servicio: "flyer", negocio: { nombre: "Ferretería López" }, contacto: { telefono: "1155555555", email: "lopez@example.com" },
     respuestas: { motivo: "Una oferta", mensaje: "2x1 en tornillos", versiones: "Una" } }));
   const r = await fetch(`${base}/api/pedidos`, { method: "POST", body: form });
   assert.equal(r.status, 400);

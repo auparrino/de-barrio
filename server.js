@@ -8,6 +8,7 @@ import { generarProducto } from "./src/generador.js";
 import { armarMuestra } from "./src/muestra.js";
 import { cargarTablas, disponibilidad, estadoTabla } from "./src/tablas.js";
 import * as correo from "./src/correo.js";
+import { confirmacionTexto, numeroPedido } from "./public/confirmacion.js";
 import { armarPedido } from "./src/prompts.js";
 import { guiasDe } from "./src/guias.js";
 
@@ -85,8 +86,8 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
 
     const faltan = [];
     if (!datos.negocio?.nombre) faltan.push("nombre del negocio");
-    if (!datos.contacto?.telefono && !datos.contacto?.email) faltan.push("WhatsApp o email");
-    if (datos.contacto?.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.contacto.email)) faltan.push("un email válido");
+    // El mail es obligatorio: ahí le llegan la confirmación, la muestra y el link de pago.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.contacto?.email ?? "")) faltan.push("tu email");
     for (const c of servicio.campos) if (c.requerido && !textoRespuesta(datos.respuestas?.[c.id])) faltan.push(c.etiqueta);
     const adjuntos = servicio.adjuntos ? (req.files ?? []) : [];
     if (servicio.fotos_obligatorias && !adjuntos.length) {
@@ -120,45 +121,34 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
     });
     almacen.guardarAdjuntos(pedido.id, adjuntos.map((f) => ({ tipo: f.mimetype, nombre: f.originalname, base64: f.buffer.toString("base64") })));
 
-    const urlPago = await pagos.crearLinkDePago(pedido, URL_BASE);
-    almacen.actualizar(pedido.id, { urlPago });
-    res.json({ id: pedido.id, clave: pedido.clave, cotizacion, urlPago, simulado: pagos.modoSimulado() });
+    // Primero la muestra; el pago se habilita cuando el cliente la ve.
+    await recibirPedido(pedido);
+    res.json({ id: pedido.id, clave: pedido.clave, cotizacion, urlPedido: linkCliente(pedido) });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "No pudimos crear el pedido. Probá de nuevo en un rato." });
   }
 });
 
-// ---------- Muestra, aprobación y devolución ----------
-// Después de pagar, el cliente ve una muestra con marca de agua. Recién al aprobarla se habilitan las
-// descargas; si no le sirve, se le devuelve el pago mientras no haya aprobado. Pasadas 48 horas sin
-// respuesta, el pedido se aprueba solo para que la plata no quede trabada.
-const HORAS_PARA_APROBAR = 48;
-
-function aprobarSiVencio(p) {
-  const listo = p.estado === "listo" && p.listo;
-  if (listo && Date.now() - new Date(p.listo).getTime() > HORAS_PARA_APROBAR * 36e5) {
-    return almacen.actualizar(p.id, { estado: "conforme", conforme: new Date().toISOString(), aprobadoSolo: true });
-  }
-  return p;
-}
+// ---------- Circuito ----------
+// recibido -> generando -> muestra (con marca de agua; se habilita el pago) -> pagado (descargas)
+// Si algo falla: error. El cliente no paga nada hasta ver la muestra.
 
 app.get("/api/pedidos/:id", (req, res) => {
-  let p = pedidoConClave(req, res);
+  const p = pedidoConClave(req, res);
   if (!p) return;
-  p = aprobarSiVencio(p);
   res.json({
     id: p.id,
     estado: p.estado,
     servicio: p.nombreServicio,
     negocio: p.negocio.nombre,
+    email: p.contacto.email,
     cotizacion: p.cotizacion,
-    urlPago: p.estado === "cotizado" ? p.urlPago : undefined,
+    urlPago: p.estado === "muestra" ? p.urlPago : undefined,
     resumen: p.resumen,
-    // Antes de aprobar se listan para ver la muestra; después, para descargar.
-    archivos: p.estado === "devuelto" ? [] : (p.archivos ?? []),
-    descargable: p.estado === "conforme",
-    aprobarAntesDe: p.estado === "listo" && p.listo ? new Date(new Date(p.listo).getTime() + HORAS_PARA_APROBAR * 36e5).toISOString() : undefined,
+    // Antes de pagar se listan para ver la muestra; después, para descargar.
+    archivos: p.archivos ?? [],
+    descargable: p.estado === "pagado",
     error: p.estado === "error" ? "Hubo un problema armando tu pedido. Ya nos avisaron y lo resolvemos." : undefined,
   });
 });
@@ -166,7 +156,6 @@ app.get("/api/pedidos/:id", (req, res) => {
 app.get("/api/pedidos/:id/muestra/*", async (req, res) => {
   const p = pedidoConClave(req, res);
   if (!p) return;
-  if (p.estado === "devuelto") return res.status(410).send("Este pedido fue devuelto.");
   const ruta = almacen.rutaArchivoEntrega(p.id, req.params[0]);
   if (!ruta) return res.status(404).send("Archivo no encontrado");
   // La muestra se sirve en una caja de arena: sin scripts y con origen propio.
@@ -175,47 +164,45 @@ app.get("/api/pedidos/:id/muestra/*", async (req, res) => {
 });
 
 app.get("/api/pedidos/:id/archivos/*", (req, res) => {
-  let p = pedidoConClave(req, res);
+  const p = pedidoConClave(req, res);
   if (!p) return;
-  p = aprobarSiVencio(p);
-  if (p.estado === "devuelto") return res.status(410).send("Este pedido fue devuelto.");
-  if (p.estado !== "conforme") return res.status(403).send("Aprobá la muestra para descargar los archivos.");
+  if (p.estado !== "pagado") return res.status(403).send("Los archivos se descargan después de pagar.");
   const ruta = almacen.rutaArchivoEntrega(p.id, req.params[0]);
   if (!ruta) return res.status(404).send("Archivo no encontrado");
   // Se descarga siempre como adjunto: el HTML generado no se sirve en nuestro dominio.
   res.download(ruta);
 });
 
-app.post("/api/pedidos/:id/conformidad", async (req, res) => {
-  let p = pedidoConClave(req, res);
-  if (!p) return;
-  p = aprobarSiVencio(p);
-  if (!["listo", "error"].includes(p.estado)) return res.status(409).json({ error: "Este pedido ya no se puede cambiar." });
-  if (req.body?.conforme === true) {
-    almacen.actualizar(p.id, { estado: "conforme", conforme: new Date().toISOString() });
-    correo.enviar({ para: correo.casilla(), asunto: `Aprobado: ${titulo(p)}`, texto: `El cliente aprobó el pedido. La plata queda liberada.\n\n${linkCliente(p)}` });
-    return res.json({ estado: "conforme" });
-  }
-  try {
-    const devolucion = await pagos.devolverPago(p.pagoId);
-    almacen.actualizar(p.id, { estado: "devuelto", devolucion, motivoDevolucion: String(req.body?.motivo ?? "").slice(0, 500) });
-    correo.enviar({ para: correo.casilla(), asunto: `Devuelto: ${titulo(p)}`, texto: `El cliente pidió la devolución y se hizo por Mercado Pago.\nMotivo: ${String(req.body?.motivo ?? "(no dijo)").slice(0, 500)}` });
-    res.json({ estado: "devuelto" });
-  } catch (e) {
-    console.error("Devolución:", e);
-    res.status(502).json({ error: "No pudimos hacer la devolución. Escribinos y lo resolvemos." });
-  }
-});
-
-// ---------- Pago y generación ----------
+// Pedido confirmado: confirmación al cliente, prompt a la casilla y, si no hay que revisar, a Claude.
+async function recibirPedido(pedido) {
+  const revisar = process.env.REVISAR_ANTES === "1";
+  await correo.enviar({
+    para: pedido.contacto.email,
+    asunto: `Recibimos tu pedido N° ${numeroPedido(pedido.id)}`,
+    texto: confirmacionTexto({
+      numero: numeroPedido(pedido.id), servicio: pedido.nombreServicio, negocio: pedido.negocio.nombre,
+      total: pedido.cotizacion.total, email: pedido.contacto.email,
+    }) + `\n\nTu pedido, cuando quieras mirarlo: ${linkCliente(pedido)}`,
+  });
+  await avisarPedidoNuevo(pedido, { revisar });
+  if (!revisar) generar(pedido.id);
+}
 
 async function procesarPago(pedidoId, pagoId) {
-  const pedido = almacen.leerPedido(pedidoId);
-  if (!pedido || pedido.estado !== "cotizado") return; // idempotente: el webhook llega más de una vez
+  const p = almacen.leerPedido(pedidoId);
+  if (!p || p.estado !== "muestra") return; // idempotente: el webhook llega más de una vez
   almacen.actualizar(pedidoId, { estado: "pagado", pagoId, pagado: new Date().toISOString() });
-  const revisar = process.env.REVISAR_ANTES === "1";
-  await avisarPedidoNuevo(almacen.leerPedido(pedidoId), { revisar });
-  if (!revisar) generar(pedidoId);
+  await correo.enviar({
+    para: p.contacto.email,
+    asunto: `Pago recibido: ya podés descargar tu ${p.nombreServicio}`,
+    texto: `Hola! Recibimos el pago de ${pesosTexto(p.cotizacion.total)} por el pedido N° ${numeroPedido(p.id)}.
+Descargá los archivos desde acá: ${linkCliente(p)}
+Empezá por LEEME.md: ahí te explicamos cómo usar cada archivo.
+
+Gracias!
+De Barrio`,
+  });
+  await correo.enviar({ para: correo.casilla(), asunto: `Cobrado: ${titulo(p)}`, texto: `Pago ${pagoId} acreditado. El cliente ya puede descargar.\n\n${linkCliente(p)}` });
 }
 
 // ---------- Correos ----------
@@ -239,10 +226,10 @@ async function avisarPedidoNuevo(p, { revisar }) {
   const respuestas = servicio.campos.map((c) => `- ${c.etiqueta} ${textoRespuesta(p.respuestas?.[c.id]) || "(sin respuesta)"}`).join("\n");
   const accion = revisar
     ? `Para mandarlo a Claude, entrá acá y confirmá:\n${URL_BASE}/api/pedidos/${p.id}/generar?firma=${firmaPedido(p.id)}`
-    : "Ya se lo pasamos a Claude. Te avisamos por acá cuando esté listo.";
+    : "Ya se lo pasamos a Claude. Cuando esté la muestra, le llega al cliente y a vos.";
   await correo.enviar({
     para: correo.casilla(),
-    asunto: `Pedido nuevo: ${titulo(p)}`,
+    asunto: `Pedido nuevo N° ${numeroPedido(p.id)}: ${titulo(p)}`,
     texto: `${p.negocio.nombre} pagó ${pesosTexto(p.cotizacion.total)} por ${p.nombreServicio}.
 Contacto: ${[p.contacto.telefono, p.contacto.email].filter(Boolean).join(" · ")}
 
@@ -259,20 +246,18 @@ El prompt completo va adjunto (prompt.txt), junto con las fotos que mandó.`,
 }
 
 async function avisarListo(p) {
-  const aprobarAntes = new Date(Date.parse(p.listo) + HORAS_PARA_APROBAR * 3600e3)
-    .toLocaleString("es-AR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Buenos_Aires" });
-  const aviso = `Hola! Tu pedido de ${p.nombreServicio} para ${p.negocio.nombre} está listo.
-Miralo acá: ${linkCliente(p)}
-Si te sirve, tocá «Aprobar y descargar». Si no, pedís la devolución desde el mismo link.
-Si no nos decís nada, se aprueba solo el ${aprobarAntes}.`;
-  await correo.enviar({ para: p.contacto.email, asunto: `Tu ${p.nombreServicio} está listo`, texto: `${aviso}\n\nDe Barrio` });
+  const aviso = `Hola! Ya está la muestra de tu ${p.nombreServicio} para ${p.negocio.nombre}.
+Mirala acá: ${linkCliente(p)}
+Si te gusta, la pagás ahí mismo con Mercado Pago (${pesosTexto(p.cotizacion.total)}) y se habilitan las descargas.
+Si no te gusta, no pagás nada. Y si querés algún cambio, respondé este mail.`;
+  await correo.enviar({ para: p.contacto.email, asunto: `Tu muestra está lista: ${p.nombreServicio}`, texto: `${aviso}\n\nDe Barrio` });
   const wa = linkWhatsApp(p.contacto.telefono, aviso);
   await correo.enviar({
     para: correo.casilla(),
-    asunto: `Listo: ${titulo(p)}`,
+    asunto: `Muestra lista: ${titulo(p)}`,
     texto: `Claude terminó el pedido: ${(p.archivos ?? []).join(", ")}.
 ${p.avisos?.length ? `\nAvisos:\n${p.avisos.map((a) => `- ${a}`).join("\n")}\n` : ""}
-${p.contacto.email ? `Al cliente ya le llegó el mail con el link (${p.contacto.email}).` : "El cliente no dejó email."}
+Al cliente ya le llegó el mail con la muestra y el link de pago (${p.contacto.email}).
 ${wa ? `Avisale por WhatsApp con un toque (el mensaje ya va escrito):\n${wa}` : ""}
 
 Link del cliente: ${linkCliente(p)}`,
@@ -286,13 +271,13 @@ app.get("/api/pedidos/:id/generar", (req, res) => {
   if (!p || !igual(req.query.firma, firmaPedido(req.params.id))) return res.sendStatus(404);
   res.type("html").send(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/estilos.css"><main class="ancho pedido"><h1>${titulo(p).replace(/[<>&]/g, "")}</h1>
-<p>Estado: ${p.estado}.</p>${p.estado === "pagado" ? `<form method="post"><button class="boton">Mandar a Claude</button></form>` : ""}</main>`);
+<p>Estado: ${p.estado}.</p>${p.estado === "recibido" ? `<form method="post"><button class="boton">Mandar a Claude</button></form>` : ""}</main>`);
 });
 app.post("/api/pedidos/:id/generar", (req, res) => {
   const p = almacen.leerPedido(req.params.id);
   if (!p || !igual(req.query.firma, firmaPedido(req.params.id))) return res.sendStatus(404);
-  if (p.estado === "pagado") generar(p.id);
-  res.type("html").send(`<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="/estilos.css"><main class="ancho pedido"><h1>En marcha</h1><p>Te llega un mail cuando esté listo.</p></main>`);
+  if (p.estado === "recibido") generar(p.id);
+  res.type("html").send(`<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="/estilos.css"><main class="ancho pedido"><h1>En marcha</h1><p>Cuando esté la muestra, le llega al cliente y a vos.</p></main>`);
 });
 
 async function generar(pedidoId) {
@@ -304,8 +289,9 @@ async function generar(pedidoId) {
       { tablas: cargarTablas() },
     );
     const archivos = almacen.guardarEntrega(pedidoId, entrega.archivos);
+    const urlPago = await pagos.crearLinkDePago(almacen.leerPedido(pedidoId), URL_BASE);
     almacen.actualizar(pedidoId, {
-      estado: "listo", listo: new Date().toISOString(), resumen: entrega.resumen, archivos, avisos: entrega.avisos, uso: entrega.uso, modelo: entrega.modelo,
+      estado: "muestra", urlPago, listo: new Date().toISOString(), resumen: entrega.resumen, archivos, avisos: entrega.avisos, uso: entrega.uso, modelo: entrega.modelo,
     });
     console.log(`Pedido ${pedidoId} listo: ${archivos.length} archivos`);
     await avisarListo(almacen.leerPedido(pedidoId));
@@ -354,14 +340,14 @@ app.get("/api/admin/pedidos", (req, res) => {
 app.post("/api/admin/pedidos/:id/reintentar", (req, res) => {
   if (!esAdmin(req)) return res.sendStatus(401);
   const p = almacen.leerPedido(req.params.id);
-  if (!p || !["error", "pagado", "generando"].includes(p.estado)) return res.status(409).json({ error: "No se puede reintentar" });
+  if (!p || !["error", "recibido", "generando"].includes(p.estado)) return res.status(409).json({ error: "No se puede reintentar" });
   generar(p.id);
   res.json({ ok: true });
 });
 
 // Si el servidor se reinició a mitad de una generación, la retoma.
 for (const p of almacen.listarPedidos()) {
-  if ((p.estado === "pagado" && process.env.REVISAR_ANTES !== "1") || p.estado === "generando") generar(p.id);
+  if ((p.estado === "recibido" && process.env.REVISAR_ANTES !== "1") || p.estado === "generando") generar(p.id);
 }
 
 app.use((_req, res) => res.status(404).sendFile("404.html", { root: "public" }));

@@ -1,4 +1,4 @@
-# Despliegue del sitio completo (con servidor: Mercado Pago, muestras, devoluciones) en Render.
+# Despliegue del sitio completo (con servidor: mails, muestras y cobro con Mercado Pago) en Render.
 # En Render: New > Blueprint > elegir este repositorio. Después cargar las variables marcadas sync: false.
 services:
   - type: web

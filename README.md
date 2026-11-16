@@ -53,10 +53,16 @@ Precios, adicionales, preguntas e instrucciones para Claude de cada servicio est
 ## Cómo funciona
 
 ```
-Formulario ──► POST /api/pedidos ──► cotización (recalculada en el servidor) ──► link de Mercado Pago
-                                                                                      │
-Descarga ◄── /pedido.html (consulta el estado) ◄── Claude genera ◄── webhook: pago aprobado
+Confirmar pedido ──► mail de confirmación al cliente + mail a la casilla con el prompt y las fotos
+        │
+        ▼ (solo, o cuando tocás «Mandar a Claude» con REVISAR_ANTES=1)
+Claude arma el pedido ──► muestra con marca de agua + link de Mercado Pago ──► mail al cliente
+        │
+        ▼ webhook: pago aprobado
+Descargas habilitadas ──► mail «Pago recibido» al cliente y «Cobrado» a la casilla
 ```
+
+El cliente no paga nada hasta ver la muestra: si no le gusta, no paga y no hay devoluciones.
 
 1. `src/cotizador.js` calcula el precio: base + adicionales + urgencia, con tope.
 2. `src/pagos.js` crea la preferencia de Checkout Pro. El webhook valida la firma (`x-signature`),
@@ -69,10 +75,8 @@ Descarga ◄── /pedido.html (consulta el estado) ◄── Claude genera ◄
    seguridad rechaza el pedido, la API lo reintenta en otro modelo (`fallbacks: "default"`).
 5. `src/almacen.js` guarda pedido y archivos en `data/pedidos/<id>/`. Los archivos se descargan como
    adjunto con la clave privada del pedido.
-6. `src/correo.js` manda los mails: cuando entra un pago, a tu casilla (`CORREO_CASILLA`) con el
-   resumen, el prompt (`prompt.txt`) y las fotos; con `REVISAR_ANTES=1` Claude arranca recién cuando
-   tocás «Mandar a Claude» en ese mail. Cuando está listo, al cliente le llega el link para ver la muestra
-   y aprobar (eso libera la plata), y a vos un mail con un link de WhatsApp con el aviso ya escrito.
+6. `src/correo.js` manda los mails del circuito de arriba. Al cliente nunca le llega nada que diga
+   cómo se arma el pedido; el prompt va solo a la casilla (`CORREO_CASILLA`), en `prompt.txt`.
 
 ## Correrlo
 
@@ -103,7 +107,7 @@ node --env-file=.env server.js
 | `GENERADOR=demo` | No llamar a Claude |
 | `SMTP_URL` | Casilla que manda los mails (`smtps://usuario:clave@servidor:465`). Sin esto se muestran en la consola |
 | `CORREO_DESDE` / `CORREO_CASILLA` | Remitente y casilla donde te llegan los pedidos |
-| `REVISAR_ANTES=1` | Claude arranca cuando confirmás desde el mail, no solo al pagar |
+| `REVISAR_ANTES=1` | Claude arranca cuando confirmás desde el mail (así filtrás pedidos que no van en serio antes de gastar en Claude) |
 
 ## Pruebas
 

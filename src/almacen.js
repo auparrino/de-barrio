@@ -16,7 +16,7 @@ export function crearPedido(datos) {
   const pedido = {
     id,
     clave: randomBytes(16).toString("hex"), // da acceso al cliente a su pedido
-    estado: "cotizado", // cotizado -> pagado -> generando -> listo | error
+    estado: "recibido", // recibido -> generando -> muestra -> pagado | error
     creado: new Date().toISOString(),
     ...datos,
   };

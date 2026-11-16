@@ -27,6 +27,7 @@ jobs:
       - run: node tools/pages.js
         env:
           BASE: /${{ github.event.repository.name }}/
+          CORREO_PEDIDOS: ${{ vars.CORREO_PEDIDOS }}
       - uses: actions/configure-pages@v5
         with:
           enablement: true

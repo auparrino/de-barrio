@@ -14,34 +14,33 @@
   </header>
   <main class="ancho pedido">
     <h1 id="titulo">Buscando tu pedido</h1>
+    <div class="confirmado" id="confirmado" hidden></div>
     <p id="detalle"></p>
     <p id="accion"></p>
     <p class="aclaracion" id="archivos-titulo" hidden></p>
     <ul id="archivos" class="archivos" hidden></ul>
-    <div class="garantia" id="garantia" hidden>
-      <p><b>¿Te sirve?</b> Mirá las muestras. Si te sirve, aprobalo y se habilitan las descargas.
-        Si no, te devolvemos la plata. <span id="plazo"></span></p>
-      <button type="button" class="boton" id="conforme">Aprobar y descargar</button>
-      <button type="button" class="enlace" id="devolver">No me sirve, quiero la devolución</button>
+    <div class="pagar-muestra" id="pagar-muestra" hidden>
+      <p><b>¿Te gusta?</b> Pagalo con Mercado Pago y se habilitan las descargas. Si no te gusta, no pagás
+        nada; si querés algún cambio, respondé el mail que te mandamos.</p>
+      <a class="boton" id="boton-pagar" href="#">Pagar y descargar</a>
     </div>
     <p class="aclaracion" id="leeme" hidden>Empezá por LEEME.md: ahí te explicamos cómo usar cada archivo y qué
       revisar antes.</p>
     <p class="aclaracion">Guardá el link de esta página: es tu acceso al pedido.</p>
   </main>
   <script type="module">
+    import { confirmacionHtml, numeroPedido } from "./confirmacion.js";
     const q = new URLSearchParams(location.search);
     const id = q.get("id"), clave = q.get("clave");
     const $ = (s) => document.querySelector(s);
     const pesos = (n) => "$ " + Math.round(n).toLocaleString("es-AR");
     const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
     const textos = {
-      cotizado: ["Falta el pago", "Cuando se acredite empezamos a armarlo."],
-      pagado: ["Pago recibido", "Estamos por empezar."],
-      generando: ["Lo estamos armando", "Tarda entre 2 y 10 minutos. Podés dejar esta página abierta: se actualiza sola."],
-      listo: ["Tu pedido está listo", ""],
+      recibido: ["Recibimos tu pedido", ""],
+      generando: ["Recibimos tu pedido", ""],
+      muestra: ["Ya está tu muestra", "Mirala acá abajo. Se abre en otra pestaña, con marca de agua."],
+      pagado: ["Listo para descargar", ""],
       error: ["Se trabó tu pedido", ""],
-      conforme: ["Listo para descargar", ""],
-      devuelto: ["Te devolvimos la plata", "La devolución se hizo por Mercado Pago. Puede tardar unos días en verse en tu cuenta."],
     };
 
     async function actualizar() {
@@ -49,38 +48,40 @@
       if (!r.ok) { $("#titulo").textContent = "No encontramos ese pedido"; return; }
       const p = await r.json();
       const [titulo, detalle] = textos[p.estado];
+      // Recién confirmado: el número, qué sigue y que paga después de ver la muestra.
+      const recienPagado = ["recibido", "generando"].includes(p.estado);
+      $("#confirmado").hidden = !recienPagado;
+      if (recienPagado) $("#confirmado").innerHTML = confirmacionHtml({
+        numero: numeroPedido(p.id), servicio: p.servicio, negocio: p.negocio, total: p.cotizacion.total, email: p.email,
+      });
+      $("#titulo").hidden = recienPagado;
+      $("#detalle").hidden = recienPagado;
       $("#titulo").textContent = titulo;
-      $("#detalle").textContent = ["listo", "conforme"].includes(p.estado)
-        ? p.resumen
-        : (p.error ?? `${p.servicio} para ${p.negocio}, ${pesos(p.cotizacion.total)}. ${detalle}`);
-      $("#accion").innerHTML = p.urlPago ? `<a class="boton" href="${escapar(p.urlPago)}">Pagar ${pesos(p.cotizacion.total)}</a>` : "";
-      // Antes de aprobar: muestras con marca de agua. Después: descargas.
+      $("#detalle").textContent = p.error ?? (p.estado === "pagado" ? p.resumen : detalle);
+      $("#pagar-muestra").hidden = !p.urlPago;
+      if (p.urlPago) {
+        $("#boton-pagar").href = p.urlPago;
+        $("#boton-pagar").textContent = `Pagar ${pesos(p.cotizacion.total)} y descargar`;
+      }
+      // Antes de pagar: muestras con marca de agua. Después: descargas.
       const tipo = p.descargable ? "archivos" : "muestra";
       $("#archivos").hidden = !p.archivos.length;
       $("#archivos-titulo").hidden = !p.archivos.length;
-      $("#archivos-titulo").textContent = p.descargable ? "Tus archivos:" : "Muestras (se abren en otra pestaña, con marca de agua):";
+      $("#archivos-titulo").textContent = p.descargable ? "Tus archivos:" : "Muestras:";
       $("#leeme").hidden = !(p.descargable && p.archivos.includes("LEEME.md"));
       $("#archivos").innerHTML = p.archivos.map((a) => {
         const ruta = a.split("/").map(encodeURIComponent).join("/");
         const destino = p.descargable ? "" : ' target="_blank" rel="noopener"';
         return `<li><a href="/api/pedidos/${encodeURIComponent(id)}/${tipo}/${ruta}?clave=${encodeURIComponent(clave)}"${destino}>${escapar(a)}</a></li>`;
       }).join("");
-      $("#garantia").hidden = p.estado !== "listo";
-      $("#plazo").textContent = p.aprobarAntesDe
-        ? `Si no nos decís nada, se aprueba solo el ${new Date(p.aprobarAntesDe).toLocaleString("es-AR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}.`
-        : "";
-      if (["cotizado", "pagado", "generando"].includes(p.estado)) setTimeout(actualizar, 5000);
+      // Vuelve de Mercado Pago antes de que llegue el aviso del pago: esperamos sin mostrar el botón.
+      const volviendoDePagar = p.estado === "muestra" && q.get("status") === "approved";
+      if (volviendoDePagar) {
+        $("#detalle").textContent = "Estamos confirmando tu pago. En unos segundos se habilitan las descargas.";
+        $("#pagar-muestra").hidden = true;
+      }
+      if (["recibido", "generando"].includes(p.estado) || volviendoDePagar) setTimeout(actualizar, volviendoDePagar ? 3000 : 5000);
     }
-    async function conformidad(conforme) {
-      if (!conforme && !confirm("¿Seguro? Te devolvemos el pago completo y el pedido se cancela.")) return;
-      const r = await fetch(`/api/pedidos/${encodeURIComponent(id)}/conformidad?clave=${encodeURIComponent(clave)}`, {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conforme }),
-      });
-      if (!r.ok) alert((await r.json()).error);
-      actualizar();
-    }
-    $("#conforme").addEventListener("click", () => conformidad(true));
-    $("#devolver").addEventListener("click", () => conformidad(false));
     actualizar();
   </script>
 </body>

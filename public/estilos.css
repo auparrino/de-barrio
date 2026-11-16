@@ -374,9 +374,9 @@ input:not([type=checkbox]), textarea, select { background: #FFFFFF; border-color
 .ticket { display: none; }
 .barra-total .error { color: #FFE3A8; margin: 0; }
 
-.garantia { border: 2px solid var(--azul-imprenta); background: #FFFFFF; padding: 14px 16px; margin: 20px 0; }
-.garantia p { margin: 0 0 12px; }
-.garantia .boton { border: 0; cursor: pointer; margin-right: 12px; }
+.garantia, .pagar-muestra { border: 2px solid var(--azul-imprenta); background: #FFFFFF; padding: 14px 16px; margin: 20px 0; }
+.garantia p, .pagar-muestra p { margin: 0 0 12px; }
+.garantia .boton, .pagar-muestra .boton { border: 0; cursor: pointer; margin-right: 12px; }
 .garantia-nota { margin: 0 0 0 auto; font: 400 .8rem/1.2 var(--lectura); color: #DCE6FF; max-width: 9rem; }
 
 /* Barra de pago: botón rojo, nota debajo */
@@ -397,3 +397,13 @@ input:not([type=checkbox]), textarea, select { background: #FFFFFF; border-color
 .contacto.falta .contacto-titulo { color: var(--precio); }
 .fotos.falta { outline: 2px solid var(--precio); outline-offset: 4px; }
 .fotos.falta .fotos-titulo { color: var(--precio); }
+
+/* Confirmación del pedido */
+.confirmado { margin: 8px 0 32px; }
+.confirmado-titulo { color: var(--azul-imprenta); }
+.confirmado-detalle { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 12px 0 20px;
+  padding: 12px 16px; background: #fff; border: 2px solid var(--azul-imprenta); }
+.confirmado-detalle dt { font-weight: 800; }
+.confirmado-detalle dd { margin: 0; }
+.confirmado-pasos { padding-left: 1.3em; }
+.confirmado-pasos li { margin-bottom: 8px; }

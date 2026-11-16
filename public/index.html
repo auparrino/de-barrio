@@ -40,6 +40,8 @@
       <div id="catalogo"></div>
     </section>
 
+    <section id="confirmado" class="confirmado" hidden aria-live="polite"></section>
+
     <section id="formulario" hidden aria-labelledby="f-titulo">
       <button type="button" class="volver" id="volver">Volver</button>
       <h2 id="f-titulo"></h2>
@@ -58,18 +60,15 @@
         <fieldset>
           <legend>Tu negocio</legend>
           <label>Nombre del negocio <input name="negocio.nombre" required autocomplete="organization"></label>
-          <div class="contacto">
-            <p class="contacto-titulo">¿Dónde te avisamos cuando esté listo?</p>
-            <label>WhatsApp <input type="tel" name="contacto.telefono" autocomplete="tel" inputmode="tel" placeholder="Ej.: 11 5555 5555"></label>
-            <label>Email <input type="email" name="contacto.email" autocomplete="email" inputmode="email" placeholder="Si preferís que te llegue por mail"></label>
-          </div>
+          <label>Tu email <input type="email" name="contacto.email" required autocomplete="email" inputmode="email" placeholder="Ahí te llegan la confirmación y el pedido"></label>
+          <label>Tu WhatsApp <em>(si querés)</em> <input type="tel" name="contacto.telefono" autocomplete="tel" inputmode="tel" placeholder="Ej.: 11 5555 5555"></label>
         </fieldset>
 
       </form>
       <p class="error error-pedido" id="error" role="alert" hidden></p>
       <div class="barra-total" id="barra-total"><span>Total</span> <strong id="barra-total-monto"></strong>
-        <span class="garantia-nota">Ves una muestra antes de descargar. Si no te sirve, te devolvemos la plata.</span>
-        <button type="submit" form="pedido" class="barra-comprar" id="pagar">Pagar con Mercado Pago</button></div>
+        <span class="garantia-nota">Primero te mandamos una muestra. Pagás solo si te gusta.</span>
+        <button type="submit" form="pedido" class="barra-comprar" id="pagar">Confirmar pedido</button></div>
     </section>
 
   </main>
