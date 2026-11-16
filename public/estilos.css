@@ -310,3 +310,32 @@ input:not([type=checkbox]), textarea, select { background: #FFFFFF; border-color
   padding: 10px 14px; border: 2px solid var(--azul-imprenta); background: #FFFFFF; font: 800 var(--t-chico) var(--lectura); color: var(--azul-imprenta); }
 .al-momento strong { font: 400 1.7rem var(--letra); color: var(--rojo-numeracion); }
 .al-momento + .cotizar { margin-top: 12px; }
+
+/* ---------- Revisión de celular ---------- */
+#lista .llave { width: calc(100% - 40px); max-width: 520px; }
+.mas { white-space: nowrap; }
+.ticket-x { line-height: 1; padding: 0; }
+.ticket-novalido { margin: 8px 0 6px; }
+.barra-total { display: none; }
+
+@media (max-width: 860px) {
+  .letrero h1 { font-size: 2.4rem; white-space: nowrap; }
+  .rubro { font-size: 1.15rem; }
+  .cinta { width: 100%; max-width: 320px; height: 52px; }
+  .cinta span { font-size: .8rem; white-space: nowrap; transform: translateY(-2px); }
+  .boleta-cabeza h2 { font-size: 1.8rem; }
+  .gondola h3 { font-size: 1.45rem; }
+  /* renglón: bolita y nombre arriba, precio abajo alineado con el nombre */
+  .renglon { display: grid; grid-template-columns: 14px 1fr; column-gap: 12px; row-gap: 2px; align-items: center; }
+  .renglon .monto, .renglon .pronto { grid-column: 2; margin-left: 0; padding-left: 0; justify-self: start; }
+  .renglon .monto { font-size: 1.2rem; }
+  #formulario h2 { font-size: 1.7rem; }
+  /* total siempre a mano mientras se tilda */
+  .barra-total {
+    display: flex; align-items: baseline; gap: 10px; position: sticky; bottom: 0; z-index: 3;
+    margin: 20px -16px 0; padding: 12px 16px; background: var(--azul-imprenta); color: #FFFFFF;
+    font: 800 var(--t-chico) var(--lectura); text-decoration: none;
+  }
+  .barra-total strong { font: 400 1.5rem var(--letra); color: #FFE3A8; }
+  .barra-ver { margin-left: auto; text-decoration: underline; }
+}

@@ -5,7 +5,6 @@ import { cargarCatalogo, buscarServicio, cotizar, opcionesDesdeRespuestas, texto
 import * as almacen from "./src/almacen.js";
 import * as pagos from "./src/pagos.js";
 import { generarProducto } from "./src/generador.js";
-import { cotizarConAgente } from "./src/cotizador-agente.js";
 import { cargarTablas, disponibilidad, estadoTabla } from "./src/tablas.js";
 
 const catalogo = cargarCatalogo();
@@ -70,28 +69,6 @@ app.post("/api/cotizar", (req, res) => {
   }
 });
 
-// El agente lee las respuestas y elige los adicionales; el precio lo calcula cotizar(), con el tope.
-app.post("/api/cotizar-agente", async (req, res) => {
-  try {
-    const { servicio, respuestas, adjuntos } = req.body ?? {};
-    const s = buscarServicio(catalogo, servicio);
-    if (!s) return res.status(400).json({ error: "Elegí un servicio" });
-    // Lo que tildó el cliente fija los adicionales; el agente los revisa con lo que escribió.
-    const opciones = opcionesDesdeRespuestas(s, respuestas ?? {});
-    let r;
-    try {
-      r = await cotizarConAgente(catalogo, s.id, respuestas ?? {}, opciones ?? {}, Number(adjuntos) || 0);
-    } catch (e) {
-      // Si el agente falla, se cotiza con lo que marcó el cliente: nunca se queda sin precio.
-      console.error("Agente cotizador:", e.message);
-      r = { opciones: opciones ?? {}, explicacion: "", preguntas: [], sugerencias: [], agente: false };
-    }
-    res.json({ ...r, cotizacion: cotizar(catalogo, s.id, r.opciones) });
-  } catch (e) {
-    res.status(400).json({ error: e.message });
-  }
-});
-
 // ---------- Pedidos ----------
 
 app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
@@ -114,7 +91,7 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
     }
 
     // La cotización se recalcula en el servidor: nunca se confía en el precio del navegador.
-    // Los adicionales salen de lo que tildó; el ajuste del cotizador solo puede sumar, nunca bajar de eso.
+    // Los adicionales salen de lo que tildó el cliente; lo que mande el navegador solo puede sumar.
     const minimas = opcionesDesdeRespuestas(servicio, datos.respuestas ?? {});
     const opciones = Object.fromEntries(Object.entries(minimas).map(([k, v]) => {
       const c = datos.opciones?.[k];

@@ -83,14 +83,12 @@ test("las páginas que no existen devuelven la 404 propia", async () => {
 });
 
 test("cotizar: lo que tildó el cliente fija los adicionales y el precio lo calcula el servidor", async () => {
-  const r = await fetch(`${base}/api/cotizar-agente`, {
+  const r = await fetch(`${base}/api/cotizar`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ servicio: "stock", respuestas: { productos: "Más de 150", etiquetas: true }, opciones: { productos_extra: 0 } }),
+    body: JSON.stringify({ servicio: "stock", respuestas: { productos: "Más de 150", etiquetas: true } }),
   });
   const res = await r.json();
   assert.equal(r.status, 200);
-  assert.equal(res.opciones.productos_extra, 2);
-  assert.equal(res.cotizacion.total, 150000 + 30000 + 15000);
-  assert.equal(res.agente, false);
+  assert.equal(res.total, 150000 + 30000 + 15000);
 });

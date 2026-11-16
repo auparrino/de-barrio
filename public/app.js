@@ -15,7 +15,7 @@ const porId = Object.fromEntries(catalogo.servicios.map((s) => [s.id, s]));
 if (ESTATICO) $("#pagar").textContent = "Enviar pedido por WhatsApp";
 let servicio = null;
 
-// ---------- Qué hacemos (sin precios: el precio sale al cotizar) ----------
+// ---------- Lista: cada servicio con su precio base ----------
 const COLORES = ["verde", "rosa", "celeste", "ocre", "verde", "rosa"];
 $("#catalogo").innerHTML = catalogo.categorias.map((cat, i) => `
   <section class="gondola gondola-${COLORES[i % COLORES.length]}" aria-labelledby="g-${cat.id}">
@@ -60,6 +60,7 @@ function suma(c, valor) {
   return v ? v * (op.precio_unitario ?? 0) : 0;
 }
 const masPrecio = (n) => (n ? ` <span class="mas">+ ${pesos(n)}</span>` : "");
+
 function campoHtml(c) {
   const nombre = `respuestas.${c.id}`;
   const opcional = c.requerido ? "" : " <em>(si querés)</em>";
@@ -92,160 +93,52 @@ function elegir(id) {
   $("#f-adjuntos-ayuda").textContent = servicio.adjuntos_ayuda ?? "";
   $("#pedido").reset();
   $("#error").hidden = true;
-  $("#ticket").hidden = true;
   $("#lista").hidden = true;
   $("#formulario").hidden = false;
-  opcionesAgente = {};
-  alMomento();
+  actualizarPresupuesto();
   $("#formulario").scrollIntoView();
   $("#f-titulo").setAttribute("tabindex", "-1");
   $("#f-titulo").focus({ preventScroll: true });
 }
 
 function leerFormulario() {
-  const datos = { servicio: servicio.id, negocio: {}, contacto: {}, respuestas: {}, opciones: { ...opcionesAgente } };
+  const datos = { servicio: servicio.id, negocio: {}, contacto: {}, respuestas: {} };
   for (const c of servicio.campos) if (c.tipo === "varios") datos.respuestas[c.id] = [];
   for (const el of $("#pedido").elements) {
     if (!el.name || el.type === "file") continue;
     const [grupo, clave] = el.name.split(".");
     const campo = grupo === "respuestas" ? servicio.campos.find((c) => c.id === clave) : null;
     if (campo?.tipo === "varios") { if (el.checked) datos[grupo][clave].push(el.value); }
-    else if (campo?.tipo === "elegir") { if (el.checked) datos[grupo][clave] = el.value; }
     else if (el.type === "radio") { if (el.checked) datos[grupo][clave] = el.value; }
     else if (el.type === "checkbox") datos[grupo][clave] = el.checked;
     else datos[grupo][clave] = el.value;
   }
+  datos.opciones = opcionesDesdeRespuestas(servicio, datos.respuestas);
   return datos;
 }
 
-// Lo que ajustó el cotizador (solo puede sumar a lo que se tildó).
-let opcionesAgente = {};
-
-// ---------- Presupuesto ----------
+// ---------- Presupuesto: siempre a la vista, se arma mientras se tilda ----------
 let ultimoTotal = null;
-function mostrarTicket(cot, agente) {
-  const ticket = $("#ticket");
-  ticket.hidden = false;
+function actualizarPresupuesto() {
+  const cot = cotizar(catalogo, servicio.id, leerFormulario().opciones);
   $("#cot-lineas").innerHTML = cot.lineas.map((l) => `<tr><td>${escapar(l.concepto)}</td><td>${pesos(l.importe)}</td></tr>`).join("");
   $("#cot-total").textContent = pesos(cot.total);
-
-  if (agente) {
-    $("#ticket-nota").textContent = agente.explicacion;
-    $("#ticket-nota").hidden = !agente.explicacion;
-    const extra = [
-      ...agente.preguntas.map((p) => `<li><b>Una pregunta:</b> ${escapar(p)}</li>`),
-      ...agente.sugerencias.map((s) => porId[s.servicio]
-        ? `<li><b>${escapar(porId[s.servicio].nombre)}:</b> ${escapar(s.motivo)} <button type="button" class="enlace" data-id="${s.servicio}">Ver</button></li>`
-        : ""),
-    ].join("");
-    $("#ticket-extra").innerHTML = extra;
-    $("#ticket-extra").hidden = !extra;
-  }
+  $("#barra-total-monto").textContent = pesos(cot.total);
+  const ticket = $("#ticket");
   // El único movimiento del sitio: el papel avanza cuando cambia el total.
-  if (cot.total !== ultimoTotal) {
+  if (ultimoTotal !== null && cot.total !== ultimoTotal) {
     ticket.classList.remove("imprime");
     void ticket.offsetWidth;
     ticket.classList.add("imprime");
   }
   ultimoTotal = cot.total;
 }
-
-$("#ticket-extra").addEventListener("click", (e) => {
-  const id = e.target.dataset?.id;
-  if (id) elegir(id);
-});
-
-function sanear(opciones) {
-  const limpio = {};
-  for (const o of servicio.opciones) {
-    const v = opciones[o.id];
-    limpio[o.id] = o.tipo === "cantidad" ? Math.max(0, Math.min(o.max ?? 1, Math.floor(Number(v) || 0))) : v === true;
-  }
-  return limpio;
-}
-
-function opcionesFinales(datos) {
-  const base = opcionesDesdeRespuestas(servicio, datos.respuestas);
-  for (const [k, v] of Object.entries(opcionesAgente)) base[k] = typeof v === "boolean" ? base[k] || v : Math.max(base[k], v);
-  return base;
-}
-
-async function precio(opciones) {
-  if (ESTATICO) return cotizar(catalogo, servicio.id, sanear(opciones));
-  const r = await fetch("/api/cotizar", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ servicio: servicio.id, opciones }),
-  });
-  return r.json();
-}
-
-// Cotizar: el agente lee lo que contaste y ajusta los adicionales; el precio lo calcula el servidor.
-$("#cotizar").addEventListener("click", async () => {
-  const error = $("#error");
-  error.hidden = true;
-  const falta = validar(false);
-  if (falta) {
-    error.textContent = "Falta completar algo: te lo marcamos en rojo.";
-    error.hidden = false;
-    falta.focus();
-    return;
-  }
-  const boton = $("#cotizar");
-  boton.disabled = true;
-  boton.textContent = "Cotizando…";
-  try {
-    const datos = leerFormulario();
-    if (ESTATICO) {
-      const opciones = opcionesFinales(datos);
-      const res = { opciones, cotizacion: cotizar(catalogo, servicio.id, opciones), preguntas: [], sugerencias: [], explicacion: "" };
-      mostrarTicket(res.cotizacion, res);
-      $("#ticket").scrollIntoView({ block: "nearest" });
-      return;
-    }
-    const r = await fetch("/api/cotizar-agente", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        servicio: datos.servicio,
-        respuestas: datos.respuestas,
-        adjuntos: $("#pedido").elements.adjuntos.files.length,
-      }),
-    });
-    const res = await r.json();
-    if (!r.ok) throw new Error(res.error);
-    // Se guarda solo lo que el cotizador sumó por encima de lo tildado.
-    const base = opcionesDesdeRespuestas(servicio, datos.respuestas);
-    opcionesAgente = Object.fromEntries(Object.entries(res.opciones).filter(([k, v]) => (typeof v === "boolean" ? v && !base[k] : v > base[k])));
-    mostrarTicket(res.cotizacion, res);
-    $("#ticket").scrollIntoView({ block: "nearest" });
-  } catch (err) {
-    error.textContent = err.message || "No pudimos cotizar. Probá de nuevo en un rato.";
-    error.hidden = false;
-  } finally {
-    boton.disabled = false;
-    boton.textContent = "Volver a cotizar";
-  }
-});
-
-// El total se ve mientras se tilda: lo calcula acá el mismo código que usa el servidor.
-function alMomento() {
-  const cot = cotizar(catalogo, servicio.id, opcionesFinales(leerFormulario()));
-  $("#al-momento-total").textContent = pesos(cot.total);
-}
 $("#pedido").addEventListener("change", (e) => {
-  if (servicio && e.target.name?.startsWith("respuestas.")) alMomento();
-});
-
-// Si después de cotizar cambia una respuesta, el total se actualiza al momento.
-$("#pedido").addEventListener("change", async (e) => {
-  if (!$("#ticket").hidden && e.target.name?.startsWith("respuestas.")) {
-    mostrarTicket(await precio(opcionesFinales(leerFormulario())));
-  }
+  if (servicio && e.target.name?.startsWith("respuestas.")) actualizarPresupuesto();
 });
 
 // ---------- Envío ----------
-function validar(conPago = true) {
+function validar() {
   const conArchivos = servicio.adjuntos && $("#pedido").elements.adjuntos.files.length > 0;
   let primero = null;
   // Preguntas de elegir obligatorias: alguna casilla marcada.
@@ -257,8 +150,7 @@ function validar(conPago = true) {
   for (const el of $("#pedido").elements) {
     if (!el.name || el.type === "file" || el.type === "checkbox") continue;
     const esCampoDelServicio = el.name.startsWith("respuestas.");
-    const esContacto = el.name.startsWith("contacto.");
-    const vacio = el.required && !el.value.trim() && !(conArchivos && esCampoDelServicio) && (conPago || !esContacto);
+    const vacio = el.required && !el.value.trim() && !(conArchivos && esCampoDelServicio);
     const malEmail = el.type === "email" && el.value && !el.checkValidity();
     const mal = vacio || malEmail;
     el.setAttribute("aria-invalid", String(mal));
@@ -270,7 +162,7 @@ function validar(conPago = true) {
 $("#pedido").addEventListener("submit", async (e) => {
   e.preventDefault();
   const error = $("#error");
-  const falta = validar(true);
+  const falta = validar();
   if (falta) {
     error.textContent = "Falta completar algo: te lo marcamos en rojo.";
     error.hidden = false;
@@ -283,7 +175,7 @@ $("#pedido").addEventListener("submit", async (e) => {
     const texto = mensajeWhatsApp({
       servicio,
       datos,
-      cotizacion: cotizar(catalogo, servicio.id, opcionesFinales(datos)),
+      cotizacion: cotizar(catalogo, servicio.id, datos.opciones),
       tablas: servicio.tablas_vigentes,
       guias: servicio.guias,
       adjuntos: $("#pedido").elements.adjuntos.files.length,
@@ -307,6 +199,6 @@ $("#pedido").addEventListener("submit", async (e) => {
     error.textContent = err.message || "No pudimos crear el pedido. Probá de nuevo en un rato.";
     error.hidden = false;
     boton.disabled = false;
-    boton.textContent = "Pagar con Mercado Pago";
+    boton.textContent = "Comprar";
   }
 });
