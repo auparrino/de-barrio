@@ -256,3 +256,57 @@ input:not([type=checkbox]), textarea, select { background: #FFFFFF; border-color
 .archivos li { border-bottom: 1px solid var(--renglon-azul); }
 .archivos a { color: var(--azul-imprenta); }
 .boton { background: var(--azul-imprenta); color: #FFFFFF; }
+
+/* ---------- Personalidad: sello de goma y frase de la cinta ---------- */
+#lista { position: relative; }
+.sello {
+  position: absolute; top: 74px; right: 24px; margin: 0; padding: 6px 12px;
+  border: 3px double var(--rojo-numeracion); color: var(--rojo-numeracion);
+  font: 800 .78rem/1.15 var(--lectura); text-transform: uppercase; letter-spacing: .08em; text-align: center;
+  transform: rotate(-8deg); opacity: .85; pointer-events: none;
+}
+.cinta span { font-family: var(--letra); font-weight: 400; font-size: 1.9cqw; }
+
+/* ---------- Preguntas para tocar: casilleros de boleta ---------- */
+.pregunta { border: 0; margin: 0 0 18px; padding: 0; }
+.pregunta legend { font: 800 var(--t-chico)/1.3 var(--lectura); color: var(--tinta); padding: 0; margin-bottom: 8px; }
+.pregunta legend em { font-weight: 400; color: var(--borrado); }
+.casilleros { display: flex; flex-wrap: wrap; gap: 8px; }
+.casilleros input, .pregunta-si input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.casilleros label, .pregunta-si label {
+  display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 8px 12px 8px 10px;
+  border: 1.5px solid var(--azul-imprenta); background: #FFFFFF; color: var(--tinta);
+  font: 400 var(--t-chico)/1.2 var(--lectura); cursor: pointer;
+}
+.casilleros label::before, .pregunta-si label::before {
+  content: ""; flex: none; width: 16px; height: 16px; border: 1.5px solid var(--azul-imprenta); background: #FFFFFF;
+  display: grid; place-items: center; font: 800 15px/1 var(--lectura); color: var(--azul-imprenta);
+}
+.casilleros input:checked + label, .pregunta-si input:checked + label { background: var(--azul-imprenta); color: #FFFFFF; }
+.casilleros input:checked + label::before, .pregunta-si input:checked + label::before { content: "✕"; border-color: #FFFFFF; }
+.casilleros input:focus-visible + label, .pregunta-si input:focus-visible + label { outline: 3px solid var(--rojo-numeracion); outline-offset: 2px; }
+.pregunta-si { margin: 0 0 18px; }
+.pregunta.falta legend { color: var(--precio); }
+.pregunta.falta .casilleros label { border-color: var(--precio); }
+
+/* Fotos primero, bien visibles */
+.fotos { border: 2px dashed var(--azul-imprenta); background: #FFFFFF; padding: 14px; margin-bottom: 22px; font-weight: 400; }
+.fotos-titulo { display: block; font: 400 1.3rem var(--letra); color: var(--azul-imprenta); margin-bottom: 4px; }
+.cinta { width: 48cqw; }
+@media (max-width: 860px) {
+  .cinta { width: 100%; max-width: 340px; }
+  .cinta span { font-size: 0.95rem; }
+  .sello { top: 64px; right: 10px; font-size: .62rem; }
+}
+
+/* ---------- Precios a la vista ---------- */
+.renglon .monto { margin-left: auto; padding-left: 12px; white-space: nowrap; font: 400 1.35rem/1 var(--letra); color: var(--rojo-numeracion); font-variant-numeric: tabular-nums; }
+.renglon .monto small { font: 400 .85rem var(--lectura); color: var(--borrado); margin-right: 2px; }
+.f-precio { font: 400 1.6rem/1 var(--letra); color: var(--rojo-numeracion); margin: 4px 0 12px; }
+.f-precio small { font: 400 .95rem var(--lectura); color: var(--borrado); }
+.mas { font-weight: 800; color: var(--rojo-numeracion); }
+.casilleros input:checked + label .mas, .pregunta-si input:checked + label .mas { color: #FFE3A8; }
+.al-momento { display: flex; justify-content: space-between; align-items: baseline; max-width: 420px; margin: 28px 0 0;
+  padding: 10px 14px; border: 2px solid var(--azul-imprenta); background: #FFFFFF; font: 800 var(--t-chico) var(--lectura); color: var(--azul-imprenta); }
+.al-momento strong { font: 400 1.7rem var(--letra); color: var(--rojo-numeracion); }
+.al-momento + .cotizar { margin-top: 12px; }

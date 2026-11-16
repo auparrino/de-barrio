@@ -48,3 +48,34 @@ export function cotizar(catalogo, servicioId, opciones = {}, extras = {}) {
     bonificacion,
   };
 }
+
+/**
+ * Los adicionales salen de lo que el cliente tildó: cada pregunta con "ajusta" fija un adicional.
+ * - elegir: "valores" da la cantidad (o true) para la respuesta elegida; si no figura, 0 / false.
+ * - varios con "cuenta": la cantidad de casilleros tildados.
+ * - si_no: true si lo tildó.
+ */
+export function opcionesDesdeRespuestas(servicio, respuestas = {}) {
+  const opciones = {};
+  for (const o of servicio.opciones) opciones[o.id] = o.tipo === "cantidad" ? 0 : false;
+  for (const c of servicio.campos) {
+    const aj = c.ajusta;
+    if (!aj || !(aj.opcion in opciones)) continue;
+    const r = respuestas[c.id];
+    if (c.tipo === "si_no") opciones[aj.opcion] = r === true || r === "true" || r === "on";
+    else if (c.tipo === "varios" && aj.cuenta) opciones[aj.opcion] = Array.isArray(r) ? r.length : 0;
+    else if (aj.valores && r in aj.valores) opciones[aj.opcion] = aj.valores[r];
+  }
+  for (const o of servicio.opciones) {
+    if (o.tipo === "cantidad") opciones[o.id] = Math.max(0, Math.min(o.max ?? 1, Number(opciones[o.id]) || 0));
+  }
+  return opciones;
+}
+
+/** Texto legible de una respuesta (listas, sí/no). */
+export function textoRespuesta(valor) {
+  if (Array.isArray(valor)) return valor.join(", ");
+  if (valor === true) return "Sí";
+  if (valor === false) return "No";
+  return String(valor ?? "").trim();
+}

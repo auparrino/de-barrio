@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { timingSafeEqual } from "node:crypto";
-import { cargarCatalogo, buscarServicio, cotizar } from "./src/cotizador.js";
+import { cargarCatalogo, buscarServicio, cotizar, opcionesDesdeRespuestas, textoRespuesta } from "./src/cotizador.js";
 import * as almacen from "./src/almacen.js";
 import * as pagos from "./src/pagos.js";
 import { generarProducto } from "./src/generador.js";
@@ -61,8 +61,10 @@ app.get("/api/catalogo", (_req, res) => res.json(conDisponibilidad()));
 
 app.post("/api/cotizar", (req, res) => {
   try {
-    const { servicio, opciones, urgente } = req.body ?? {};
-    res.json(cotizar(catalogo, servicio, opciones, { urgente: Boolean(urgente) }));
+    const { servicio, opciones, respuestas, urgente } = req.body ?? {};
+    const s = buscarServicio(catalogo, servicio);
+    const elegidas = respuestas && s ? opcionesDesdeRespuestas(s, respuestas) : opciones;
+    res.json(cotizar(catalogo, servicio, elegidas, { urgente: Boolean(urgente) }));
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
@@ -71,9 +73,11 @@ app.post("/api/cotizar", (req, res) => {
 // El agente lee las respuestas y elige los adicionales; el precio lo calcula cotizar(), con el tope.
 app.post("/api/cotizar-agente", async (req, res) => {
   try {
-    const { servicio, respuestas, opciones, adjuntos } = req.body ?? {};
+    const { servicio, respuestas, adjuntos } = req.body ?? {};
     const s = buscarServicio(catalogo, servicio);
     if (!s) return res.status(400).json({ error: "Elegí un servicio" });
+    // Lo que tildó el cliente fija los adicionales; el agente los revisa con lo que escribió.
+    const opciones = opcionesDesdeRespuestas(s, respuestas ?? {});
     let r;
     try {
       r = await cotizarConAgente(catalogo, s.id, respuestas ?? {}, opciones ?? {}, Number(adjuntos) || 0);
@@ -101,7 +105,7 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
     const faltan = [];
     if (!datos.negocio?.nombre) faltan.push("nombre del negocio");
     if (!datos.contacto?.email) faltan.push("email");
-    for (const c of servicio.campos) if (c.requerido && !String(datos.respuestas?.[c.id] ?? "").trim()) faltan.push(c.etiqueta);
+    for (const c of servicio.campos) if (c.requerido && !textoRespuesta(datos.respuestas?.[c.id])) faltan.push(c.etiqueta);
     const adjuntos = servicio.adjuntos ? (req.files ?? []) : [];
     // Si mandó archivos, los campos del servicio pueden venir en ellos; nombre y email siempre son obligatorios.
     const faltanDatosBasicos = faltan.some((f) => !servicio.campos.some((c) => c.etiqueta === f));
@@ -110,7 +114,13 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
     }
 
     // La cotización se recalcula en el servidor: nunca se confía en el precio del navegador.
-    const cotizacion = cotizar(catalogo, servicio.id, datos.opciones, { urgente: Boolean(datos.urgente) });
+    // Los adicionales salen de lo que tildó; el ajuste del cotizador solo puede sumar, nunca bajar de eso.
+    const minimas = opcionesDesdeRespuestas(servicio, datos.respuestas ?? {});
+    const opciones = Object.fromEntries(Object.entries(minimas).map(([k, v]) => {
+      const c = datos.opciones?.[k];
+      return [k, typeof v === "boolean" ? v || c === true : Math.max(v, Math.floor(Number(c) || 0))];
+    }));
+    const cotizacion = cotizar(catalogo, servicio.id, opciones, { urgente: Boolean(datos.urgente) });
 
     const pedido = almacen.crearPedido({
       servicio: servicio.id,
@@ -118,7 +128,7 @@ app.post("/api/pedidos", subir.array("adjuntos", 8), async (req, res) => {
       negocio: { nombre: datos.negocio.nombre, rubro: datos.negocio.rubro ?? "", barrio: datos.negocio.barrio ?? "" },
       contacto: { nombre: datos.contacto.nombre ?? "", email: datos.contacto.email, telefono: datos.contacto.telefono ?? "" },
       respuestas: datos.respuestas ?? {},
-      opciones: datos.opciones ?? {},
+      opciones,
       urgente: Boolean(datos.urgente),
       cotizacion,
       cantidadAdjuntos: adjuntos.length,

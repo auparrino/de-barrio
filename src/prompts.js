@@ -1,5 +1,6 @@
 // Arma el pedido a Claude para generar el producto cotizado.
 import { buscarServicio } from "./cotizador.js";
+import { textoRespuesta } from "../public/cotizar.js";
 
 export const SISTEMA = `Sos el equipo de producción de "De Barrio", una microconsultora que arma
 productos listos para usar para comercios de barrio en Argentina (almacenes, verdulerías, carnicerías,
@@ -98,7 +99,7 @@ export function bloquesAdjuntos(adjuntos = []) {
 
 export function textoRespuestas(servicio, respuestas = {}) {
   return servicio.campos
-    .map((c) => `### ${c.etiqueta}\n${String(respuestas[c.id] ?? "").trim() || "(sin respuesta)"}`)
+    .map((c) => `### ${c.etiqueta}\n${textoRespuesta(respuestas[c.id]) || "(sin respuesta)"}`)
     .join("\n\n");
 }
 

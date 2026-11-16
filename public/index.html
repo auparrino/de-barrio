@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <a class="saltar" href="#lista">Ir a lo que hacemos</a>
+  <a class="saltar" href="#lista">Ir a la lista</a>
 
   <header class="letrero">
     <div class="ancho">
@@ -23,6 +23,10 @@
         <div class="panel-texto">
           <h1>De Barrio</h1>
           <p class="rubro">Planillas y carteles para el comercio de la cuadra</p>
+          <p class="cinta">
+            <svg viewBox="-4 0 532 90" aria-hidden="true" focusable="false" preserveAspectRatio="none"><use href="/filete.svg#cinta"/></svg>
+            <span>Hoy no se fía, mañana sí</span>
+          </p>
         </div>
       </div>
     </div>
@@ -31,18 +35,20 @@
   <main class="ancho mostrador">
     <section id="lista" aria-labelledby="t-lista">
       <div class="boleta-cabeza">
-        <h2 id="t-lista">Qué hacemos</h2>
+        <h2 id="t-lista">¿Qué va a llevar?</h2>
         <p class="boleta-numero"><small>N°</small>0001-00000001</p>
       </div>
       <svg class="llave" viewBox="0 0 600 60" aria-hidden="true" focusable="false"><use href="/filete.svg#llave"/></svg>
-      <p class="aclaracion">Tocá lo que te sirva. El precio te lo pasamos cuando nos contás qué necesitás.</p>
-      <p class="boleta-columnas" aria-hidden="true"><span>Detalle</span><span>Precio: al cotizar</span></p>
+      <p class="aclaracion">Tocá lo que te sirva. El precio final depende de lo que marques.</p>
+      <p class="sello" aria-hidden="true">Atendido<br>por sus dueños</p>
+      <p class="boleta-columnas" aria-hidden="true"><span>Detalle</span><span>Precio</span></p>
       <div id="catalogo"></div>
     </section>
 
     <section id="formulario" hidden aria-labelledby="f-titulo">
       <button type="button" class="volver" id="volver">Volver</button>
       <h2 id="f-titulo"></h2>
+      <p class="f-precio" id="f-precio"></p>
       <p id="f-descripcion"></p>
       <p class="entregables"><b>Te llevás:</b> <span id="f-entregables"></span></p>
 
@@ -50,21 +56,19 @@
         <fieldset>
           <legend>Tu negocio</legend>
           <label>Nombre del negocio <input name="negocio.nombre" required autocomplete="organization"></label>
-          <label>Rubro <input name="negocio.rubro" placeholder="Ferretería, almacén, corralón…"></label>
+          <fieldset class="pregunta">
+            <legend>Rubro</legend>
+            <div class="casilleros"><input type="radio" id="r0" name="negocio.rubro" value="Ferretería"><label for="r0">Ferretería</label><input type="radio" id="r1" name="negocio.rubro" value="Almacén"><label for="r1">Almacén</label><input type="radio" id="r2" name="negocio.rubro" value="Verdulería"><label for="r2">Verdulería</label><input type="radio" id="r3" name="negocio.rubro" value="Kiosco"><label for="r3">Kiosco</label><input type="radio" id="r4" name="negocio.rubro" value="Panadería"><label for="r4">Panadería</label><input type="radio" id="r5" name="negocio.rubro" value="Carnicería"><label for="r5">Carnicería</label><input type="radio" id="r6" name="negocio.rubro" value="Peluquería"><label for="r6">Peluquería</label><input type="radio" id="r7" name="negocio.rubro" value="Otro"><label for="r7">Otro</label></div>
+          </fieldset>
           <label>Barrio o localidad <input name="negocio.barrio"></label>
         </fieldset>
 
         <fieldset>
           <legend>Contanos</legend>
-          <div id="f-campos"></div>
-          <label id="f-adjuntos" hidden><span id="f-adjuntos-ayuda"></span>
+          <label id="f-adjuntos" class="fotos" hidden><span class="fotos-titulo">Fotos</span> <span id="f-adjuntos-ayuda"></span>
             <input type="file" name="adjuntos" accept="image/*,application/pdf" multiple>
           </label>
-        </fieldset>
-
-        <fieldset id="f-opciones-caja">
-          <legend>Si ya sabés que necesitás más</legend>
-          <div id="f-opciones"></div>
+          <div id="f-campos"></div>
         </fieldset>
 
         <fieldset>
@@ -74,6 +78,7 @@
           <label>WhatsApp <input name="contacto.telefono" autocomplete="tel" inputmode="tel"></label>
         </fieldset>
 
+        <p class="al-momento" aria-live="polite">Hasta ahora <strong id="al-momento-total"></strong></p>
         <button type="button" id="cotizar" class="cotizar">Cotizar</button>
         <p class="error" id="error" role="alert" hidden></p>
 

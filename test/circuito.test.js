@@ -29,8 +29,7 @@ test("pedido pagado genera archivos descargables", async () => {
     servicio: "promos",
     negocio: { nombre: "Almacén Don Tito", rubro: "almacén" },
     contacto: { email: "tito@example.com" },
-    respuestas: { oferta: "Fideos 500 g a $ 1.200, 2x1 hasta el domingo" },
-    opciones: { piezas_extra: 1 },
+    respuestas: { producto: "Fideos 500 g", precio: "1200", promo: "2x1", cuando: "Esta semana", piezas: "10" },
   };
   const form = new FormData();
   form.append("datos", JSON.stringify(datos));
@@ -72,7 +71,7 @@ test("un servicio con tablas sin verificar no se puede contratar", async () => {
   assert.equal(cobros.disponible, false);
   assert.equal(cobros.instrucciones, undefined, "las instrucciones internas no se publican");
   const form = new FormData();
-  form.append("datos", JSON.stringify({ servicio: "cobros", negocio: { nombre: "X" }, contacto: { email: "a@b.c" }, respuestas: { medios: "MP", montos: "100" } }));
+  form.append("datos", JSON.stringify({ servicio: "cobros", negocio: { nombre: "X" }, contacto: { email: "a@b.c" }, respuestas: { medios: ["Efectivo"], posnet: "Getnet", acreditacion: "En el momento", monto: "2 a 5 millones", tarjeta: "La mitad", provincia: "CABA" } }));
   const r = await fetch(`${base}/api/pedidos`, { method: "POST", body: form });
   assert.equal(r.status, 409);
 });
@@ -83,15 +82,15 @@ test("las páginas que no existen devuelven la 404 propia", async () => {
   assert.match(await r.text(), /salió a buscar cambio/);
 });
 
-test("cotizar con agente: sin clave de API usa lo que marcó el cliente y calcula el precio en el servidor", async () => {
+test("cotizar: lo que tildó el cliente fija los adicionales y el precio lo calcula el servidor", async () => {
   const r = await fetch(`${base}/api/cotizar-agente`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ servicio: "stock", respuestas: { productos: "180 productos" }, opciones: { productos_extra: 9, etiquetas: true } }),
+    body: JSON.stringify({ servicio: "stock", respuestas: { productos: "Más de 150", etiquetas: true }, opciones: { productos_extra: 0 } }),
   });
   const res = await r.json();
   assert.equal(r.status, 200);
-  assert.equal(res.opciones.productos_extra, 2, "se limita al máximo del catálogo");
+  assert.equal(res.opciones.productos_extra, 2);
   assert.equal(res.cotizacion.total, 150000 + 30000 + 15000);
   assert.equal(res.agente, false);
 });

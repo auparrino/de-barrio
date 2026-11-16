@@ -15,4 +15,4 @@ export function buscarServicio(catalogo, id) {
 
 // La cuenta vive en public/cotizar.js para que el navegador (versión de prueba en GitHub Pages)
 // y el servidor calculen exactamente igual.
-export { cotizar } from "../public/cotizar.js";
+export { cotizar, opcionesDesdeRespuestas, textoRespuesta } from "../public/cotizar.js";

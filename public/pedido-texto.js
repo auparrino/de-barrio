@@ -2,11 +2,13 @@
 // proyecto «De Barrio» de Claude (que ya tiene las instrucciones generales y las guías cargadas;
 // ver docs/proyecto-claude/). Se usa en la versión de prueba, sin servidor.
 
+import { textoRespuesta } from "./cotizar.js";
+
 const pesos = (n) => "$ " + Math.round(n).toLocaleString("es-AR");
 
 function respuestas(servicio, r = {}) {
   return servicio.campos
-    .map((c) => `### ${c.etiqueta}\n${String(r[c.id] ?? "").trim() || "(sin respuesta)"}`)
+    .map((c) => `### ${c.etiqueta}\n${textoRespuesta(r[c.id]) || "(sin respuesta)"}`)
     .join("\n\n");
 }
 
